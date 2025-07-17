@@ -1,5 +1,6 @@
 import Layer from './AbstractLayer';
 import { IMAGE_DEFAULTS } from "@/app/lib/defaults";
+import { ImagePropertiesPanel } from "@/app/components/core/menu/ImageEditPanel";
 
 class ImageLayer extends Layer {
     constructor({ id, title, subtitle, options = {}, canvas = null }) {
@@ -12,21 +13,83 @@ class ImageLayer extends Layer {
         this.canvas = canvas;
     }
 
-    renderContent() {
+    buildTransform({ rotation, skewX, skewY }) {
+        const transforms = [];
+
+        if (rotation) transforms.push(`rotate(${rotation})`);
+        if (skewX) transforms.push(`skewX(${skewX}deg)`);
+        if (skewY) transforms.push(`skewY(${skewY}deg)`);
+
+        return transforms.join(' ');
+    }
+
+    buildStyle() {
+
+        const {
+            rotation,
+            skewX,
+            skewY,
+            left,
+            top,
+            ...styleProps
+        } = this.imageProps;
+
+        const transformParts = [this.buildTransform({ rotation, skewX, skewY })];
+        if (left && /%$/.test(left)) transformParts.push('translateX(-50%)');
+        if (top && /%$/.test(top)) transformParts.push('translateY(-50%)');
+
+        const baseStyle = {
+            ...styleProps,
+            left,
+            top,
+            display: 'flex',
+            transform: transformParts.filter(Boolean).join(' '),
+            transformOrigin: 'center center',
+        };
+
+        return { style: baseStyle };
+
+    }
+
+
+    renderContent({ node_key }) {
         // Actual rendering would go here
-        return <img alt={this.imageProps.alt || 'Image'} src={`https://placehold.co/${this.imageProps.width}x${this.imageProps.height}/png`} width={this.imageProps.width} height={this.imageProps.height}>
+        const { style } = this.buildStyle();
+        return <img
+            key={node_key}
+            alt={this.imageProps.alt || 'Image'}
+            src={`https://placehold.co/400x400/png`}
+            style={style}
+        >
         </img>; // Placeholder for now
     }
 
     renderPreview() {
-        return null
+        const { style } = this.buildStyle();
+
+        const previewStyle = {
+            ...style,
+            position: 'relative',
+            overflow: 'auto',
+            top: 'auto',
+            left: 'auto',
+        }
+
+        return <img
+            alt={this.imageProps.alt || 'Image'}
+            src={`https://placehold.co/400x400/png`}
+            style={previewStyle}
+        >
+        </img>;
     }
 
     renderPropertiesPanel(onChange) {
         return (
-            <div className="p-4">
-                <p>Image Properties Panel (to be implemented)</p>
-                {/* Actual image properties editing would go here */}
+            <div className="max-w-full overflow-auto">
+                <ImagePropertiesPanel
+                    value={this.imageProps}
+                    onChange={onChange}
+                />
             </div>
         );
     }

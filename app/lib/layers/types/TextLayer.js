@@ -48,8 +48,6 @@ class TextLayer extends Layer {
             ...styleProps
         } = this.textProps;
 
-        console.log('This layer: ', this.id, this);
-
 
         const inferredDirection = direction(content || '') === 'rtl' ? 'rtl' : 'ltr';
         const inferredTextAlign = inferredDirection === 'rtl' ? 'right' : 'left';

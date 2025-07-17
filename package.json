@@ -22,7 +22,8 @@
     "react-colorful": "^5.6.1",
     "react-dom": "^19.0.0",
     "react-zoom-pan-pinch": "^3.7.0",
-    "rosetta": "^1.1.0"
+    "rosetta": "^1.1.0",
+    "use-long-press": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

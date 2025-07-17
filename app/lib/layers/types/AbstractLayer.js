@@ -1,13 +1,13 @@
 // Abstract Layer class
 class Layer {
-  constructor(id, type, title, subtitle, options = {}) {
+  constructor(id, type = 'text', title = 'New Layer', subtitle = 'Press to expand', options = {}) {
     if (new.target === Layer) {
       throw new Error("Layer is abstract and cannot be instantiated directly");
     }
     this.id = id;
     this.type = type;
     this.title = title;
-    this.subtitle = subtitle || 'Press to expand';
+    this.subtitle = subtitle;
     this.icon = options.icon || null;
   }
 

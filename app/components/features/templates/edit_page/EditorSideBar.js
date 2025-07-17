@@ -5,6 +5,8 @@ import AddButtonWithPopover from "@/app/components/core/buttons/AddButtonWithPop
 import LayersTab from "@/app/components/features/templates/edit_page/LayersTab";
 import MaskedIcon from "@/app/components/core/icons/Icon";
 import { DEFAULT_CONTENT_x2 } from "@/app/components/shared/constants/placeholders";
+import AddLayerOptions from "./panel/layer_control/AddLayerOptions";
+
 
 const EditorSidebarPanel = ({ layers }) => (
     <div className="absolute top-1/2 right-[30px] transform -translate-y-1/2 w-[400px] h-[calc(100%-60px)] rounded-xl bg-white/40 shadow-xl backdrop-blur-md">
@@ -50,10 +52,7 @@ const EditorSidebarPanel = ({ layers }) => (
         <AddButtonWithPopover
             onAction={() => { console.log('Add Clicked!') }}
             PopoverOptions={
-                <div className="flex flex-col gap-2 p-3">
-                    <p className="text-sm font-semibold">إضافة طبقة</p>
-                    <p className="text-sm text-gray-500">يمكنك إضافة طبقة من هنا</p>
-                </div>
+                <AddLayerOptions />
             } />
     </div>
 );

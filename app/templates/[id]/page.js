@@ -12,6 +12,7 @@ import { TextLayer, ImageLayer } from '@/app/lib/layers/types';
 
 
 function EditTemplateInner() {
+
     const { setLayers } = useLayers();
 
     useEffect(() => {

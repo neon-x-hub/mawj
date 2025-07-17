@@ -24,14 +24,107 @@ const LayersTab = () => {
         );
     };
 
+
+    /// ===================Title & Subtitle====================================
+    const [editingId, setEditingId] = useState(null);
+    const [editField, setEditField] = useState(null); // 'title' | 'subtitle'
+    const [editText, setEditText] = useState('');
+
+    const startEditing = (id, field, initialValue) => {
+        setEditingId(id);
+        setEditField(field);
+        setEditText(initialValue);
+        console.log('Editing ID:', id, 'Field:', field, 'Initial Value:', initialValue);
+    };
+
+    const commitEdit = () => {
+        if (editingId && editField) {
+            setLayers(prevLayers =>
+                prevLayers.map(layer => {
+                    if (layer.id === editingId) {
+                        const cloned = layer.clone();
+                        cloned[editField] = editText;
+                        return cloned;
+                    }
+                    return layer;
+                })
+            );
+        }
+        setEditingId(null);
+        setEditField(null);
+        setEditText('');
+    };
+
+
+    const handleKeyDown = (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            commitEdit();
+        } else if (e.key === 'Escape') {
+            setEditingId(null);
+            setEditField(null);
+            setEditText('');
+        }
+        else if (e.key === ' ' || e.code === 'Space') {
+            // This because of the @heroui/react accessibility support interception
+            e.preventDefault();
+            e.stopPropagation();
+            // add ' '
+            setEditText(editText + ' ');
+        }
+    };
+
+    /// =====================================================================
+
     return (
         <Accordion aria-label="layers Accordion">
             {layers.map((layer) => (
                 <AccordionItem
                     key={layer.id}
                     aria-label={`Layer ${layer.id}`}
-                    subtitle={layer.subtitle}
-                    title={layer.title}
+                    subtitle={
+                        editingId === layer.id && editField === 'subtitle' ? (
+                            <input
+                                type="text"
+                                value={editText}
+                                autoFocus
+                                onChange={(e) => setEditText(e.target.value)}
+                                onBlur={commitEdit}
+                                onKeyDown={handleKeyDown}
+                                className="text-sm text-default-500 bg-white px-1 border rounded w-full"
+                            />
+                        ) : (
+                            <span
+                                onDoubleClick={() => startEditing(layer.id, 'subtitle', layer.subtitle || '')}
+                                className="text-sm text-default-500 cursor-pointer"
+                                title="Double click to edit"
+                            >
+                                {layer.subtitle || 'No subtitle'}
+                            </span>
+                        )
+                    }
+                    title={
+                        editingId === layer.id && editField === 'title' ? (
+                            <input
+                                type="text"
+                                value={editText}
+                                autoFocus
+                                onChange={(e) => setEditText(e.target.value)}
+                                onBlur={commitEdit}
+                                onKeyDown={handleKeyDown}
+                                className="font-semibold text-base bg-white px-1 border rounded w-full"
+                            />
+                        ) : (
+                            <span
+                                onDoubleClick={() => startEditing(layer.id, 'title', layer.title || '')}
+                                className="font-semibold cursor-pointer"
+                                title="Double click to edit"
+                            >
+                                {layer.title || 'Untitled'}
+                            </span>
+                        )
+                    }
                     startContent={layer.icon && (
                         <MaskedIcon
                             src={layer.icon}
@@ -41,17 +134,22 @@ const LayersTab = () => {
                         />
                     )}
                     classNames={{ title: 'font-semibold' }}
+                    onContextMenu={(e)=> {
+                        e.preventDefault();
+                        console.log('context menu');
+                    }}
                 >
 
-                    <LayerPreview layer={layer} handlePropsChange={handlePropsChange} />
+            <LayerPreview layer={layer} handlePropsChange={handlePropsChange} />
 
-                    {layer.renderPropertiesPanel((newProps) =>
-                        handlePropsChange(layer.id, newProps)
-                    )}
-                </AccordionItem>
+            {layer.renderPropertiesPanel((newProps) =>
+                handlePropsChange(layer.id, newProps)
+            )}
+        </AccordionItem>
 
-            ))}
-        </Accordion>
+    ))
+}
+        </Accordion >
     );
 };
 
