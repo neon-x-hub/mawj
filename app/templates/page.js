@@ -1,18 +1,20 @@
-'use client';
+'use client'
 
+import React from 'react'
 // I18N
-import { t } from '@/app/i18n';
+import { t } from '@/app/i18n'
 // Components
-import HeroBanner from './components/features/home/banner';
-import FolderSectionHead from './components/features/home/FolderSectionHead';
-import GenericCard from './components/core/cards/GenericCard';
-import ResponiveGrid from './components/layout/ResponiveGrid';
-export default function Home() {
+import TemplateSectionHead from '../components/features/templates/TemplateSectionHead'
+import ResponiveGrid from '../components/layout/ResponiveGrid'
+import GenericCard from '../components/core/cards/GenericCard'
+import DynamicBreadcrumbs from '../components/core/breadcrumbs/DynamicBreadCrumbs'
 
+
+export default function Page() {
     return (
         <>
-            <HeroBanner />
-            <FolderSectionHead />
+            <TemplateSectionHead />
+            <DynamicBreadcrumbs basePath={'/templates'} baseLabel={t('common.templates')} />
             <ResponiveGrid>
                 <GenericCard
                     title="المشروع الافتراضي"

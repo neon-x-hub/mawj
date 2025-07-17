@@ -1,0 +1,22 @@
+{
+    "welcome": "مرحبًا {{name}}!",
+    "home": "الرئيسية",
+    "templates": "القوالب",
+    "settings": "الإعدادات",
+    "projects": "المشاريع",
+    "fonts": "الخطوط",
+    "learn": "تعلم",
+    "get_started": "ابدأ الآن",
+    "learn_more": "كيف يعمل؟",
+    "sections": {
+        "folders": "المجلدات"
+    },
+    "placeholder": {
+        "search": "  ابحث في: {{pl}} ..."
+    },
+    "folder": "مجلد",
+    "project": "مشروع",
+    "data": "البيانات",
+    "metadata": "المعلومات",
+    "layers": "الطبقات"
+}

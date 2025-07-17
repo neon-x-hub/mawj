@@ -9,13 +9,27 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "@heroui/react": "^2.7.11",
+    "@uidotdev/usehooks": "^2.4.1",
+    "chart.js": "^4.5.0",
+    "direction": "^2.0.1",
+    "fitty": "^2.4.2",
+    "framer-motion": "^12.23.0",
+    "next": "15.3.5",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-colorful": "^5.6.1",
     "react-dom": "^19.0.0",
-    "next": "15.3.5"
+    "react-zoom-pan-pinch": "^3.7.0",
+    "rosetta": "^1.1.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
-    "@eslint/eslintrc": "^3"
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
   }
 }

@@ -1,0 +1,30 @@
+{
+    "text": {
+        "regular": "نص عادي",
+        "alignment": "محاذاة",
+        "horizontalAlignment": "محاذاة افقية",
+        "verticalAlignment": "محاذاة عمودية",
+        "textAlignment": "محاذاة النص",
+        "typography": "الخط",
+        "fontFamily": "نوع الخط",
+        "fontSize": "حجم الخط",
+        "fontWeight": "سماكة الخط",
+        "decoration": "الزخرفة",
+        "colors": "الألوان",
+        "textColor": "لون النص",
+        "backgroundColor": "لون الخلفية",
+        "decorations": {
+            "none": "بدون",
+            "underline": "تحته خط",
+            "line-through": "يتوسطه خط",
+            "overline": "فوقه خط"
+        },
+        "transformations": "التحويلات",
+        "position": "الموقع",
+        "rotation": "الدوران",
+        "skew": "الإمالة",
+        "absolute": "مطلق (بكسل)",
+        "relative": "نسبي (%)",
+        "size": "الحجم"
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "types": {
+        "actions": "إجراءات",
+        "danger_zone": "منطقة الخطر"
+    },
+    "generate": "إنشـاء",
+    "export": "تصدير",
+    "import": "استيراد",
+    "generic": {
+        "add": {
+            "label": "إضافة {{object}} ",
+            "desc": "إضافة {{object}} جديد"
+        }
+    },
+    "search": "بحث",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "add": "اضافة",
+    "preview": "معاينة"
+}
