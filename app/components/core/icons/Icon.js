@@ -4,6 +4,7 @@ const MaskedIcon = ({
     className = 'w-6 h-6',
     height = '25px',
     width = '25px',
+    ...props
 }) => {
     return (
         <div
@@ -19,6 +20,7 @@ const MaskedIcon = ({
                 width: width,
                 height: height,
             }}
+            {...props}
         />
     );
 };

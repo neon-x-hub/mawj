@@ -5,6 +5,9 @@ import { Accordion, AccordionItem } from '@heroui/react';
 import MaskedIcon from '@/app/components/core/icons/Icon';
 import LayerPreview from './panel/preview/LayerPreview';
 import { useLayers } from '@/app/lib/layers/context/LayerContext';
+import ButtonWithPopover from '@/app/components/core/buttons/AddButtonWithPopover';
+import LayerDirectOptions from './panel/layer_control/LayerDirectOptions';
+
 
 
 const LayersTab = () => {
@@ -134,21 +137,31 @@ const LayersTab = () => {
                         />
                     )}
                     classNames={{ title: 'font-semibold' }}
-                    onContextMenu={(e)=> {
+                    onContextMenu={(e) => {
                         e.preventDefault();
                         console.log('context menu');
                     }}
+                    indicator={
+                        <ButtonWithPopover
+                            isOptions
+                            PopoverOptions={
+                                <LayerDirectOptions layer={layer}/>
+                            }
+
+                        />
+
+                    }
                 >
 
-            <LayerPreview layer={layer} handlePropsChange={handlePropsChange} />
+                    <LayerPreview layer={layer} handlePropsChange={handlePropsChange} />
 
-            {layer.renderPropertiesPanel((newProps) =>
-                handlePropsChange(layer.id, newProps)
-            )}
-        </AccordionItem>
+                    {layer.renderPropertiesPanel((newProps) =>
+                        handlePropsChange(layer.id, newProps)
+                    )}
+                </AccordionItem>
 
-    ))
-}
+            ))
+            }
         </Accordion >
     );
 };

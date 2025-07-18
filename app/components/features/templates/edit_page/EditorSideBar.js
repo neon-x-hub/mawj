@@ -1,7 +1,7 @@
 
 import { t } from "@/app/i18n";
 import { Tabs, Tab } from "@heroui/react";
-import AddButtonWithPopover from "@/app/components/core/buttons/AddButtonWithPopover";
+import ButtonWithPopover from "@/app/components/core/buttons/AddButtonWithPopover";
 import LayersTab from "@/app/components/features/templates/edit_page/LayersTab";
 import MaskedIcon from "@/app/components/core/icons/Icon";
 import { DEFAULT_CONTENT_x2 } from "@/app/components/shared/constants/placeholders";
@@ -49,7 +49,7 @@ const EditorSidebarPanel = ({ layers }) => (
                 </Tabs>
             </div>
         </div>
-        <AddButtonWithPopover
+        <ButtonWithPopover
             onAction={() => { console.log('Add Clicked!') }}
             PopoverOptions={
                 <AddLayerOptions />
