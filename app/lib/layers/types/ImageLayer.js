@@ -6,9 +6,9 @@ class ImageLayer extends Layer {
     constructor({ id, title, subtitle, options = {}, canvas = null }) {
         super(id, 'image', title, subtitle, options);
         this.icon = options.icon || '/icons/coco/line/Gallery.svg';
-        this.imageProps = {
+        this.props = {
             ...IMAGE_DEFAULTS,
-            ...options.imageProps
+            ...options.props
         };
         this.canvas = canvas;
     }
@@ -32,7 +32,7 @@ class ImageLayer extends Layer {
             left,
             top,
             ...styleProps
-        } = this.imageProps;
+        } = this.props;
 
         const transformParts = [this.buildTransform({ rotation, skewX, skewY })];
         if (left && /%$/.test(left)) transformParts.push('translateX(-50%)');
@@ -57,7 +57,7 @@ class ImageLayer extends Layer {
         const { style } = this.buildStyle();
         return <img
             key={node_key}
-            alt={this.imageProps.alt || 'Image'}
+            alt={this.props.alt || 'Image'}
             src={`https://placehold.co/400x400/png`}
             style={style}
         >
@@ -76,7 +76,7 @@ class ImageLayer extends Layer {
         }
 
         return <img
-            alt={this.imageProps.alt || 'Image'}
+            alt={this.props.alt || 'Image'}
             src={`https://placehold.co/400x400/png`}
             style={previewStyle}
         >
@@ -87,7 +87,7 @@ class ImageLayer extends Layer {
         return (
             <div className="max-w-full overflow-auto">
                 <ImagePropertiesPanel
-                    value={this.imageProps}
+                    value={this.props}
                     onChange={onChange}
                 />
             </div>
@@ -95,7 +95,7 @@ class ImageLayer extends Layer {
     }
 
     updateProps(newProps) {
-        this.imageProps = { ...this.imageProps, ...newProps };
+        this.props = { ...this.props, ...newProps };
         return this;
     }
 
@@ -106,7 +106,7 @@ class ImageLayer extends Layer {
             subtitle: this.subtitle,
             options: {
                 icon: this.icon,
-                imageProps: { ...this.imageProps }
+                props: { ...this.props }
             },
             canvas: this.canvas
         });

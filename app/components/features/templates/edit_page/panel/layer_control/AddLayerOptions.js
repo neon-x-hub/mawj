@@ -5,6 +5,8 @@ import { useLayers } from "@/app/lib/layers/context/LayerContext";
 
 import { TextLayer, ImageLayer } from "@/app/lib/layers/types";
 
+// useLedgex
+import { useLedgex } from "@/app/lib/state-ledger/useLedgex";
 
 export const ListboxWrapper = ({ children }) => (
     <div className="flex flex-col gap-2 w-full">
@@ -24,6 +26,7 @@ export default function AddLayerOptions() {
     const canvas = { width: 1920, height: 1080 };
 
     const { layers, setLayers } = useLayers();
+    const { get, set } = useLedgex();
 
     const handleAddLayer = (key) => {
         // Handle the selected layer type
@@ -36,6 +39,15 @@ export default function AddLayerOptions() {
                     canvas
                 });
                 setLayers([...layers, newLayer]);
+                set({
+                    [newLayer.id]: {
+                        type: newLayer.type,
+                        title: newLayer.title,
+                        subtitle: newLayer.subtitle,
+                        options: { props: newLayer.options },
+                        canvas
+                    }
+                })
                 break;
             case "image":
                 console.log("Adding an Image layer");
@@ -44,6 +56,15 @@ export default function AddLayerOptions() {
                     id: layers.length + 1,
                     canvas
                 });
+                set({
+                    [newLayer.id]: {
+                        type: newLayer.type,
+                        title: newLayer.title,
+                        subtitle: newLayer.subtitle,
+                        options: { props: newLayer.options },
+                        canvas
+                    }
+                })
                 setLayers([...layers, newImageLayer]);
                 break;
             case "custom":

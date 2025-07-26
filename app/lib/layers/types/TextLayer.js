@@ -12,9 +12,9 @@ class TextLayer extends Layer {
     constructor({ id, title, subtitle, options = {}, canvas }) {
         super(id, 'text', title, subtitle, options);
         this.icon = options.icon || '/icons/coco/line/Text.svg';
-        this.textProps = {
+        this.props = {
             ...TEXT_DEFAULTS,
-            ...options.textProps // Override defaults
+            ...options.props // Override defaults
         };
         this.canvas = canvas;
     }
@@ -46,7 +46,7 @@ class TextLayer extends Layer {
             minFontSize,
             maxFontSize,
             ...styleProps
-        } = this.textProps;
+        } = this.props;
 
 
         const inferredDirection = direction(content || '') === 'rtl' ? 'rtl' : 'ltr';
@@ -83,9 +83,6 @@ class TextLayer extends Layer {
 
             baseStyle.fontSize = `${computedFontSize}px`;
 
-            console.log('computedFontSize', computedFontSize);
-
-
         } else if (fontSize) {
             baseStyle.fontSize = fontSize;
         }
@@ -95,7 +92,7 @@ class TextLayer extends Layer {
 
 
     renderPreview(onChange) {
-        const { content } = this.textProps;
+        const { content } = this.props;
         const { style } = this.buildStyle();
 
         const textareaStyle = {
@@ -110,7 +107,7 @@ class TextLayer extends Layer {
         }
         const handleChange = (e) => {
             const newContent = e.target.value;
-            this.textProps.content = newContent; // still update internal state
+            this.props.content = newContent; // still update internal state
             if (typeof onChange === 'function') {
                 onChange({ content: newContent }); // notify parent
             }
@@ -127,10 +124,7 @@ class TextLayer extends Layer {
 
     renderContent({ node_key }) {
 
-        console.log('Rendering text layer... ', this.id); // This logs
-
-
-        const { content } = this.textProps;
+        const { content } = this.props;
         const elementId = `text-layer-${this.id}`;
         const { style } = this.buildStyle();
 
@@ -195,7 +189,7 @@ class TextLayer extends Layer {
         return (
             <div className="max-w-full overflow-auto">
                 <TextPropertiesPanel
-                    value={this.textProps}
+                    value={this.props}
                     onChange={onChange}
                 />
             </div>
@@ -203,7 +197,7 @@ class TextLayer extends Layer {
     }
 
     updateProps(newProps) {
-        this.textProps = { ...this.textProps, ...newProps };
+        this.props = { ...this.props, ...newProps };
         return this;
     }
     clone() {
@@ -213,7 +207,7 @@ class TextLayer extends Layer {
             subtitle: this.subtitle,
             options: {
                 icon: this.icon,
-                textProps: { ...this.textProps }
+                props: { ...this.props }
             },
             canvas: this.canvas
         });

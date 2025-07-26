@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { t } from '@/app/i18n';
 import { Accordion, AccordionItem } from '@heroui/react';
 import MaskedIcon from '@/app/components/core/icons/Icon';
@@ -9,10 +9,19 @@ import ButtonWithPopover from '@/app/components/core/buttons/AddButtonWithPopove
 import LayerDirectOptions from './panel/layer_control/LayerDirectOptions';
 
 
+// throttle
+import throttle from '@/app/lib/helpers/throttle';
+
+
+// Ledgex
+import { useLedgex } from '@/app/lib/state-ledger/useLedgex';
 
 const LayersTab = () => {
 
     const { layers, setLayers } = useLayers();
+    const { set, get, undo, redo } = useLedgex();
+
+    const throttledSet = useMemo(() => throttle(set, 300), [set]);
 
     const handlePropsChange = (layerId, newProps) => {
         setLayers(prevLayers =>
@@ -20,6 +29,21 @@ const LayersTab = () => {
                 if (layer.id === layerId) {
                     const updatedLayer = layer.clone();
                     updatedLayer.updateProps(newProps);
+                    throttledSet({
+                        [layerId]: {
+                            type: updatedLayer.type,
+                            title: updatedLayer.title,
+                            subtitle: updatedLayer.subtitle,
+                            options: {
+                                icon: updatedLayer.icon,
+                                props: updatedLayer.props
+                            },
+                            canvas: updatedLayer.canvas
+                        }
+                    });
+                    console.log("Updated Layer:", updatedLayer);
+                    console.log("Updated State:", get());
+
                     return updatedLayer;
                 }
                 return layer;
@@ -77,6 +101,10 @@ const LayersTab = () => {
             setEditText(editText + ' ');
         }
     };
+
+
+
+
 
     /// =====================================================================
 
@@ -145,7 +173,7 @@ const LayersTab = () => {
                         <ButtonWithPopover
                             isOptions
                             PopoverOptions={
-                                <LayerDirectOptions layer={layer}/>
+                                <LayerDirectOptions layer={layer} />
                             }
 
                         />

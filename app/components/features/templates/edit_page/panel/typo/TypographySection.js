@@ -20,7 +20,7 @@ const FONT_WEIGHTS = [
 const DECORATIONS = ["none", "underline", "line-through", "overline"];
 
 export default function TypographySection({ value, update }) {
-    console.log(value);
+
 
 
     return (
