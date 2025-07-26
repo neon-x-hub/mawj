@@ -1,4 +1,6 @@
 'use client';
+// I18N
+import { t } from "@/app/i18n";
 
 import { Listbox, ListboxItem, Divider } from "@heroui/react";
 import { useLayers } from "@/app/lib/layers/context/LayerContext";
@@ -16,8 +18,8 @@ export const ListboxWrapper = ({ children }) => (
 
 export const LayerTypesInfo = () => (
     <div className="flex flex-col gap-2 p-3">
-        <p className="text-sm font-semibold">إضافة طبقة</p>
-        <p className="text-sm text-gray-500">اختر نوع الطبقة لإضافتها</p>
+        <p className="text-sm font-semibold">{t('actions.generic.add.label', { object: t('common.layer') })}</p>
+        <p className="text-sm text-gray-500">{t('messages.layer.type.choose_type_to_add')}</p>
     </div>
 );
 

@@ -1,5 +1,8 @@
 'use client';
 
+// I18N
+import { t } from "@/app/i18n";
+
 import { useMemo } from "react";
 import { Listbox, ListboxItem } from "@heroui/react";
 import throttle from "@/app/lib/helpers/throttle";
@@ -112,7 +115,7 @@ export default function LayerDirectOptions({ layer }) {
     return (
         <div className="space-y-1 w-[120px] max-w-md">
             <ListboxWrapper>
-                <Listbox aria-label="Layer Actions" onAction={handleAddLayer} className="font-medium">
+                <Listbox aria-label="Layer Actions" onAction={handleAddLayer}>
 
                     {/* ✅ Hide / Show */}
                     <ListboxItem
@@ -125,8 +128,12 @@ export default function LayerDirectOptions({ layer }) {
                                 color="currentColor"
                             />
                         }
+
+                        classNames={{
+                            title: 'font-medium',
+                        }}
                     >
-                        {isHidden ? "Show" : "Hide"}
+                        {isHidden ? t("actions.show") : t("actions.hide")}
                     </ListboxItem>
 
                     {/* ✅ Duplicate */}
@@ -138,8 +145,12 @@ export default function LayerDirectOptions({ layer }) {
                                 height="18px" width="18px"
                                 color={"currentColor"}
                             />}
-                    >
-                        Duplicate
+
+                        classNames={{
+                            title: 'font-medium',
+                        }}
+                        >
+                        {t("actions.duplicate")}
                     </ListboxItem>
 
                     {/* ✅ Delete */}
@@ -148,19 +159,20 @@ export default function LayerDirectOptions({ layer }) {
                         color="danger"
                         startContent={
                             <MaskedIcon
-                                src="/icons/coco/line/Trash-2.svg"
-                                height="18px"
-                                width="18px"
-                                color="currentColor"
-                                className="group-hover:text-white"
+                            src="/icons/coco/line/Trash-2.svg"
+                            height="18px"
+                            width="18px"
+                            color="currentColor"
+                            className="group-hover:text-white"
                             />
+
                         }
                         classNames={{
                             wrapper: "group text-danger",
-                            title: "group-hover:text-white",
+                            title: "group-hover:text-white font-medium",
                         }}
                     >
-                        Delete
+                        {t("actions.delete")}
                     </ListboxItem>
                 </Listbox>
             </ListboxWrapper>

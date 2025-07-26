@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { t } from '@/app/i18n';
 import EditorSidebarPanel from '@/app/components/features/templates/edit_page/EditorSideBar';
 import Canvas from '@/app/components/features/templates/edit_page/canvas/Canvas';
-import { DEFAULT_CONTENT_x2 } from '@/app/components/shared/constants/placeholders';
 // hotkeys
 import { useHotkeys } from "react-hotkeys-hook";
 // build layers
@@ -11,10 +10,12 @@ import { buildLayer } from '@/app/lib/layers/types';
 
 import { LayersProvider, useLayers } from '@/app/lib/layers/context/LayerContext';
 
+import { Button } from '@heroui/react';
 // Layer classes
 import { TextLayer, ImageLayer } from '@/app/lib/layers/types';
 
 import { useLedgex } from '@/app/lib/state-ledger/useLedgex';
+import MaskedIcon from '@/app/components/core/icons/Icon';
 
 function EditTemplateInner() {
 
@@ -114,6 +115,22 @@ function EditTemplateInner() {
         <div className="relative w-full h-full bg-slate-100 overflow-hidden">
             <Canvas />
             <EditorSidebarPanel />
+            <Button
+                color='primary'
+                startContent={
+                    <MaskedIcon
+                        src="/icons/hugeicons/line/floppy-disk.svg"
+                        color="#ffffff"
+                        height='22px'
+                        width='22px'
+                    />
+                }
+                className='absolute bottom-6 left-6 z-50'
+            >
+                <span className='font-normal text-lg text-white'>
+                    {t('actions.save')}
+                </span>
+            </Button>
         </div>
     );
 }

@@ -6,5 +6,10 @@
         "unauthorized_description": "ليس لديك الصلاحيات للوصول إلى هذه الصفحة.",
         "server_error": "خطأ في الخادم",
         "server_error_description": "حدث خطأ غير متوقع. يرجى المحاولة لاحقًا."
+    },
+    "layer": {
+        "type": {
+            "choose_type_to_add": "اختر نوع الطبقة لاضافتها"
+        }
     }
 }
