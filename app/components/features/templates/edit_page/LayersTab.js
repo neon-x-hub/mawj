@@ -30,16 +30,7 @@ const LayersTab = () => {
                     const updatedLayer = layer.clone();
                     updatedLayer.updateProps(newProps);
                     throttledSet({
-                        [layerId]: {
-                            type: updatedLayer.type,
-                            title: updatedLayer.title,
-                            subtitle: updatedLayer.subtitle,
-                            options: {
-                                icon: updatedLayer.icon,
-                                props: updatedLayer.props
-                            },
-                            canvas: updatedLayer.canvas
-                        }
+                        [layerId]: updatedLayer.toObject()
                     });
                     console.log("Updated Layer:", updatedLayer);
                     console.log("Updated State:", get());

@@ -15,7 +15,7 @@ const menuItems = [
     { icon: '/icons/coco/line/Home-2.svg', label: t('common.home'), href: '/' },
     { icon: '/icons/coco/line/bag.svg', label: t('common.projects'), href: '/projects' },
     { icon: '/icons/coco/line/Document.svg', label: t('common.templates'), href: '/templates' },
-    { icon: '/icons/coco/line/Text.svg', label: t('common.fonts'), href: '/fonts' },
+    //{ icon: '/icons/coco/line/Text.svg', label: t('common.fonts'), href: '/fonts' },
     { icon: '/icons/coco/line/Setting-3.svg', label: t('common.settings'), href: '/settings' },
     /* { icon: '/icons/coco/line/Discovery.svg', label: t('common.learn'), href: '/learn' }
  */]

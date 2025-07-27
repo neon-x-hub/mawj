@@ -1,155 +1,70 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
+import { useRouter } from 'next/navigation';
 // I18N
-import { t } from '@/app/i18n'
+import { t } from '@/app/i18n';
 // Components
-import ProjectSectionHead from '../components/features/projects/ProjectSectionHead'
-import ResponiveGrid from '../components/layout/ResponiveGrid'
-import GenericCard from '../components/core/cards/GenericCard'
-import DynamicBreadcrumbs from '../components/core/breadcrumbs/DynamicBreadCrumbs'
-
-
-
+import ProjectSectionHead from '../components/features/projects/ProjectSectionHead';
+import ResponiveGrid from '../components/layout/ResponiveGrid';
+import GenericCard from '../components/core/cards/GenericCard';
+import DynamicBreadcrumbs from '../components/core/breadcrumbs/DynamicBreadCrumbs';
+import ProjectDirectOptions from '../components/core/menu/ProjectDirectOptions';
 
 export default function Page() {
+    const router = useRouter();
+
+    // ✅ Placeholder project list
+    const projects = [
+        {
+            id: 101,
+            title: 'المشروع الافتراضي 1',
+            description: 'وصف مختصر للمشروع الأول و محتوياته',
+            previews: ['https://picsum.photos/200/300', 'https://picsum.photos/200/300'],
+        },
+        {
+            id: 102,
+            title: 'المشروع الافتراضي 2',
+            description: 'وصف مختصر للمشروع الثاني و محتوياته',
+            previews: ['https://picsum.photos/200/300', 'https://picsum.photos/200/300'],
+        },
+        {
+            id: 103,
+            title: 'المشروع الافتراضي 3',
+            description: 'وصف مختصر للمشروع الثالث و محتوياته',
+            previews: ['https://picsum.photos/200/300', 'https://picsum.photos/200/300'],
+        },
+        {
+            id: 104,
+            title: 'المشروع الافتراضي 4',
+            description: 'وصف مختصر للمشروع الرابع و محتوياته',
+            previews: ['https://picsum.photos/200/300', 'https://picsum.photos/200/300'],
+        },
+        {
+            id: 105,
+            title: 'المشروع الافتراضي 5',
+            description: 'وصف مختصر للمشروع الخامس و محتوياته',
+            previews: ['https://picsum.photos/200/300', 'https://picsum.photos/200/300'],
+        },
+    ];
+
     return (
         <>
             <ProjectSectionHead />
-            <DynamicBreadcrumbs basePath={'/projects'} baseLabel={t('common.projects')} />
-            <ResponiveGrid>
-                <GenericCard
-                    title="المشروع الافتراضي"
-                    description="وصف مختصر للمشروع و محتوايته"
-                    previews={[
-                        'https://picsum.photos/200/300',
-                        'https://picsum.photos/200/300',
-                    ]}
-                    options={{
-                        actions: [
-                            {
-                                key: 'copy',
-                                label: 'Copy link',
-                                description: 'Copy the file link',
-                                icon: '/icons/coco/bold/Note-add.svg',
-                            },
-                        ],
-                        danger: [
-                            {
-                                key: 'delete',
-                                label: 'Delete project',
-                                description: 'This action is irreversible',
-                                icon: '/icons/coco/bold/Delete.svg',
-                            },
-                        ],
-                    }}
-                />
-                <GenericCard
-                    title="المشروع الافتراضي"
-                    description="وصف مختصر للمشروع و محتوايته"
-                    previews={[
-                        'https://picsum.photos/200/300',
-                        'https://picsum.photos/200/300',
-                    ]}
-                    options={{
-                        actions: [
-                            {
-                                key: 'copy',
-                                label: 'Copy link',
-                                description: 'Copy the file link',
-                                icon: '/icons/coco/bold/Note-add.svg',
-                            },
-                        ],
-                        danger: [
-                            {
-                                key: 'delete',
-                                label: 'Delete project',
-                                description: 'This action is irreversible',
-                                icon: '/icons/coco/bold/Delete.svg',
-                            },
-                        ],
-                    }}
-                />
-                <GenericCard
-                    title="المشروع الافتراضي"
-                    description="وصف مختصر للمشروع و محتوايته"
-                    previews={[
-                        'https://picsum.photos/200/300',
-                        'https://picsum.photos/200/300',
-                    ]}
-                    options={{
-                        actions: [
-                            {
-                                key: 'copy',
-                                label: 'Copy link',
-                                description: 'Copy the file link',
-                                icon: '/icons/coco/bold/Note-add.svg',
-                            },
-                        ],
-                        danger: [
-                            {
-                                key: 'delete',
-                                label: 'Delete project',
-                                description: 'This action is irreversible',
-                                icon: '/icons/coco/bold/Delete.svg',
-                            },
-                        ],
-                    }}
-                />
-                <GenericCard
-                    title="المشروع الافتراضي"
-                    description="وصف مختصر للمشروع و محتوايته"
-                    previews={[
-                        'https://picsum.photos/200/300',
-                        'https://picsum.photos/200/300',
-                    ]}
-                    options={{
-                        actions: [
-                            {
-                                key: 'copy',
-                                label: 'Copy link',
-                                description: 'Copy the file link',
-                                icon: '/icons/coco/bold/Note-add.svg',
-                            },
-                        ],
-                        danger: [
-                            {
-                                key: 'delete',
-                                label: 'Delete project',
-                                description: 'This action is irreversible',
-                                icon: '/icons/coco/bold/Delete.svg',
-                            },
-                        ],
-                    }}
-                />
-                <GenericCard
-                    title="المشروع الافتراضي"
-                    description="وصف مختصر للمشروع و محتوايته"
-                    previews={[
-                        'https://picsum.photos/200/300',
-                        'https://picsum.photos/200/300',
-                    ]}
-                    options={{
-                        actions: [
-                            {
-                                key: 'copy',
-                                label: 'Copy link',
-                                description: 'Copy the file link',
-                                icon: '/icons/coco/bold/Note-add.svg',
-                            },
-                        ],
-                        danger: [
-                            {
-                                key: 'delete',
-                                label: 'Delete project',
-                                description: 'This action is irreversible',
-                                icon: '/icons/coco/bold/Delete.svg',
-                            },
-                        ],
-                    }}
-                />
-            </ResponiveGrid>
+            <DynamicBreadcrumbs basePath="/projects" baseLabel={t('common.projects')} />
 
+            <ResponiveGrid>
+                {projects.map((project) => (
+                    <GenericCard
+                        key={project.id}
+                        title={project.title}
+                        description={project.description}
+                        previews={project.previews}
+                        onPress={() => router.push(`/projects/${project.id}`)} // ✅ Navigate on click
+                        optionsContent={<ProjectDirectOptions project={project} />} // ✅ Popover options for project
+                    />
+                ))}
+            </ResponiveGrid>
         </>
-    )
+    );
 }

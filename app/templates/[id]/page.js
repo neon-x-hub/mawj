@@ -16,10 +16,11 @@ import { TextLayer, ImageLayer } from '@/app/lib/layers/types';
 
 import { useLedgex } from '@/app/lib/state-ledger/useLedgex';
 import MaskedIcon from '@/app/components/core/icons/Icon';
+import SaveButton from '@/app/components/core/buttons/SaveButton';
 
 function EditTemplateInner() {
 
-    const { setLayers } = useLayers();
+    const { layers, setLayers } = useLayers();
     const { undo, redo, set } = useLedgex();
 
 
@@ -115,22 +116,13 @@ function EditTemplateInner() {
         <div className="relative w-full h-full bg-slate-100 overflow-hidden">
             <Canvas />
             <EditorSidebarPanel />
-            <Button
-                color='primary'
-                startContent={
-                    <MaskedIcon
-                        src="/icons/hugeicons/line/floppy-disk.svg"
-                        color="#ffffff"
-                        height='22px'
-                        width='22px'
-                    />
-                }
-                className='absolute bottom-6 left-6 z-50'
-            >
-                <span className='font-normal text-lg text-white'>
-                    {t('actions.save')}
-                </span>
-            </Button>
+            <SaveButton
+                onPress={() => {
+                    const LayersExport = layers.map((layer) => layer.toObject());
+                    console.log('Layers Export:', LayersExport);
+
+                }}
+            />
         </div>
     );
 }

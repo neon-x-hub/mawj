@@ -1,6 +1,7 @@
 'use client';
 
 import { NumberInput, Button, Tooltip } from '@heroui/react';
+import { t } from '@/app/i18n';
 
 function parsePx(val) {
     if (typeof val === 'string') return parseInt(val.replace('px', '')) || 0;
@@ -24,10 +25,9 @@ function FontSizeInputWithMode({
     return (
         <div>
             <label className="text-sm font-medium block mb-1">
-                Font Size
+                {t('layers.text.fontSize')}
             </label>
 
-            {/* 主输入 + 模式切换按钮 */}
             <div className="flex items-center gap-2">
                 <NumberInput
                     minValue={6}
@@ -37,7 +37,7 @@ function FontSizeInputWithMode({
                     isDisabled={responsiveFont}
                     className="flex-1"
                 />
-                <Tooltip content={responsiveFont ? "Responsive mode enabled" : "Static size"}>
+                <Tooltip content={responsiveFont ? t("layers.text.autoSize") : t("layers.text.fixedSize")}>
                     <Button
                         variant="light"
                         size="sm"
@@ -48,7 +48,6 @@ function FontSizeInputWithMode({
                 </Tooltip>
             </div>
 
-            {/* 当启用响应式字体时，显示 min/max */}
             {responsiveFont && (
                 <div className="flex gap-2 mt-2">
                     <NumberInput

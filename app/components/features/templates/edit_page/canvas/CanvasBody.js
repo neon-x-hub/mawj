@@ -17,49 +17,34 @@ export default function CanvasBody() {
     const scale = previewWidth / IMAGE.width;
 
     return (
-        <TransformComponent
-            wrapperStyle={{ width: '100%', height: '100%' }}
-            contentStyle={{
-                width: '300%',
-                height: '300%',
-                backgroundImage: 'url("/bg/grid/dot-6.jpg")',
-                backgroundRepeat: 'repeat',
-                backgroundSize: '500px 500px',
-                backgroundPosition: 'center center',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-            }}
-        >
-            <div className="w-full h-full relative">
-                <div
-                    className="absolute transform -translate-x-1/2 -translate-y-1/2"
-                    style={{
-                        top: '50vh',
-                        left: '10%',
-                        width: `${IMAGE.width}px`,
-                        height: `${IMAGE.height}px`,
-                        transform: `scale(${scale})`, // 💥 只缩放容器
-                        transformOrigin: 'top left',
-                    }}
-                >
-                    <Image
-                        src={IMAGE.src}
-                        width={IMAGE.width}
-                        height={IMAGE.height}
-                        alt="preview"
-                        className="absolute top-0 left-0 w-full h-full object-cover"
-                    />
+        <div className="w-full h-full relative">
+            <div
+                className="absolute transform -translate-x-1/2 -translate-y-1/2"
+                style={{
+                    top: '50vh',
+                    left: '10%',
+                    width: `${IMAGE.width}px`,
+                    height: `${IMAGE.height}px`,
+                    transform: `scale(${scale})`, // 💥 只缩放容器
+                    transformOrigin: 'top left',
+                }}
+            >
+                <Image
+                    src={IMAGE.src}
+                    width={IMAGE.width}
+                    height={IMAGE.height}
+                    alt="preview"
+                    className="absolute top-0 left-0 w-full h-full object-cover"
+                />
 
-                    <div className="relative w-full h-full">
-                        {layers?.length > 0 &&
-                            layers.map((layer) =>
-                                layer.renderContent({ node_key: layer.id })
-                            )
-                        }
-                    </div>
+                <div className="relative w-full h-full">
+                    {layers?.length > 0 &&
+                        layers.map((layer) =>
+                            layer.renderContent({ node_key: layer.id })
+                        )
+                    }
                 </div>
             </div>
-        </TransformComponent>
+        </div>
     );
 }
