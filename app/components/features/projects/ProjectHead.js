@@ -26,8 +26,15 @@ export default function ProjectHead({ id }) {
                     label: t('actions.generate'),
                     endIconUrl: '/icons/coco/line/Star.svg',
                     isPrimary: true,
-                    onClick: () => console.log('Generate'),
+                    //onClick: () => console.log('Generate'),
                     endIconSize: '20px',
+                    modal: {
+                        title: 'Create New Project',
+                        content: <p>Fill in project details here...</p>,  // ✅ can be JSX
+                        actionLabel: 'Save',
+                        closeLabel: 'Cancel',
+                        action: () => console.log('Project created!'),
+                    }
                 },
                 {
                     key: 'export',

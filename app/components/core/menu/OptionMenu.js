@@ -29,7 +29,7 @@ export default function ActionsDropdown({
                         className={`flex-shrink-0 cursor-pointer ${IconClassName}`}
                         alt="Options Menu"
                         height={iconSize || '30px'}
-                        width= {iconSize || '30px'}
+                        width={iconSize || '30px'}
                     /> : triggerLabel}
                 </button>
             </DropdownTrigger>
@@ -38,13 +38,14 @@ export default function ActionsDropdown({
                 {/* Actions Section */}
                 {actions.length > 0 && (
                     <DropdownSection showDivider={danger.length > 0} title={t('actions.types.actions')}>
-                        {actions.map(({ key, label, description, shortcut, icon: Icon }) => (
+                        {actions.map(({ key, label, description, shortcut, do: Do, icon: Icon }) => (
                             <DropdownItem
                                 key={key}
                                 className='hover:!bg-blue-50 !border-0'
                                 description={description}
                                 shortcut={shortcut}
                                 startContent={Icon ? <MaskedIcon src={Icon} className={iconClasses} color={colors.primary} /> : null}
+                                onPress={() => Do()}
                             >
                                 <span className='font-medium'>
                                     {label}

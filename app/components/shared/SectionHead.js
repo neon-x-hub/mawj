@@ -1,23 +1,32 @@
 'use client';
 
+import React from 'react';
 // Design Tokens
 import { colors } from '@/app/styles/designTokens';
 // Components
 import SectionHeadTitle from './SectionHeadTitle';
-import { Input } from '@heroui/react';
+import { Input, } from '@heroui/react';
 import ActionButton from '../core/buttons/actionButton';
 import OptionsMenu from '../core/buttons/OptionMenu';
 import SortAndFilter from '../core/buttons/SortFilterButtonGroup';
 import ActionsDropdown from '../core/menu/OptionMenu';
+import ActionButtonWithOptionalModal from '../core/buttons/ActionButtonWithModal';
 
-export function SectionHead({ iconUrl, title, options = null, buttons = [], search = null, onSort = null, onFilter = null }) {
+
+export function SectionHead({
+    iconUrl,
+    title,
+    options = null,
+    buttons = [],
+    search = null,
+    onSort = null,
+    onFilter = null
+}) {
     return (
         <div className="w-full flex items-center justify-between gap-4">
 
-
             {/* 📌 Right: Title + Icon */}
             <SectionHeadTitle iconUrl={iconUrl} title={title} />
-
 
             {/* 📌 Left: Options menu + Action Buttons + Search */}
             <div className="flex items-center gap-4">
@@ -31,23 +40,16 @@ export function SectionHead({ iconUrl, title, options = null, buttons = [], sear
                     />
                 )}
 
-                {buttons.map(({ key, label, endIconUrl, isPrimary, onClick, endIconSize }) => (
-                    <ActionButton
-                        key={key}
-                        label={label}
-                        endIconUrl={endIconUrl}
-                        isPrimary={isPrimary}
-                        endIconSize={endIconSize}
-                        onClick={onClick}
-                    />
-                ))}
+                {buttons.map((btn) => {
+                    const { key, ...props } = btn;
+                    return <ActionButtonWithOptionalModal key={key} {...props} />;
+                })}
 
-                {/* 📌 Sort and Filter Buttons (Icons) */}
-                {onSort && onFilter && <SortAndFilter
-                    onSort={onSort}
-                    onFilter={onFilter}
-                />}
 
+                {/* 📌 Sort and Filter Buttons */}
+                {onSort && onFilter && (
+                    <SortAndFilter onSort={onSort} onFilter={onFilter} />
+                )}
 
                 {/* 📌 Options Dropdown */}
                 {options && (
@@ -62,7 +64,6 @@ export function SectionHead({ iconUrl, title, options = null, buttons = [], sear
                 )}
 
             </div>
-
         </div>
     );
 }
