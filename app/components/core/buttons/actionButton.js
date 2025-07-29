@@ -20,7 +20,7 @@ export default function ActionButton({ label, onClick, endIconUrl, isPrimary = f
                     <MaskedIcon
                         src={endIconUrl}
                         color={isPrimary ? '#fff' : colors.primary}
-                        className={` flex-shrink-0`}
+                        className={` ${isPrimary ? 'font-semibold': ''} flex-shrink-0`}
                         height={endIconSize}
                         width={endIconSize}
                     />

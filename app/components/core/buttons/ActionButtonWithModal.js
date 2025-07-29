@@ -42,7 +42,7 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
                                     {modal.closeLabel || 'Close'}
                                 </Button>
                                 {modal.action && (
-                                    <Button color="primary" onPress={() => { modal.action(); onClose(); }}>
+                                    <Button color="primary" className="text-white font-semibold" onPress={() => { modal.action(); onClose(); }}>
                                         {modal.actionLabel || 'Action'}
                                     </Button>
                                 )}

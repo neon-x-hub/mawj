@@ -13,6 +13,8 @@
     "@heroui/react": "^2.7.11",
     "@uidotdev/usehooks": "^2.4.1",
     "chart.js": "^4.5.0",
+    "csv-parse": "^6.1.0",
+    "csv-stringify": "^6.6.0",
     "direction": "^2.0.1",
     "fitty": "^2.4.2",
     "framer-motion": "^12.23.0",
