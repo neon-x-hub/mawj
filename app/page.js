@@ -1,65 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { t } from '@/app/i18n';
 import { Skeleton } from '@heroui/react';
+
+import { useFolders } from './components/context/folders/foldersContext';
 
 // Components
 import HeroBanner from './components/features/home/banner';
 import FolderSectionHead from './components/features/home/FolderSectionHead';
 import GenericCard from './components/core/cards/GenericCard';
 import ResponiveGrid from './components/layout/ResponiveGrid';
-import ProjectDirectOptions from './components/core/menu/ProjectDirectOptions';
 import FolderDirectOptions from './components/core/menu/FolderDirectOptions';
 
 export default function Home() {
     const router = useRouter();
 
-    const [folders, setFolders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    // ✅ Fetch folders initially
-    useEffect(() => {
-        const fetchFolders = async () => {
-            try {
-                const res = await fetch('/api/v1/folders');
-                if (!res.ok) throw new Error('Failed to fetch folders');
-                const data = await res.json();
-                setFolders(data.data || []);
-                console.log("✅ Folders fetched successfully:", data.data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchFolders();
-    }, []);
-
-    // ✅ Function to update folder in backend + state
-    const updateFolder = async (id, updates) => {
-        try {
-            const res = await fetch(`/api/v1/folders/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, ...updates }),
-            });
-
-            if (!res.ok) throw new Error(`Failed to update folder ${id}`);
-
-            const updatedFolder = await res.json();
-            console.log("✅ Folder updated:", updatedFolder);
-
-            // ✅ Update local state
-            setFolders((prev) =>
-                prev.map((f) => (f.id === id ? { ...f, ...updates } : f))
-            );
-        } catch (err) {
-            console.error("❌ Error updating folder:", err);
-        }
-    };
+    // ✅ Pull state & actions from context
+    const { folders, loading, error, updateFolder } = useFolders();
 
     return (
         <>

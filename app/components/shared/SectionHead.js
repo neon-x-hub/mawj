@@ -22,6 +22,7 @@ export function SectionHead({
     onSort = null,
     onFilter = null
 }) {
+
     return (
         <div className="w-full flex items-center justify-between gap-4">
 
@@ -47,7 +48,7 @@ export function SectionHead({
 
 
                 {/* 📌 Sort and Filter Buttons */}
-                {onSort && onFilter && (
+                {(onSort || onFilter) && (
                     <SortAndFilter onSort={onSort} onFilter={onFilter} />
                 )}
 

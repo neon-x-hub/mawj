@@ -10,6 +10,14 @@
         "add": {
             "label": "إضافة {{object}} ",
             "desc": "إضافة {{object}} جديد"
+        },
+        "delete": {
+            "label": "حذف {{object}}",
+            "desc": "حذف {{object}} بشكل دائم"
+        },
+        "delete_all": {
+            "label": "حذف جميع {{object}}",
+            "desc": "حذف جميع {{object}} بشكل دائم"
         }
     },
     "search": "بحث",
@@ -24,5 +32,7 @@
     "zoom_in": "تكبير",
     "zoom_out": "تصغير",
     "reset": "اعادة تعيين",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "open": "فتح",
+    "confirm_delete": "تأكيد الحذف"
 }

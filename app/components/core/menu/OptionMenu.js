@@ -1,10 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-// I18N
 import { t } from '@/app/i18n';
-// Design Tokens
 import { colors } from '@/app/styles/designTokens';
-// Components
 import {
     Dropdown,
     DropdownTrigger,
@@ -33,8 +30,9 @@ export default function ActionsDropdown({
     IconClassName = '',
 }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [activeModal, setActiveModal] = useState(null);   // stores modal data for clicked action
-    const [formData, setFormData] = useState({});           // stores form data
+    const [activeModal, setActiveModal] = useState(null);
+    const [formData, setFormData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -43,19 +41,45 @@ export default function ActionsDropdown({
 
     const handleSave = async (onClose) => {
         if (activeModal?.action) {
+            setIsLoading(true);
             await activeModal.action(formData);
+            setIsLoading(false);
         }
+        cleanup(onClose);
+    };
+
+    const handleConfirmDanger = async (onClose) => {
+        if (activeModal?.dangerAction) {
+            setIsLoading(true);
+            await activeModal.dangerAction();
+            setIsLoading(false)
+        }
+        cleanup(onClose);
+    };
+
+    const cleanup = (onClose) => {
         setFormData({});
         setActiveModal(null);
         onClose();
     };
 
-    const handleItemClick = (item) => {
+    const handleItemClick = (item, isDanger = false) => {
         if (item.modal) {
+            // ✅ Custom modal provided
             setActiveModal(item.modal);
-            onOpen(); // open modal instead of executing directly
+            onOpen();
+        } else if (isDanger && item.do) {
+            // ✅ Fallback to confirmation modal
+            setActiveModal({
+                title: t('actions.confirm_delete'),
+                content: t('messages.confirm_delete', { object: item.label || t('common.item') }),
+                dangerAction: item.do,
+                closeLabel: t('actions.cancel'),
+                confirmLabel: t('actions.delete')
+            });
+            onOpen();
         } else if (item.do) {
-            item.do(); // normal action execution
+            item.do();
         }
     };
 
@@ -78,7 +102,7 @@ export default function ActionsDropdown({
                 </DropdownTrigger>
 
                 <DropdownMenu aria-label="Dynamic actions dropdown" variant="faded">
-                    {/* Actions Section */}
+                    {/* ✅ Actions Section */}
                     {actions.length > 0 && (
                         <DropdownSection showDivider={danger.length > 0} title={t('actions.types.actions')}>
                             {actions.map(({ key, label, description, shortcut, do: Do, icon: Icon, modal }) => (
@@ -98,10 +122,10 @@ export default function ActionsDropdown({
                         </DropdownSection>
                     )}
 
-                    {/* Danger Section */}
+                    {/* ✅ Danger Section */}
                     {danger.length > 0 && (
                         <DropdownSection title={t('actions.types.danger_zone')}>
-                            {danger.map(({ key, label, description, shortcut, icon: Icon, modal }) => (
+                            {danger.map(({ key, label, description, shortcut, do: Do, icon: Icon, modal }) => (
                                 <DropdownItem
                                     key={key}
                                     className="hover:!bg-red-50 !border-0"
@@ -111,7 +135,7 @@ export default function ActionsDropdown({
                                     startContent={
                                         Icon ? <MaskedIcon src={Icon} className={iconClasses} color={colors.danger} /> : null
                                     }
-                                    onPress={() => handleItemClick({ modal })}
+                                    onPress={() => handleItemClick({ label, do: Do, modal }, true)}
                                 >
                                     <span className="font-medium text-red-600">{label}</span>
                                 </DropdownItem>
@@ -121,7 +145,7 @@ export default function ActionsDropdown({
                 </DropdownMenu>
             </Dropdown>
 
-            {/* Modal for Actions with Forms */}
+            {/* ✅ Modal (supports both custom and confirmation modals) */}
             {activeModal && (
                 <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                     <ModalContent>
@@ -129,36 +153,27 @@ export default function ActionsDropdown({
                             <>
                                 <ModalHeader>{activeModal.title}</ModalHeader>
                                 <ModalBody>
-                                    {activeModal.content ? (
-                                        typeof activeModal.content === 'string' ? (
-                                            <p>{activeModal.content}</p>
-                                        ) : (
-                                            // ✅ If content is a function, pass state & handlers
-                                            activeModal.content({ formData, handleInputChange })
-                                        )
-                                    ) : (
-                                        // ✅ Default form fallback
-                                        <form className="space-y-2">
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                placeholder="Enter name"
-                                                onChange={handleInputChange}
-                                                className="border p-2 w-full"
-                                            />
-                                        </form>
+                                    {activeModal.content && (
+                                        typeof activeModal.content === 'string'
+                                            ? <p>{activeModal.content}</p>
+                                            : activeModal.content({ formData, handleInputChange })
                                     )}
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button color="danger" variant="light" onPress={onClose}>
+                                    <Button color="default" variant="light" onPress={onClose}>
                                         {activeModal.closeLabel || t('actions.cancel')}
                                     </Button>
+
+                                    {/* ✅ Confirmation Button for Danger */}
+                                    {activeModal.dangerAction && (
+                                        <Button color="danger" className='font-semibold text-white' isLoading={isLoading} onPress={() => handleConfirmDanger(onClose)}>
+                                            {activeModal.confirmLabel || t('actions.delete')}
+                                        </Button>
+                                    )}
+
+                                    {/* ✅ Regular Form Modal Save Button */}
                                     {activeModal.action && (
-                                        <Button
-                                            color="primary"
-                                            className="text-white font-semibold"
-                                            onPress={() => handleSave(onClose)}
-                                        >
+                                        <Button color="primary" isLoading={isLoading} className="text-white font-semibold" onPress={() => handleSave(onClose)}>
                                             {activeModal.actionLabel || t('actions.save')}
                                         </Button>
                                     )}

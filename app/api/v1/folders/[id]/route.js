@@ -68,7 +68,7 @@ export async function DELETE(_, { params }) {
     const dbInstance = await db.getDB();
 
     try {
-        const id = params.id;
+        const id = await params.id;
 
         if (!id) {
             return Response.json(
