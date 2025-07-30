@@ -2,6 +2,7 @@ import db from "@/app/lib/providers/db";
 
 export async function PUT(request, { params }) {
     const dbInstance = await db.getDB();
+    await params;
 
     try {
         const { id: payloadId, ...updates } = await request.json();

@@ -54,6 +54,8 @@ const actions = [
 
                     const result = await response.json();
                     console.log('✅ Folder created successfully:', result);
+                    // refresh the window
+                    window.location.reload();
                     // You might also trigger a toast or refresh data here
                 } catch (error) {
                     console.error('❌ Failed to create folder:', error);

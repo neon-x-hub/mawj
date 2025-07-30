@@ -156,10 +156,6 @@ const LayersTab = () => {
                         />
                     )}
                     classNames={{ title: 'font-semibold' }}
-                    onContextMenu={(e) => {
-                        e.preventDefault();
-                        console.log('context menu');
-                    }}
                     indicator={
                         <ButtonWithPopover
                             isOptions

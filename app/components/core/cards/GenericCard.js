@@ -3,32 +3,119 @@ import { Card, Chip } from '@heroui/react';
 import ButtonWithPopover from '../buttons/AddButtonWithPopover';
 
 export default function GenericCard({
-    title,
-    description,
+    id,
+    title = { value: '', onEdit: () => { } },
+    description = { value: '', onEdit: () => { } },
     previews = [],
     tags = [],
     optionsContent,
     onPress,
 }) {
+    const hasPreviews = previews.length > 0;
+
+    // 🔹 Local state for inline editing
+    const [editingField, setEditingField] = useState(null); // "title" | "description" | null
+    const [editText, setEditText] = useState('');
+
+    const startEditing = (field, initialValue) => {
+        setEditingField(field);
+        setEditText(initialValue);
+    };
+
+    const commitEdit = async () => {
+        if (editingField === 'title') await title.onEdit(editText);
+        if (editingField === 'description') await description.onEdit(editText);
+        setEditingField(null);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.stopPropagation()
+            commitEdit()
+        };
+        if (e.key === 'Space' || e.code === 'Space') {
+            e.preventDefault();
+            e.stopPropagation();
+            setEditText(editText + ' ');
+        }
+        if (e.key === 'Escape') setEditingField(null);
+    };
+
     return (
         <Card
             className="bg-white r30 h-[200px] relative p-4 flex flex-col justify-between w-full max-w-md overflow-hidden shadow-md cursor-pointer"
             isPressable
             onPress={() => onPress()}
         >
-            {/* Preview Images */}
+            {/* ✅ Preview Section */}
             <div className="flex">
-                {Array.from({ length: 2 }).map((_, i) => (
-                    <RenderPreview key={i} src={previews[i]} index={i} />
-                ))}
+                {hasPreviews
+                    ? Array.from({ length: 2 }).map((_, i) => (
+                        <RenderPreview key={i} src={previews[i]} index={i} />
+                    ))
+                    : Array.from({ length: 2 }).map((_, i) => (
+                        <div key={i} className="w-1/2 px-1">
+                            <div className="w-full h-[180px] bg-gray-200 rounded-xl" />
+                        </div>
+                    ))}
             </div>
 
-            {/* Card Content */}
+            {/* ✅ Card Content */}
             <div className="absolute bottom-0 pr-5 pl-2 py-3 bg-white shadow-lg left-0 w-full flex justify-between items-center gap-4 z-10">
-                {/* Text Content */}
                 <div className="text-right">
-                    <div className="font-bold text-lg text-gray-900">{title}</div>
-                    <div className="text-sm text-gray-500">{description}</div>
+                    {/* 🔹 Editable Title */}
+                    <div
+                        className="font-bold text-lg text-gray-900"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {editingField === 'title' ? (
+                            <input
+                                type="text"
+                                value={editText}
+                                autoFocus
+                                onChange={(e) => setEditText(e.target.value)}
+                                onBlur={commitEdit}
+                                onKeyDown={handleKeyDown}
+                                className="font-semibold text-lg bg-white px-1 border rounded w-full"
+                            />
+                        ) : (
+                            <span
+                                onDoubleClick={() => startEditing('title', title.value)}
+                                className="cursor-pointer"
+                                title="Double click to edit"
+                            >
+                                {title.value || 'Untitled'}
+                            </span>
+                        )}
+                    </div>
+
+                    {/* 🔹 Editable Description */}
+                    <div
+                        className="text-sm text-gray-500"
+                        onClick={(e) => e.stopPropagation()}  // ✅ prevent card click
+                    >
+                        {editingField === 'description' ? (
+                            <input
+                                type="text"
+                                value={editText}
+                                autoFocus
+                                onChange={(e) => setEditText(e.target.value)}
+                                onBlur={commitEdit}
+                                onKeyDown={handleKeyDown}
+                                className="text-sm bg-white px-1 border rounded w-full"
+                            />
+                        ) : (
+                            <span
+                                onDoubleClick={() => startEditing('description', description.value)}
+                                className="cursor-pointer"
+                                title="Double click to edit"
+                            >
+                                {description.value || 'No description'}
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Tags */}
                     {tags.length > 0 && (
                         <div className="mt-2 flex flex-wrap gap-1">
                             {tags.map((tag, index) => (
@@ -56,22 +143,27 @@ export default function GenericCard({
 const RenderPreview = ({ src, index }) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
+    if (!src) {
+        return (
+            <div className="w-1/2 px-1">
+                <div className="w-full h-[180px] bg-gray-300 rounded-xl" />
+            </div>
+        );
+    }
+
     return (
         <div className="w-1/2 px-1">
             <div className="relative w-full h-full rounded-xl overflow-hidden">
                 {!isLoaded && (
                     <div className="w-full h-full inset-0 animate-pulse bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 rounded-xl z-0" />
                 )}
-                {src ? (
-                    <img
-                        src={src}
-                        alt={`Preview ${index + 1}`}
-                        className={`object-cover rounded-xl w-full h-full transition-opacity duration-300 z-10 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-                        onLoad={() => setIsLoaded(true)}
-                    />
-                ) : (
-                    <div className="w-full h-full bg-gray-300 rounded-xl" />
-                )}
+                <img
+                    src={src}
+                    alt={`Preview ${index + 1}`}
+                    className={`object-cover rounded-xl w-full h-full transition-opacity duration-300 z-10 ${isLoaded ? 'opacity-100' : 'opacity-0'
+                        }`}
+                    onLoad={() => setIsLoaded(true)}
+                />
             </div>
         </div>
     );
