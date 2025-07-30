@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // ✅ For navigation
+import { useRouter } from 'next/navigation';
 import { t } from '@/app/i18n';
 
 // Components
@@ -14,20 +14,20 @@ import ProjectDirectOptions from './components/core/menu/ProjectDirectOptions';
 export default function Home() {
     const router = useRouter();
 
-    // ✅ State to store projects, loading, and error
-    const [projects, setProjects] = useState([]);
+    // ✅ State to store folders, loading, and error
+    const [folders, setFolders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // ✅ Fetch projects on component mount
+    // ✅ Fetch folders on component mount
     useEffect(() => {
-        const fetchProjects = async () => {
+        const fetchFolders = async () => {
             try {
-                const res = await fetch('/api/v1/folders'); // ✅ Relative API call
-                if (!res.ok) throw new Error('Failed to fetch projects');
+                const res = await fetch('/api/v1/folders');
+                if (!res.ok) throw new Error('Failed to fetch folders');
                 const data = await res.json();
-                setProjects(data.data || []); // ✅ Adjust based on your API response structure
-                console.log("Projects fetched:", data.data);
+                setFolders(data.data || []);
+                console.log("✅ Folders fetched successfully:", data.data);
 
             } catch (err) {
                 setError(err.message);
@@ -36,7 +36,7 @@ export default function Home() {
             }
         };
 
-        fetchProjects();
+        fetchFolders();
     }, []);
 
     return (
@@ -48,17 +48,24 @@ export default function Home() {
             {loading && <p>{t('loading')}...</p>}
             {error && <p style={{ color: 'red' }}>{t('error')}: {error}</p>}
 
-            {/* ✅ Projects Grid */}
-            {!loading && !error && (
+            {/* ✅ No Folders Case */}
+            {!loading && !error && folders.length === 0 && (
+                <p className='text-center font-bold text-2xl opacity-80 h-52 flex items-center justify-center text-gray-500'>
+                    {t('messages.error.no_folders_found')}
+                </p>
+            )}
+
+            {/* ✅ Render Grid if folders exist */}
+            {!loading && !error && folders.length > 0 && (
                 <ResponiveGrid>
-                    {projects.map((project) => (
+                    {folders.map((folder) => (
                         <GenericCard
-                            key={project.id}
-                            title={project.title}
-                            description={project.description}
-                            previews={project.previews || []}
-                            onPress={() => router.push(`/projects?f=${project.id}`)}
-                            optionsContent={<ProjectDirectOptions project={project} />}
+                            key={folder.id}
+                            title={folder.name}
+                            description={folder.description}
+                            previews={folder.previews || []}
+                            onPress={() => router.push(`/projects?f=${folder.id}`)}
+                            optionsContent={<ProjectDirectOptions project={folder} />}
                         />
                     ))}
                 </ResponiveGrid>

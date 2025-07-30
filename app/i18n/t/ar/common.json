@@ -12,12 +12,16 @@
         "folders": "المجلدات"
     },
     "placeholder": {
-        "search": "  ابحث في: {{pl}} ..."
+        "search": "  ابحث في: {{pl}} ...",
+        "name": "اسم {{pl}}",
+        "description": "وصف {{pl}}"
     },
     "folder": "مجلد",
+    "the_folder": "المجلد",
     "project": "مشروع",
     "data": "البيانات",
     "metadata": "المعلومات",
     "layers": "الطبقات",
-    "layer": "طبقة"
+    "layer": "طبقة",
+    "noData": "لا توجد بيانات لعرضها"
 }
