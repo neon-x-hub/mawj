@@ -1,11 +1,23 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@heroui/react";
+import { useState } from "react";
 import ActionButton from "./actionButton";
-
 
 function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrimary, onClick, modal }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [formData, setFormData] = useState({}); // <-- store form data here
 
-    // If no modal is provided → use normal ActionButton
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSave = (onClose) => {
+        if (modal?.action) {
+            modal.action(formData);
+        }
+        onClose();
+    };
+
     if (!modal) {
         return (
             <ActionButton
@@ -18,7 +30,6 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
         );
     }
 
-    // If modal data exists → show modal on button press
     return (
         <>
             <ActionButton
@@ -33,17 +44,46 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">{modal.title}</ModalHeader>
+                            <ModalHeader>{modal.title}</ModalHeader>
                             <ModalBody>
-                                {typeof modal.content === 'string' ? <p>{modal.content}</p> : modal.content}
+                                {/* If modal.content is a custom component, pass down handlers */}
+                                {modal.content ? (
+                                    typeof modal.content === "string" ? (
+                                        <p>{modal.content}</p>
+                                    ) : (
+                                        modal.content({ formData, handleInputChange })
+                                    )
+                                ) : (
+                                    // Default form example
+                                    <form className="space-y-2">
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            placeholder="Enter name"
+                                            onChange={handleInputChange}
+                                            className="border p-2 w-full"
+                                        />
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            placeholder="Enter email"
+                                            onChange={handleInputChange}
+                                            className="border p-2 w-full"
+                                        />
+                                    </form>
+                                )}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
-                                    {modal.closeLabel || 'Close'}
+                                    {modal.closeLabel || "Close"}
                                 </Button>
                                 {modal.action && (
-                                    <Button color="primary" className="text-white font-semibold" onPress={() => { modal.action(); onClose(); }}>
-                                        {modal.actionLabel || 'Action'}
+                                    <Button
+                                        color="primary"
+                                        className="text-white font-semibold"
+                                        onPress={() => handleSave(onClose)}
+                                    >
+                                        {modal.actionLabel || "Save"}
                                     </Button>
                                 )}
                             </ModalFooter>

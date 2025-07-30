@@ -36,7 +36,7 @@ export function SectionHead({
                         width="200px"
                         placeholder={search.placeholder}
                         className="!min-w-[200px] r30"
-                        onChange={(e) => search.onSearch(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && search.onSearch(e.target.value)}
                     />
                 )}
 
