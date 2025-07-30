@@ -7,8 +7,8 @@ export async function GET(request) {
     try {
         // Convert search params to filters with enhanced parsing
         const filters = {
-            name: searchParams.get('name'),
-            description: searchParams.get('description'),
+            name: searchParams.has('name') ? searchParams.get('name') : undefined,
+            description: searchParams.has('description') ? searchParams.get('description') : undefined,
             hasProjects: searchParams.get('hasProjects') === 'true' ? true : undefined,
             minProjects: searchParams.has('minProjects')
                 ? parseInt(searchParams.get('minProjects'))
