@@ -76,7 +76,7 @@ export function FoldersProvider({ children }) {
 
     return (
         <FoldersContext.Provider
-            value={{ folders, loading, error, fetchFolders, addFolder, updateFolder, deleteFolder }}
+            value={{ folders, setFolders, loading, error, fetchFolders, addFolder, updateFolder, deleteFolder }}
         >
             {children}
         </FoldersContext.Provider>

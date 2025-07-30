@@ -7,7 +7,7 @@ import { SectionHead } from '../../shared/SectionHead';
 import { Input } from '@heroui/react';
 
 export default function FolderSectionHead() {
-    const { addFolder } = useFolders();
+    const { addFolder, setFolders, folders } = useFolders();
     const actions = [
         {
             key: 'new',
@@ -80,7 +80,32 @@ export default function FolderSectionHead() {
                 placeholder: t('common.placeholder.search', { pl: t('common.sections.folders') }),
                 onSearch: (q) => console.log('Search:', q),
             }}
-            onSort={() => console.log('Sort clicked')}
+            onSort={(sortKey) => {
+                console.log(`Sorting folders by ${sortKey}`);
+
+                setFolders((prev) => {
+                    const sorted = [...prev].sort((a, b) => {
+                        const valA = a[sortKey];
+                        const valB = b[sortKey];
+
+                        if (valA == null) return 1;
+                        if (valB == null) return -1;
+
+                        if (sortKey === 'createdAt' || sortKey === 'updatedAt') {
+                            // newest first
+                            return new Date(valB) - new Date(valA);
+                        }
+
+                        // For names, handle Arabic locale
+                        return String(valA).localeCompare(String(valB), 'ar', { sensitivity: 'base' });
+                    });
+                    return sorted;
+                });
+
+
+                console.log("Folders: ", folders);
+
+            }}
         />
     );
 }
