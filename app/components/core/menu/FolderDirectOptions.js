@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { t } from '@/app/i18n';
 import { Listbox, ListboxItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from '@heroui/react';
 import MaskedIcon from '@/app/components/core/icons/Icon';
@@ -12,6 +13,8 @@ export const ListboxWrapper = ({ children }) => (
 
 export default function FolderDirectOptions({ folder }) {
 
+    const router = useRouter();
+
     const { addFolder, deleteFolder } = useFolders();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +24,7 @@ export default function FolderDirectOptions({ folder }) {
         switch (key) {
             case 'open':
                 console.log(`📂 Opening folder: ${folder?.name}`);
-                window.location.href = `/projects?f=${folder.id}`;
+                router.push(`/projects?f=${folder.id}`);
                 break;
 
             case 'duplicate':

@@ -12,7 +12,14 @@ const ButtonWithPopover = ({
         : '/icons/coco/line/Plus.svg', // ✅ defaults based on mode
     PopoverOptions,
 }) => (
-    <Popover placement="left-end" offset={20}>
+    <Popover
+        placement="left-end"
+        offset={20}
+        triggerType='listbox'
+        style={{
+            zIndex: 50,
+        }}
+        >
         <PopoverTrigger>
             {isOptions ? (
                 <MaskedIcon

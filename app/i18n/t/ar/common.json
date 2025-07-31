@@ -14,7 +14,8 @@
     "placeholder": {
         "search": "  ابحث في: {{pl}} ...",
         "name": "اسم {{pl}}",
-        "description": "وصف {{pl}}"
+        "description": "وصف {{pl}}",
+        "select": "اختر {{pl}}"
     },
     "folder": "مجلد",
     "the_folder": "المجلد",
@@ -31,5 +32,6 @@
         "card": "بطاقة",
         "video": "فيديو",
         "booklet": "كتيب"
-    }
+    },
+    "current_folders": "المجلدات الحالية"
 }

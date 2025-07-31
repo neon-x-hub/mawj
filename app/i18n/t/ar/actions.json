@@ -34,5 +34,7 @@
     "reset": "اعادة تعيين",
     "cancel": "إلغاء",
     "open": "فتح",
-    "confirm_delete": "تأكيد الحذف"
+    "confirm_delete": "تأكيد الحذف",
+    "add_to_folder": "إضافة إلى مجلد",
+    "remove": "إزالة"
 }

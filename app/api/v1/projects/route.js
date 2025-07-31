@@ -1,5 +1,4 @@
 import db from "@/app/lib/providers/db";
-import { data } from "autoprefixer";
 
 export async function GET(request) {
     const dbInstance = await db.getDB();
