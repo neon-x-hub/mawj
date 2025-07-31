@@ -7,7 +7,7 @@ import { SectionHead } from '../../shared/SectionHead';
 import { Input } from '@heroui/react';
 
 export default function FolderSectionHead() {
-    const { addFolder, setFolders, folders } = useFolders();
+    const { addFolder, setFolders, folders, getFolders } = useFolders();
     const actions = [
         {
             key: 'new',
@@ -78,7 +78,10 @@ export default function FolderSectionHead() {
             options={{ actions, danger }}
             search={{
                 placeholder: t('common.placeholder.search', { pl: t('common.sections.folders') }),
-                onSearch: (q) => console.log('Search:', q),
+                onSearch: (q) => {
+                    console.log('Searching folders:', q);
+                    getFolders({ name: q }).catch((err) => console.error('Search error:', err));
+                },
             }}
             onSort={(sortKey) => {
                 console.log(`Sorting folders by ${sortKey}`);

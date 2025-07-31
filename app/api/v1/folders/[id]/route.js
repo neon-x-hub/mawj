@@ -66,9 +66,10 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(_, { params }) {
     const dbInstance = await db.getDB();
+    await params;
 
     try {
-        const id = await params.id;
+        const id =  params.id;
 
         if (!id) {
             return Response.json(

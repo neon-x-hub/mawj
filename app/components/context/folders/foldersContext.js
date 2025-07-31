@@ -8,6 +8,15 @@ export function FoldersProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // ✅ Helper: Convert object → URLSearchParams
+    const buildQuery = (params) => {
+        const search = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) search.append(key, value);
+        });
+        return search.toString();
+    };
+
     // ✅ Fetch all folders
     const fetchFolders = async () => {
         try {
@@ -22,7 +31,25 @@ export function FoldersProvider({ children }) {
         }
     };
 
-    // ✅ Add a new folder
+    // ✅ Fetch folders with filter
+    const getFolders = async (filter = {}) => {
+        try {
+            setLoading(true);
+            const query = buildQuery(filter);
+            const url = query ? `/api/v1/folders?${query}` : '/api/v1/folders';
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Failed to fetch filtered folders');
+            const data = await res.json();
+            setFolders(data.data || []);
+        } catch (err) {
+            console.error('Filter fetch error:', err);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ✅ Add folder
     const addFolder = async (folderData) => {
         try {
             const res = await fetch('/api/v1/folders', {
@@ -33,9 +60,6 @@ export function FoldersProvider({ children }) {
             if (!res.ok) throw new Error('Failed to create folder');
 
             const created = await res.json();
-            console.log('✅ Folder created:', created);
-
-            // Append the new folder to state (or refetch if needed)
             setFolders((prev) => [...prev, created.data || created]);
             return created;
         } catch (err) {
@@ -76,7 +100,17 @@ export function FoldersProvider({ children }) {
 
     return (
         <FoldersContext.Provider
-            value={{ folders, setFolders, loading, error, fetchFolders, addFolder, updateFolder, deleteFolder }}
+            value={{
+                folders,
+                setFolders,
+                loading,
+                error,
+                fetchFolders,
+                getFolders,      // ✅ exposed new function
+                addFolder,
+                updateFolder,
+                deleteFolder
+            }}
         >
             {children}
         </FoldersContext.Provider>
