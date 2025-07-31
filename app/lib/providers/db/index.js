@@ -1,4 +1,4 @@
-import JSONProvider from './json.js';
+import JSONProvider from './json2.js';
 
 let dbInstance = null;
 let initializationPromise = null;
