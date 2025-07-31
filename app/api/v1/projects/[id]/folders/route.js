@@ -30,44 +30,52 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
     const dbInstance = await db.getDB();
-    await params;
-    const id = params.id; // ✅ project ID
-    const body = await req.json();
-    const { folders } = body; // ✅ array of folder IDs
-
-    const project = await dbInstance.findById('projects', id);
-    if (!project) {
-        return Response.json({ error: 'Project not found' }, { status: 404 });
-    }
+    const { id } = params; // ✅ project ID
+    const { folders } = await req.json(); // ✅ array of folder IDs
 
     try {
+        // ✅ Find the project
+        const project = await dbInstance.findById('projects', id);
+        if (!project) {
+            return Response.json({ error: 'Project not found' }, { status: 404 });
+        }
+
+        // ✅ Fetch all folders
         const allFolders = await dbInstance.find('folders');
 
-        // ✅ Update folders: add/remove project ID as needed
+        // ✅ Iterate through all folders to update their `projects` lists
         for (const folder of allFolders) {
-
             if (!Array.isArray(folder.projects)) folder.projects = [];
 
             if (folders.includes(folder.id)) {
-                // Ensure project is in folder
-                if (!folder.projects.includes(id)) folder.projects.push(id);
+                // ✅ Ensure this project ID is present
+                if (!folder.projects.includes(id)) {
+                    folder.projects.push(id);
+                }
             } else {
-                // Remove project if exists
+                // ✅ Ensure this project ID is removed
                 folder.projects = folder.projects.filter(pid => pid !== id);
             }
 
+            // ✅ Persist updated folder
             await dbInstance.update('folders', folder.id, folder);
-            await dbInstance.update('projects', id, {
-                folders: project.folders ? [...project.folders, folder.id] : [folder.id]
-            }); // Update project to trigger reactivity
         }
 
-        return Response.json({ success: true }, { status: 200 });
+        // ✅ Update the project object to reflect the final folder associations
+        await dbInstance.update('projects', id, {
+            ...project,
+            folders: folders // ✅ directly set to the new desired state
+        });
+
+        return Response.json({ success: true, updatedFolders: folders }, { status: 200 });
 
     } catch (error) {
         console.error('❌ Failed to update project folders:', error);
         return Response.json(
-            { error: 'Failed to update project folders', details: process.env.NODE_ENV === 'development' ? error.message : undefined },
+            {
+                error: 'Failed to update project folders',
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            },
             { status: 500 }
         );
     }

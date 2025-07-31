@@ -18,6 +18,7 @@ import {
 } from '@heroui/react';
 import MaskedIcon from '@/app/components/core/icons/Icon';
 import { useFolders } from '../../context/folders/foldersContext';
+import { useProjects } from '../../context/projects/projectsContext';
 
 export const ListboxWrapper = ({ children }) => (
     <div className="flex flex-col gap-2 w-full">{children}</div>
@@ -25,11 +26,21 @@ export const ListboxWrapper = ({ children }) => (
 
 export default function ProjectDirectOptions({ project }) {
     const router = useRouter();
-    const { folders } = useFolders(); // ✅ get all folders from context
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { folders } = useFolders();
+    const { addProject, deleteProject } = useProjects();
 
+    // ✅ Modals
+    const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Folder modal
+    const {
+        isOpen: isDeleteOpen,
+        onOpen: openDeleteModal,
+        onOpenChange: onDeleteOpenChange
+    } = useDisclosure(); // Delete confirmation modal
+
+    // ✅ State
     const [selectedFolders, setSelectedFolders] = useState(new Set());
     const [loading, setLoading] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     // ✅ Fetch folders this project belongs to
     useEffect(() => {
@@ -46,19 +57,25 @@ export default function ProjectDirectOptions({ project }) {
         fetchProjectFolders();
     }, [project.id]);
 
+    // ✅ Handle actions
     const handleAction = (key) => {
         switch (key) {
             case 'open':
                 router.push(`/projects/${project.id}`);
                 break;
             case 'folders':
-                onOpen(); // ✅ open modal
+                onOpen();
                 break;
             case 'duplicate':
-                console.log(`Duplicating project: ${project?.title}`);
+                console.log(`Duplicating project: ${project?.name}`);
+                addProject({
+                    ...project,
+                    name: `${project.name} (Copy)`,
+                    id: undefined,
+                });
                 break;
             case 'delete':
-                console.log(`Deleting project: ${project?.title}`);
+                openDeleteModal(); // ✅ open confirmation modal
                 break;
             default:
                 console.warn('Unknown project action:', key);
@@ -70,6 +87,7 @@ export default function ProjectDirectOptions({ project }) {
         try {
             setLoading(true);
             const folderArray = Array.from(selectedFolders);
+            console.log(`Saving folders for project ${project.id}:`, folderArray);
 
             const res = await fetch(`/api/v1/projects/${project.id}/folders`, {
                 method: 'PUT',
@@ -79,7 +97,6 @@ export default function ProjectDirectOptions({ project }) {
 
             if (!res.ok) throw new Error('Failed to update project folders');
             console.log('✅ Project folders updated');
-
             onClose();
         } catch (err) {
             console.error('❌ Update failed:', err);
@@ -88,8 +105,23 @@ export default function ProjectDirectOptions({ project }) {
         }
     };
 
+    // ✅ Confirm project deletion
+    const confirmDelete = async (onClose) => {
+        try {
+            setDeleting(true);
+            await deleteProject(project.id);
+            console.log(`✅ Project ${project.name} deleted`);
+            onClose();
+        } catch (err) {
+            console.error('❌ Failed to delete project:', err);
+        } finally {
+            setDeleting(false);
+        }
+    };
+
     return (
         <>
+            {/* ✅ Project Options List */}
             <div className="space-y-1 w-[180px] max-w-md">
                 <ListboxWrapper>
                     <Listbox aria-label="Project Actions" onAction={handleAction}>
@@ -108,7 +140,6 @@ export default function ProjectDirectOptions({ project }) {
                             key="folders"
                             startContent={<MaskedIcon src="/icons/coco/line/Folder.svg" height="18px" width="18px" color="currentColor" />}
                             classNames={{ title: 'font-medium' }}
-
                         >
                             {t('common.folders')}
                         </ListboxItem>
@@ -127,8 +158,19 @@ export default function ProjectDirectOptions({ project }) {
                         <ListboxItem
                             key="delete"
                             color="danger"
-                            startContent={<MaskedIcon src="/icons/coco/line/Trash-2.svg" height="18px" width="18px" color="currentColor" />}
-                            classNames={{ wrapper: 'group text-danger', title: 'group-hover:text-white font-medium' }}
+                            startContent={
+                                <MaskedIcon
+                                    src="/icons/coco/line/Trash-2.svg"
+                                    height="18px"
+                                    width="18px"
+                                    color="currentColor"
+                                    className="group-hover:text-white"
+                                />
+                            }
+                            classNames={{
+                                wrapper: 'group text-danger',
+                                title: 'group-hover:text-white font-medium',
+                            }}
                         >
                             {t('actions.delete')}
                         </ListboxItem>
@@ -191,6 +233,30 @@ export default function ProjectDirectOptions({ project }) {
                                 <Button variant="light" onPress={onClose}>{t('actions.cancel')}</Button>
                                 <Button color="primary" isLoading={loading} onPress={() => handleSaveFolders(onClose)} className='font-semibold text-white'>
                                     {t('actions.save')}
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+
+            {/* ✅ Delete Confirmation Modal */}
+            <Modal isOpen={isDeleteOpen} onOpenChange={onDeleteOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                {t('actions.confirm_delete')}
+                            </ModalHeader>
+                            <ModalBody>
+                                <p>{t('messages.caution.confirm_delete', { object: project.name })}</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="default" variant="light" onPress={onClose}>
+                                    {t('actions.cancel')}
+                                </Button>
+                                <Button color="danger" isLoading={deleting} className="font-medium text-white" onPress={() => confirmDelete(onClose)}>
+                                    {t('actions.delete')}
                                 </Button>
                             </ModalFooter>
                         </>

@@ -142,7 +142,7 @@ export default function ProjectSectionHead() {
                     endIconUrl: '/icons/coco/line/Import.svg',
                     isPrimary: true,
                     onClick: () => console.log('Import clicked'),
-                    endIconSize: '20px',
+                    endIconSize: '18px',
                 },
             ]}
         />
