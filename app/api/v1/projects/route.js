@@ -1,4 +1,5 @@
 import db from "@/app/lib/providers/db";
+import { data } from "autoprefixer";
 
 export async function GET(request) {
     const dbInstance = await db.getDB();
@@ -17,8 +18,8 @@ export async function GET(request) {
         else if (!isNaN(value) && value.trim() !== '') filters[key] = Number(value);
         // Handle arrays (comma-separated)
         else if (value.includes(',')) filters[key] = value.split(',');
-        // Handle project type enum (image/video/booklet)
-        else if (key === 'type' && ['image', 'video', 'booklet'].includes(value)) {
+        // Handle project type enum (card/video/booklet)
+        else if (key === 'type' && ['card', 'video', 'booklet'].includes(value)) {
             filters[key] = value;
         }
         // Default to string
@@ -27,7 +28,11 @@ export async function GET(request) {
 
     try {
         const projects = await dbInstance.find('projects', filters);
-        return Response.json(projects);
+        return Response.json({
+            data: projects,
+            meta: {
+            }
+        });
     } catch (error) {
         return Response.json(
             { error: 'Failed to fetch projects' },

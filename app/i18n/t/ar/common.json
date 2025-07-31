@@ -20,9 +20,16 @@
     "the_folder": "المجلد",
     "folders": "المجلدات",
     "project": "مشروع",
+    "the_project": "المشروع",
     "data": "البيانات",
     "metadata": "المعلومات",
     "layers": "الطبقات",
     "layer": "طبقة",
-    "noData": "لا توجد بيانات لعرضها"
+    "noData": "لا توجد بيانات لعرضها",
+    "project_types": {
+        "label": "نوع المشروع",
+        "card": "بطاقة",
+        "video": "فيديو",
+        "booklet": "كتيب"
+    }
 }

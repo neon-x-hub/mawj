@@ -1,49 +1,36 @@
 import db from "@/app/lib/providers/db";
 
-
-export async function GET(params) {
+export async function GET(req, { params }) {
     const dbInstance = await db.getDB();
-    await params;
-    const { id } = params;
+    const { id } = params; // ✅ Now id is correctly extracted
 
-    // Get Folder, then folder.projects, then for each project get it from "projects" collection
     try {
-        if (!id) {
-            return Response.json(
-                { error: 'Folder ID is required in URL' },
-                { status: 400 }
-            );
-        }
-
+        // Get folder by ID
         const folder = await dbInstance.findById('folders', id);
         if (!folder) {
-            return Response.json(
-                { error: 'Folder not found' },
-                { status: 404 }
-            );
+            return Response.json({ error: 'Folder not found' }, { status: 404 });
         }
+
         const { projects } = folder;
         if (!projects || projects.length === 0) {
-            return Response.json(
-                { data: [] },
-                { status: 200 }
-            );
+            return Response.json({ data: [] }, { status: 200 });
         }
-        const projectPromises = projects.map(async (projectId) => {
-            const project = await dbInstance.findById('projects', projectId);
-            return project;
-        });
+
+        // Fetch all projects referenced in the folder
+        const projectPromises = projects.map((projectId) =>
+            dbInstance.findById('projects', projectId)
+        );
 
         const projectsData = await Promise.all(projectPromises);
-        return Response.json(
-            { data: projectsData },
-            { status: 200 }
-        );
+        return Response.json({ data: projectsData }, { status: 200 });
 
     } catch (error) {
         console.error('Failed to fetch folder projects:', error);
         return Response.json(
-            { error: 'Failed to fetch folder projects', details: process.env.NODE_ENV === 'development' ? error.message : undefined },
+            {
+                error: 'Failed to fetch folder projects',
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+            },
             { status: 500 }
         );
     }

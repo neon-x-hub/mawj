@@ -41,7 +41,7 @@ export default function FolderSectionHead() {
                 ),
                 action: async (data) => {
                     try {
-                        await addFolder(data); // ✅ use context method
+                        await addFolder(data);
                     } catch (err) {
                         console.error('❌ Failed to create folder:', err);
                     }
@@ -79,13 +79,10 @@ export default function FolderSectionHead() {
             search={{
                 placeholder: t('common.placeholder.search', { pl: t('common.sections.folders') }),
                 onSearch: (q) => {
-                    console.log('Searching folders:', q);
                     getFolders({ name: q }).catch((err) => console.error('Search error:', err));
                 },
             }}
             onSort={(sortKey) => {
-                console.log(`Sorting folders by ${sortKey}`);
-
                 setFolders((prev) => {
                     const sorted = [...prev].sort((a, b) => {
                         const valA = a[sortKey];
@@ -104,10 +101,6 @@ export default function FolderSectionHead() {
                     });
                     return sorted;
                 });
-
-
-                console.log("Folders: ", folders);
-
             }}
         />
     );
