@@ -36,5 +36,8 @@
     "open": "فتح",
     "confirm_delete": "تأكيد الحذف",
     "add_to_folder": "إضافة إلى مجلد",
-    "remove": "إزالة"
+    "remove": "إزالة",
+    "upload": "تحميل",
+    "upload_base_layer": "تحميل الطبقة الأساسية",
+    "change_base_layer": "تغيير الطبقة الأساسية"
 }

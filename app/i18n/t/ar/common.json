@@ -25,10 +25,18 @@
     "data": "البيانات",
     "metadata": "المعلومات",
     "layers": "الطبقات",
+    "template": "قالب",
+    "the_template": "القالب",
     "layer": "طبقة",
     "noData": "لا توجد بيانات لعرضها",
     "project_types": {
         "label": "نوع المشروع",
+        "card": "بطاقة",
+        "video": "فيديو",
+        "booklet": "كتيب"
+    },
+    "template_types": {
+        "label": "نوع القالب",
         "card": "بطاقة",
         "video": "فيديو",
         "booklet": "كتيب"
