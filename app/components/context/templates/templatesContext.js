@@ -53,12 +53,15 @@ export function TemplatesProvider({ children }) {
     const getTemplateById = async (id) => {
         try {
             const res = await fetch(`/api/v1/templates/${id}`);
+
             if (!res.ok) {
                 if (res.status === 404) return null;
                 throw new Error('Failed to fetch template');
             }
             const data = await res.json();
-            return data.data || null;
+
+            return data || null;
+
         } catch (err) {
             console.error('Get template by ID error:', err);
             throw err;
@@ -112,6 +115,17 @@ export function TemplatesProvider({ children }) {
         }
     };
 
+    // ✅ Upload base layer for template
+    async function uploadBaseLayer(id, formData) {
+        const res = await fetch(`/api/v1/templates/${id}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        if (!res.ok) throw new Error('Upload failed');
+        return await res.json();
+    }
+
+
     useEffect(() => {
         fetchTemplates();
     }, []);
@@ -125,10 +139,11 @@ export function TemplatesProvider({ children }) {
                 error,
                 fetchTemplates,
                 getTemplates,
-                getTemplateById, // ✅ Added here
+                getTemplateById,
                 addTemplate,
                 updateTemplate,
-                deleteTemplate
+                deleteTemplate,
+                uploadBaseLayer
             }}
         >
             {children}
