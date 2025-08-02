@@ -106,7 +106,7 @@ export function FoldersProvider({ children }) {
                 loading,
                 error,
                 fetchFolders,
-                getFolders,      // ✅ exposed new function
+                getFolders,
                 addFolder,
                 updateFolder,
                 deleteFolder

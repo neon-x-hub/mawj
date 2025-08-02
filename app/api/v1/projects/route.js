@@ -58,6 +58,7 @@ export async function POST(request) {
             ...data,
             description: data.description || '',
             folders: data.folders || [],
+            tempplate: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };

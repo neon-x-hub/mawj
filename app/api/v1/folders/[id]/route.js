@@ -69,7 +69,7 @@ export async function DELETE(_, { params }) {
     await params;
 
     try {
-        const id =  params.id;
+        const id = params.id;
 
         if (!id) {
             return Response.json(
@@ -87,18 +87,25 @@ export async function DELETE(_, { params }) {
             );
         }
 
-        // Check if folder has projects (optional business rule)
-        if (folder.projects?.length > 0) {
-            return Response.json(
-                {
-                    error: 'Cannot delete folder with projects',
-                    projectCount: folder.projects.length,
-                    suggestion: 'Remove all projects first or use force=true parameter to override'
-                },
-                { status: 409 }
-            );
+        // Check if folder has projects
+        const projectIds = folder.projects || [];
+        if (projectIds.length > 0) {
+            // Bulk find projects by their IDs
+            const projects = await dbInstance.bulkFindByIds('projects', projectIds);
+
+            if (projects.length > 0) {
+                // Update each project by removing this folder id from their folders array
+                const updatedProjects = projects.map(project => ({
+                    ...project,
+                    folders: (project.folders || []).filter(folderId => folderId !== id)
+                }));
+
+                // Bulk update projects
+                await dbInstance.bulkUpdate('projects', updatedProjects);
+            }
         }
 
+        // Finally delete the folder
         const deleted = await dbInstance.delete('folders', id);
         return Response.json({
             success: true,

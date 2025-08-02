@@ -67,7 +67,7 @@ export default function ProjectDirectOptions({ project }) {
                 onOpen();
                 break;
             case 'duplicate':
-                console.log(`Duplicating project: ${project?.name}`);
+                console.log(`Duplicating project: ${project.name}, it has folders: ${project.folders}`);
                 addProject({
                     ...project,
                     name: `${project.name} (Copy)`,

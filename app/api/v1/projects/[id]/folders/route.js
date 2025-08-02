@@ -30,51 +30,52 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
     const dbInstance = await db.getDB();
-    const { id } = params; // ✅ project ID
-    const { folders } = await req.json(); // ✅ array of folder IDs
+    await params;
+    const id = params.id;
+    const { folders: targetFolderIds } = await req.json(); // ✅ array of folder IDs
 
     try {
-        // ✅ Find the project
+        // ✅ Check project existence
         const project = await dbInstance.findById('projects', id);
         if (!project) {
             return Response.json({ error: 'Project not found' }, { status: 404 });
         }
 
-        // ✅ Fetch all folders
+        // ✅ Fetch all folders (once)
         const allFolders = await dbInstance.find('folders');
 
-        // ✅ Iterate through all folders to update their `projects` lists
-        for (const folder of allFolders) {
-            if (!Array.isArray(folder.projects)) folder.projects = [];
+        // ✅ Prepare bulk updates
+        const updates = allFolders.map(folder => {
+            const updatedProjects = Array.isArray(folder.projects) ? [...folder.projects] : [];
 
-            if (folders.includes(folder.id)) {
-                // ✅ Ensure this project ID is present
-                if (!folder.projects.includes(id)) {
-                    folder.projects.push(id);
-                }
+            if (targetFolderIds.includes(folder.id)) {
+                if (!updatedProjects.includes(id)) updatedProjects.push(id);
             } else {
-                // ✅ Ensure this project ID is removed
-                folder.projects = folder.projects.filter(pid => pid !== id);
+                // Remove this project ID if present
+                const idx = updatedProjects.indexOf(id);
+                if (idx !== -1) updatedProjects.splice(idx, 1);
             }
 
-            // ✅ Persist updated folder
-            await dbInstance.update('folders', folder.id, folder);
-        }
-
-        // ✅ Update the project object to reflect the final folder associations
-        await dbInstance.update('projects', id, {
-            ...project,
-            folders: folders // ✅ directly set to the new desired state
+            return { id: folder.id, data: { ...folder, projects: updatedProjects } };
         });
 
-        return Response.json({ success: true, updatedFolders: folders }, { status: 200 });
+        // ✅ Bulk update all folders at once
+        await dbInstance.bulkUpdate('folders', updates);
+
+        // ✅ Update the project with its new folder associations
+        await dbInstance.update('projects', id, {
+            ...project,
+            folders: targetFolderIds
+        });
+
+        return Response.json({ success: true, updatedFolders: targetFolderIds }, { status: 200 });
 
     } catch (error) {
         console.error('❌ Failed to update project folders:', error);
         return Response.json(
             {
                 error: 'Failed to update project folders',
-                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined,
             },
             { status: 500 }
         );
