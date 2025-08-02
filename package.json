@@ -26,6 +26,7 @@
     "react-hotkeys-hook": "^5.1.0",
     "react-zoom-pan-pinch": "^3.7.0",
     "rosetta": "^1.1.0",
+    "sharp": "^0.34.3",
     "use-long-press": "^3.3.0"
   },
   "devDependencies": {
