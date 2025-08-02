@@ -4,8 +4,10 @@ import db from "@/app/lib/providers/db";
 export async function GET(_, { params }) {
     const dbInstance = await db.getDB();
 
+  const { id } = await params;
+
     try {
-        const template = await dbInstance.findById('templates', params.id);
+        const template = await dbInstance.findById('templates', id);
         if (!template) {
             return Response.json(
                 { error: 'Template not found' },

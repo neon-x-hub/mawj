@@ -1,5 +1,4 @@
 import db from "@/app/lib/providers/db";
-import { generateId } from "@/lib/idGenerator";
 
 // GET /api/templates
 export async function GET() {
