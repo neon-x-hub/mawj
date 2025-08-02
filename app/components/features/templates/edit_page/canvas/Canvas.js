@@ -1,10 +1,13 @@
-import React from 'react'
-import CanvasBody from './CanvasBody'
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
-import ZoomControls from './ZoomControls'
+'use client';
+import React, { useState } from 'react';
+import CanvasBody from './CanvasBody';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import ZoomControls from './ZoomControls';
+import UploadBaseLayerModal from '@/app/components/core/modal/UploadBaseLayer';
 
+export default function Canvas({ template }) {
+    const [isChangeBaseModalOpen, setChangeBaseModalOpen] = useState(false);
 
-export default function Canvas() {
     return (
         <>
             <TransformWrapper
@@ -23,11 +26,12 @@ export default function Canvas() {
             >
                 {({ zoomIn, zoomOut, resetTransform }) => (
                     <>
-
+                        {/* ✅ Pass handler to open modal */}
                         <ZoomControls
                             zoomIn={zoomIn}
                             zoomOut={zoomOut}
                             resetTransform={resetTransform}
+                            onChangeBaseLayer={() => setChangeBaseModalOpen(true)}
                         />
 
                         <TransformComponent
@@ -44,11 +48,19 @@ export default function Canvas() {
                                 left: 0,
                             }}
                         >
-                            <CanvasBody />
+                            <CanvasBody template={template} />
                         </TransformComponent>
                     </>
                 )}
             </TransformWrapper>
+
+            {/* ✅ Modal for changing base layer (force=false so it can be canceled) */}
+            <UploadBaseLayerModal
+                template={template}
+                isOpen={isChangeBaseModalOpen}
+                onClose={() => setChangeBaseModalOpen(false)}
+                force={false}
+            />
         </>
-    )
+    );
 }
