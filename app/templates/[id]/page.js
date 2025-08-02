@@ -24,7 +24,7 @@ function EditTemplateInner() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const { getTemplateById } = useTemplates();
+    const { getTemplateById, updateTemplate } = useTemplates();
 
     /** ✅ Fetch template using custom hook */
     useEffect(() => {
@@ -140,15 +140,26 @@ function EditTemplateInner() {
             {template && <Canvas template={template} />}
 
             {/* ✅ Sidebar Panel */}
-            <EditorSidebarPanel />
+            <EditorSidebarPanel template={template} />
 
             {/* ✅ Save Button */}
             <SaveButton
-                onPress={() => {
-                    const LayersExport = layers.regular.map(layer => layer.toObject());
-                    console.log('Layers Export:', LayersExport);
+                onPress={async () => {
+                    try {
+                        // ✅ Convert current layers to serializable objects
+                        const LayersExport = layers.regular.map(layer => layer.toObject());
+                        console.log('Layers Export:', LayersExport);
+
+                        // ✅ Call updateTemplate to persist layer changes
+                        await updateTemplate(template.id, { layers: LayersExport });
+
+                        console.log('✅ Template layers updated successfully');
+                    } catch (err) {
+                        console.error('❌ Failed to save layers:', err);
+                    }
                 }}
             />
+
         </div>
     );
 }
