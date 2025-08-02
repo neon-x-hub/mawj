@@ -1,14 +1,47 @@
-
 import { t } from "@/app/i18n";
 import { Tabs, Tab } from "@heroui/react";
 import ButtonWithPopover from "@/app/components/core/buttons/AddButtonWithPopover";
 import LayersTab from "@/app/components/features/templates/edit_page/LayersTab";
 import MaskedIcon from "@/app/components/core/icons/Icon";
-import { DEFAULT_CONTENT_x2 } from "@/app/components/shared/constants/placeholders";
 import AddLayerOptions from "./panel/layer_control/AddLayerOptions";
 
+const TemplateMetadata = ({ template }) => {
+    if (!template) {
+        return <p className="text-gray-500">{t('messages.error.no_template_found')}</p>;
+    }
 
-const EditorSidebarPanel = ({ layers }) => (
+    return (
+        <div className="flex flex-col gap-3 text-sm text-gray-700 p-2">
+            <div>
+                <span className="font-semibold">{t('common.name')}:</span> {template.name || t('common.untitled')}
+            </div>
+            <div>
+            <span className="font-semibold">{t('common.type')}:</span> {t(`common.template_types.${template.type}`) || 'N/A'}
+            </div>
+            <div>
+                <span className="font-semibold">{t('common.base_layers')}:</span> {template.baseLayers?.length || 0}
+            </div>
+            {template.dimensions && (
+                <div>
+                    <span className="font-semibold">{t('common.dimensions')}:</span> {template.dimensions.width} × {template.dimensions.height}
+                </div>
+            )}
+            <div>
+                <span className="font-semibold">{t('common.created_at')}:</span> {new Date(template.createdAt).toLocaleString()}
+            </div>
+            <div>
+                <span className="font-semibold">{t('common.updated_at')}:</span> {new Date(template.updatedAt).toLocaleString()}
+            </div>
+            {template.description && (
+                <div>
+                    <span className="font-semibold">{t('common.description')}:</span> {template.description}
+                </div>
+            )}
+        </div>
+    );
+};
+
+const EditorSidebarPanel = ({ template }) => (
     <div className="absolute top-1/2 right-[30px] transform -translate-y-1/2 w-[400px] h-[calc(100%-60px)] rounded-xl bg-white/40 shadow-xl backdrop-blur-md">
         <div className='relative w-full h-full overflow-x-hidden scrollbar-hide'>
             <div className="flex w-full flex-col h-full p-3">
@@ -20,40 +53,48 @@ const EditorSidebarPanel = ({ layers }) => (
                         tabContent: 'text-black group-data-[selected=true]:text-white font-medium',
                     }}
                 >
-                    <Tab key="metadata" title={
-                        <div className="flex items-center gap-1">
-                            <MaskedIcon
-                                src={'/icons/coco/line/Info.svg'}
-                                color="currentColor"
-                                height="18px"
-                                width="18px"
-                            />
-                            {t('common.metadata')}
-                        </div>
-                    }>
-                        {DEFAULT_CONTENT_x2}
+                    <Tab
+                        key="metadata"
+                        title={
+                            <div className="flex items-center gap-1">
+                                <MaskedIcon
+                                    src={'/icons/coco/line/Info.svg'}
+                                    color="currentColor"
+                                    height="18px"
+                                    width="18px"
+                                />
+                                {t('common.metadata')}
+                            </div>
+                        }
+                    >
+                        {/* ✅ Render Metadata */}
+                        <TemplateMetadata template={template} />
                     </Tab>
-                    <Tab key="layers" title={
-                        <div className="flex items-center px-0 justify-between gap-1">
-                            <MaskedIcon
-                                src={'/icons/coco/line/Note.svg'}
-                                color="currentColor"
-                                height="18px"
-                                width="18px"
-                            />
-                            {t('common.layers')}
-                        </div>
-                    }>
-                        <LayersTab templateLayers={layers} />
+
+                    <Tab
+                        key="layers"
+                        title={
+                            <div className="flex items-center px-0 justify-between gap-1">
+                                <MaskedIcon
+                                    src={'/icons/coco/line/Note.svg'}
+                                    color="currentColor"
+                                    height="18px"
+                                    width="18px"
+                                />
+                                {t('common.layers')}
+                            </div>
+                        }
+                    >
+                        <LayersTab />
                     </Tab>
                 </Tabs>
             </div>
         </div>
+
         <ButtonWithPopover
             onAction={() => { console.log('Add Clicked!') }}
-            PopoverOptions={
-                <AddLayerOptions />
-            } />
+            PopoverOptions={<AddLayerOptions />}
+        />
     </div>
 );
 

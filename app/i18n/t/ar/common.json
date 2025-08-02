@@ -41,5 +41,12 @@
         "video": "فيديو",
         "booklet": "كتيب"
     },
-    "current_folders": "المجلدات الحالية"
+    "current_folders": "المجلدات الحالية",
+    "name": "الاسم",
+    "description": "الوصف",
+    "created_at": "تاريخ الإنشاء",
+    "updated_at": "تاريخ التحديث",
+    "dimensions": "الأبعاد",
+    "type": "النوع",
+    "base_layers": "الطبقات الأساسية"
 }
