@@ -101,7 +101,7 @@ const LayersTab = () => {
 
     return (
         <Accordion aria-label="layers Accordion">
-            {layers.map((layer) => (
+            {layers.regular?.map((layer) => (
                 <AccordionItem
                     key={layer.id}
                     aria-label={`Layer ${layer.id}`}

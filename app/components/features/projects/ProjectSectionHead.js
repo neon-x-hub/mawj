@@ -56,7 +56,7 @@ export default function ProjectSectionHead() {
                             name="type"
                             aria-label={t('common.project_types.label')}
                             placeholder={t('common.types.select')}
-                            selectedKeys={new Set([formData.type || 'image'])}
+                            selectedKeys={new Set([formData.type || 'card'])}
                             onSelectionChange={(keys) => {
                                 // Convert Set to string
                                 const selectedType = Array.from(keys)[0];
