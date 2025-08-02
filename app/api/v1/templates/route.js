@@ -34,6 +34,7 @@ export async function POST(request) {
         const templateData = {
             name: data.name.trim(),
             description: data.description || '',
+            type: data.type || 'card', // Default to 'card' if not provided
             baseLayers: [],
             layers: [],
             createdAt: new Date().toISOString(),
