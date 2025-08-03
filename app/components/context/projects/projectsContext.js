@@ -49,6 +49,26 @@ export function ProjectsProvider({ children }) {
             setLoading(false);
         }
     };
+    const getProjectById = async (id) => {
+        try {
+            setLoading(true);
+            const response = await fetch(`/api/v1/projects/${id}`);
+
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+
+            const project = await response.json();
+            return project;
+        } catch (error) {
+            console.error('Failed to fetch project:', error);
+            throw error; // rethrow so the caller can handle it
+        } finally {
+            setLoading(false);
+        }
+
+    };
+
 
     // ✅ Create project
     const addProject = async (projectData) => {
@@ -145,6 +165,7 @@ export function ProjectsProvider({ children }) {
                 error,
                 fetchProjects,
                 getProjects,
+                getProjectById,
                 addProject,
                 updateProject,
                 deleteProject,
