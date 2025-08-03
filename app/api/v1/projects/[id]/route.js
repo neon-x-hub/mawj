@@ -2,10 +2,10 @@ import db from "@/app/lib/providers/db";
 
 // GET /api/projects/abc123
 export async function GET(_, { params }) {
-    await params;
+    const { id } = await params;
     const dbInstance = await db.getDB();
     try {
-        const project = await dbInstance.findById('projects', params.id);
+        const project = await dbInstance.findById('projects', id);
         if (!project) {
             return Response.json({ error: "Project not found" }, { status: 404 });
         }
