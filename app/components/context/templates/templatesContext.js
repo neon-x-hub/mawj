@@ -40,7 +40,7 @@ export function TemplatesProvider({ children }) {
             const res = await fetch(url);
             if (!res.ok) throw new Error('Failed to fetch filtered templates');
             const data = await res.json();
-            setTemplates(data.data || []);
+            return data.data || [];
         } catch (err) {
             console.error('Template filter fetch error:', err);
             throw err;
