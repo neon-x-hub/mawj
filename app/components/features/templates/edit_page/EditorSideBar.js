@@ -11,7 +11,7 @@ const TemplateMetadata = ({ template }) => {
     }
 
     return (
-        <div className="flex flex-col gap-3 text-sm text-gray-700 p-2">
+        <div className="flex flex-col gap-3 text-base text-gray-700 p-2">
             <div>
                 <span className="font-semibold">{t('common.name')}:</span> {template.name || t('common.untitled')}
             </div>
@@ -21,9 +21,12 @@ const TemplateMetadata = ({ template }) => {
             <div>
                 <span className="font-semibold">{t('common.base_layers')}:</span> {template.baseLayers?.length || 0}
             </div>
-            {template.dimensions && (
+            <div>
+                <span className="font-semibold">{t('common.layers')}:</span> {template.layers?.length || 0}
+            </div>
+            {template.baseLayers && (
                 <div>
-                    <span className="font-semibold">{t('common.dimensions')}:</span> {template.dimensions.width} × {template.dimensions.height}
+                    <span className="font-semibold">{t('common.dimensions')}:</span> {template.baseLayers[0].width} × {template.baseLayers[0].height}
                 </div>
             )}
             <div>
