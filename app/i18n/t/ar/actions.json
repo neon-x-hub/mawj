@@ -39,5 +39,6 @@
     "remove": "إزالة",
     "upload": "تحميل",
     "upload_base_layer": "تحميل الطبقة الأساسية",
-    "change_base_layer": "تغيير الطبقة الأساسية"
+    "change_base_layer": "تغيير الطبقة الأساسية",
+    "add_template_to_start_your_project": "اضف قالبا لتبدأ مشروعك"
 }
