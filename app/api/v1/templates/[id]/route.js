@@ -27,6 +27,7 @@ export async function GET(_, { params }) {
 export async function PUT(request, { params }) {
     const dbInstance = await db.getDB();
     const updates = await request.json();
+    const { id } = await params;
 
     try {
         if (updates.name && updates.name.trim().length < 2) {
@@ -46,7 +47,7 @@ export async function PUT(request, { params }) {
         delete updateData.createdAt;
         delete updateData.baseLayers; // Should use upload endpoint
 
-        const updatedTemplate = await dbInstance.update('templates', params.id, updateData);
+        const updatedTemplate = await dbInstance.update('templates', id, updateData);
         if (!updatedTemplate) {
             return Response.json(
                 { error: 'Template not found' },
