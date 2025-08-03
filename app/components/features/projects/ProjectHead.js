@@ -3,13 +3,14 @@
 import React from 'react'
 import { t } from '@/app/i18n'
 import { SectionHead } from '../../shared/SectionHead'
+import { useProjects } from '@/app/components/context/projects/projectsContext';
 
-export default function ProjectHead({ id }) {
-    const project = { type: 'image' }
-    const defaultOutputPath = `/projects/${id}/output/`
+
+export default function ProjectHead({ project }) {
+    const defaultOutputPath = `/projects/${project.id}/output/`
     return (
         <SectionHead
-            title={`${id}`}
+            title={`${project.name}`}
             iconUrl={'/icons/coco/bold/Bag.svg'}
             options={{
                 actions: [
@@ -37,7 +38,7 @@ export default function ProjectHead({ id }) {
                                 <div className="p-3 bg-gray-50 rounded-md">
                                     <p>📦 <strong>عدد العناصر:</strong> {'256'}</p>
                                     <p>⏱️ <strong>الوقت المقدر:</strong> ~{'5'} دقيقة</p>
-                                    <p className="text-sm text-red-500">{ '⚠️ بعض البيانات غير مكتملة!'}</p>
+                                    <p className="text-sm text-red-500">{'⚠️ بعض البيانات غير مكتملة!'}</p>
                                 </div>
 
                                 {/* Essential Settings */}
