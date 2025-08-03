@@ -24,14 +24,15 @@ export default function LayerDirectOptions({ layer }) {
 
     const throttledSet = useMemo(() => throttle(set, 300), [set]);
 
-    const currentLayer = layers.find(l => l.id === layer.id);
+    const currentLayer = layers.regular.find(l => l.id === layer.id);
     const isHidden = currentLayer?.props?.opacity === 0;
 
     /** ✅ Toggle Hide/Show */
     const handleToggleVisibility = () => {
         const newOpacity = isHidden ? 1 : 0;
-        setLayers(prevLayers =>
-            prevLayers.map(l => {
+        setLayers(prevLayers => ({
+            ...prevLayers,
+            regular: prevLayers.regular.map(l => {
                 if (l.id === layer.id) {
                     const updatedLayer = l.clone();
                     updatedLayer.updateProps({ opacity: newOpacity });
@@ -53,20 +54,20 @@ export default function LayerDirectOptions({ layer }) {
                 }
                 return l;
             })
-        );
+        }));
+
     };
 
     /** ✅ Duplicate Layer with persistence */
     const handleDuplicate = () => {
         setLayers(prevLayers => {
-            const original = prevLayers.find(l => l.id === layer.id);
+            const original = prevLayers.regular.find(l => l.id === layer.id);
             if (!original) return prevLayers;
 
             const duplicate = original.clone();
-            duplicate.id = `${original.id}-${Date.now()}`; // new unique ID
+            duplicate.id = `${original.id}-${Date.now()}`;
             duplicate.title = `${original.title} Copy`;
 
-            // Persist duplicated layer
             throttledSet({
                 [duplicate.id]: {
                     type: duplicate.type,
@@ -83,16 +84,21 @@ export default function LayerDirectOptions({ layer }) {
             console.log("Duplicated Layer:", duplicate);
             console.log("Ledgex State After Duplication:", get());
 
-            return [...prevLayers, duplicate];
+            return {
+                ...prevLayers,
+                regular: [...prevLayers.regular, duplicate],
+            };
         });
+
     };
 
     /** ✅ Delete Layer with Ledgex remove */
     const handleDelete = () => {
-        setLayers(prevLayers => prevLayers.filter(l => l.id !== layer.id));
-        remove(layer.id); // remove from ledgex state
-        console.log(`Deleted Layer ${layer.id}`);
-        console.log("Ledgex State After Deletion:", get());
+        setLayers(prevLayers => ({
+            ...prevLayers,
+            regular: prevLayers.regular.filter(l => l.id !== layer.id),
+        }));
+        remove(layer.id);
     };
 
     /** ✅ Dispatch actions */
@@ -149,7 +155,7 @@ export default function LayerDirectOptions({ layer }) {
                         classNames={{
                             title: 'font-medium',
                         }}
-                        >
+                    >
                         {t("actions.duplicate")}
                     </ListboxItem>
 
@@ -159,11 +165,11 @@ export default function LayerDirectOptions({ layer }) {
                         color="danger"
                         startContent={
                             <MaskedIcon
-                            src="/icons/coco/line/Trash-2.svg"
-                            height="18px"
-                            width="18px"
-                            color="currentColor"
-                            className="group-hover:text-white"
+                                src="/icons/coco/line/Trash-2.svg"
+                                height="18px"
+                                width="18px"
+                                color="currentColor"
+                                className="group-hover:text-white"
                             />
 
                         }
