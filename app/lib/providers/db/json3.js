@@ -1,13 +1,15 @@
 import fs from 'fs/promises';
 import path from 'path';
 import DBProvider from './provider.js';
+import generateId from '../../id/generate.js';
 
 class JSONProvider extends DBProvider {
-    constructor(basePath = './data', segmentSize = 50 * 1024) {
+    constructor(basePath = './data', segmentSize = 50 * 1024, idLength = 6) {
         super();
         this.basePath = basePath;
         this.segmentSize = segmentSize;
         this.locks = new Map();
+        this.idLength = idLength;
     }
 
     /* ------------------- PUBLIC API ------------------- */
@@ -229,7 +231,7 @@ class JSONProvider extends DBProvider {
     }
 
     _generateId(segment) {
-        return `${segment}_${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
+        return `${segment}_${generateId(this.idLength)}`;
     }
 
     _segmentFromId(id) {
