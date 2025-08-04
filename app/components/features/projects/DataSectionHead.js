@@ -20,7 +20,6 @@ export default function DataSectionHead() {
                 ],
                 danger: [],
             }}
-            onFilter={() => console.log('Filter clicked')}
             onSort={() => console.log('Sort clicked')}
             search={{
                 placeholder: t('common.placeholder.search', { pl: t('common.data') }),
