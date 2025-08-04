@@ -152,6 +152,26 @@ export function ProjectsProvider({ children }) {
         }
     };
 
+    // ✅ Upload data file for a project
+    const uploadProjectDataFile = async (projectId, file) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const res = await fetch(`/api/v1/projects/${projectId}/data/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!res.ok) throw new Error('Failed to upload project data file');
+            return await res.json();
+        } catch (err) {
+            console.error('Upload project data file error:', err);
+            throw err;
+        }
+    };
+
+
     useEffect(() => {
         fetchProjects();
     }, []);
@@ -171,7 +191,8 @@ export function ProjectsProvider({ children }) {
                 deleteProject,
                 getProjectData,
                 addProjectData,
-                deleteProjectData
+                deleteProjectData,
+                uploadProjectDataFile
             }}
         >
             {children}
