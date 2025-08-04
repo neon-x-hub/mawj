@@ -9,6 +9,8 @@ import MaskedIcon from '../icons/Icon';
 import ChooseTemplateModal from '../modal/ChooseTemplateModal';
 import { useProjects } from '../../context/projects/projectsContext';
 import { useDisclosure } from '@heroui/react';
+import ButtonWithPopover from '../buttons/AddButtonWithPopover';
+import ProjectTemplateOptions from '../menu/ProjectTemplateDirectOptions';
 export default function HoverCard({
     imageSrc,
     title,
@@ -27,6 +29,7 @@ export default function HoverCard({
         try {
             await updateProject(project.id, { template: template.id });
             console.log('✅ Project updated successfully');
+            window.location.reload();
         } catch (err) {
             console.error('❌ Failed to update project:', err);
             alert(t('errors.update_project_failed') || 'Failed to update project');
@@ -58,7 +61,7 @@ export default function HoverCard({
                     // ✅ Fallback background when no image is provided
                     // When click a modal appears to choose a template from
                     <div
-                        className="z-0 w-full h-full flex flex-col items-center justify-center bg-gray-100"
+                        className="z-0 cursor-pointer w-full h-full flex flex-col items-center justify-center bg-gray-100"
                         onClick={() => setIsModalOpen(true)} // ✅ Open modal on click
                     >
                         <MaskedIcon
@@ -124,13 +127,10 @@ export default function HoverCard({
                             </Button>}
 
                             {imageSrc && OptionsDropdown && (
-                                <ActionsDropdown
-                                    actions={OptionsDropdown.actions}
-                                    danger={OptionsDropdown.danger}
-                                    icon="/icons/feather/line/more-vertical.svg"
-                                    color="#333"
-                                    iconSize={20}
-                                    IconClassName="cursor-pointer"
+                                <ButtonWithPopover
+                                    isOptions
+                                    iconUrl="/icons/feather/line/more-vertical.svg"
+                                    PopoverOptions={<ProjectTemplateOptions project={project} />}
                                 />
                             )}
                         </div>
