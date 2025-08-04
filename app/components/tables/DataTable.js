@@ -11,48 +11,82 @@ import {
     Chip,
 } from "@heroui/react";
 import ActionButtonWithOptionalModal from "../core/buttons/ActionButtonWithModal";
-import MaskedIcon from "../core/icons/Icon";
-import { colors } from "@/app/styles/designTokens";
 import { t } from "@/app/i18n";
 
 function StatusCell({ value }) {
     const isDone = value === true || value === "Done";
     return (
-        <Chip
-            className="capitalize"
-            color={isDone ? "success" : "danger"}
-            size="sm"
-            variant="flat"
-        >
+        <Chip className="capitalize" color={isDone ? "success" : "danger"} size="sm" variant="flat">
             {isDone ? "Done" : "Pending"}
         </Chip>
     );
 }
 
-export default function DataTable({ data, setData, columns }) {
+export default function DataTable({ data, setData, columns, project }) {
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
 
-    // ✅ Action handlers
-    const handleEdit = () => {
-        const selected = Array.from(selectedKeys);
-        if (selected.length === 1) {
-            const item = data.find((row) => row.key === selected[0]);
-            console.log("Edit:", item);
+    /** ✅ Helper to call the POST bulk endpoint */
+    const sendBulkUpdate = async (updates) => {
+        try {
+            const res = await fetch(`/api/v1/projects/${project.id}/data`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updates),
+            });
+            if (!res.ok) throw new Error("Failed to update data");
+            const result = await res.json();
+            console.log("✅ Update result:", result);
+            return result;
+        } catch (err) {
+            console.error("❌ Bulk update failed:", err);
         }
     };
 
-    const handleDelete = () => {
+    /** ✅ Action handlers */
+    const handleEdit = async (formData) => {
         const selected = Array.from(selectedKeys);
-        console.log("Delete items:", selected);
-        // setData(data.filter((row) => !selected.includes(row.key)));
+        if (selected.length !== 1) return;
+
+        const payload = [
+            { id: selected[0], updates: { data: formData } }
+        ];
+
+        await sendBulkUpdate(payload);
+
+        // Optimistically update local state
+        setData((prev) =>
+            prev.map((row) =>
+                row.key === selected[0] ? { ...row, ...formData } : row
+            )
+        );
     };
 
-    const handleToggleStatus = () => {
+    const handleDelete = async () => {
         const selected = Array.from(selectedKeys);
-        console.log("Toggle status for:", selected);
-        // implement toggle logic
+        const payload = selected.map((id) => ({ id, updates: null }));
+
+        await sendBulkUpdate(payload);
+
+        // Optimistically remove locally
+        setData((prev) => prev.filter((row) => !selected.includes(row.key)));
+        setSelectedKeys(new Set([]));
     };
 
+    const handleToggleStatus = async (isDone) => {
+        const selected = Array.from(selectedKeys);
+        const payload = selected.map((id) => ({ id, updates: { status: isDone } }));
+
+        await sendBulkUpdate(payload);
+
+        // Optimistically update status locally
+        setData((prev) =>
+            prev.map((row) =>
+                selected.includes(row.key) ? { ...row, status: isDone } : row
+            )
+        );
+    };
+
+    /** ✅ Render table cells */
     const renderCell = (item, columnKey) => {
         const value = item[columnKey];
         switch (columnKey) {
@@ -63,34 +97,35 @@ export default function DataTable({ data, setData, columns }) {
         }
     };
 
-    // ✅ Define the button configuration array
+    /** ✅ Action buttons configuration */
     const actionButtons = [
         {
             label: t("actions.delete"),
             isPrimary: false,
             onClick: handleDelete,
             modal: {
-                title: "Confirm Delete",
-                content: "Are you sure you want to delete the selected items?",
-                actionLabel: "Confirm",
-                closeLabel: "Cancel",
-                action: () => handleDelete(),
+                title: t("actions.delete"),
+                content: t("messages.caution.confirm_delete_multiple"),
+                actionLabel: t("actions.delete"),
+                closeLabel: t("actions.cancel"),
+                action: handleDelete,
+                isDanger: true,
             },
         },
         {
             label: t("actions.mark_pending"),
             isPrimary: true,
-            onClick: handleToggleStatus,
+            onClick: () => handleToggleStatus(false),
         },
         {
             label: t("actions.mark_done"),
             isPrimary: true,
-            onClick: handleToggleStatus,
+            onClick: () => handleToggleStatus(true),
         },
         {
             label: t("actions.edit"),
             isPrimary: true,
-            onClick: handleEdit,
+            onClick: () => { }, // open modal via ActionButtonWithOptionalModal
             disabledCondition: () => selectedKeys.size !== 1,
             modal: {
                 title: t("actions.edit_item"),
@@ -108,7 +143,7 @@ export default function DataTable({ data, setData, columns }) {
                 ),
                 actionLabel: "Save Changes",
                 closeLabel: "Cancel",
-                action: (formData) => console.log("Save edits:", formData),
+                action: handleEdit,
             },
         },
     ];
@@ -144,7 +179,7 @@ export default function DataTable({ data, setData, columns }) {
             </AnimatePresence>
 
             {/* ✅ Table */}
-            <Table
+            {data.length > 0 ? <Table
                 aria-label="Project data table"
                 isStriped
                 selectionMode="multiple"
@@ -153,7 +188,10 @@ export default function DataTable({ data, setData, columns }) {
                         wrapper: "after:bg-primary after:text-background text-background",
                     },
                 }}
-                onSelectionChange={(keys) => setSelectedKeys(keys)}
+                onSelectionChange={(keys) => {
+                    if (keys === 'all') keys = new Set(data.map((item) => item.key));
+                    setSelectedKeys(keys)
+                }}
             >
                 <TableHeader columns={columns}>
                     {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
@@ -166,7 +204,11 @@ export default function DataTable({ data, setData, columns }) {
                         </TableRow>
                     )}
                 </TableBody>
-            </Table>
+            </Table> : (
+                <div className="text-center font-bold text-2xl opacity-80 h-52 flex items-center justify-center text-gray-500">
+                    <p className="text-gray-500">{t("messages.error.no_data")}</p>
+                </div>
+            )}
         </div>
     );
 }
