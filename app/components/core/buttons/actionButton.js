@@ -6,10 +6,12 @@ import { colors } from '@/app/styles/designTokens'
 import { Button } from "@heroui/react"
 import MaskedIcon from "../icons/Icon"
 
-export default function ActionButton({ label, onClick, endIconUrl, isPrimary = false, endIconSize = '25px' }) {
+export default function ActionButton({ label, onClick, endIconUrl, isPrimary = false, endIconSize = '25px', ...props }) {
+    console.log("Props: ", props);
+
     return (
         <Button
-            className="r30 h-[35px] px-8 font-normal min-w-18"
+            className="r30 h-[35px] px-8 font-normal text-[20px]"
             variant={isPrimary ? 'solid' : 'bordered'}
             color="primary"
             style={{
@@ -38,8 +40,9 @@ export default function ActionButton({ label, onClick, endIconUrl, isPrimary = f
                 )
             }
             onPress={() => onClick()}
+            {...props}
         >
-            <span className='translate-y-[-2px] text-[20px]'>
+            <span className='translate-y-[-2px]'>
                 {label}
             </span>
         </Button>
