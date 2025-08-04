@@ -7,7 +7,6 @@ import { Button } from "@heroui/react"
 import MaskedIcon from "../icons/Icon"
 
 export default function ActionButton({ label, onClick, endIconUrl, isPrimary = false, endIconSize = '25px', ...props }) {
-    console.log("Props: ", props);
 
     return (
         <Button
