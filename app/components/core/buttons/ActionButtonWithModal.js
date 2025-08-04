@@ -5,15 +5,18 @@ import ActionButton from "./actionButton";
 function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrimary, onClick, modal, ...props }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [formData, setFormData] = useState({}); // <-- store form data here
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = (onClose) => {
+    const handleSave = async (onClose) => {
         if (modal?.action) {
-            modal.action(formData);
+            setIsLoading(true);
+            await modal.action(formData);
+            setIsLoading(false);
         }
         onClose();
     };
@@ -55,25 +58,8 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
                                     ) : (
                                         modal.content({ formData, handleInputChange })
                                     )
-                                ) : (
-                                    // Default form example
-                                    <form className="space-y-2">
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            placeholder="Enter name"
-                                            onChange={handleInputChange}
-                                            className="border p-2 w-full"
-                                        />
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            placeholder="Enter email"
-                                            onChange={handleInputChange}
-                                            className="border p-2 w-full"
-                                        />
-                                    </form>
-                                )}
+                                ) : null
+                                }
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
@@ -81,9 +67,10 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
                                 </Button>
                                 {modal.action && (
                                     <Button
-                                        color="primary"
+                                        color={modal.isDanger ? "danger" : "primary"}
                                         className="text-white font-semibold"
                                         onPress={() => handleSave(onClose)}
+                                        isLoading={isLoading}
                                     >
                                         {modal.actionLabel || "Save"}
                                     </Button>
