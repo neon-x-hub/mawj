@@ -68,6 +68,7 @@ export default function DataSection({ project }) {
         <>
             <DataSectionHead project={project} data={data} setData={setData} />
             <DataTable
+                project={project}
                 data={data}
                 setData={setData}
                 columns={columns}
