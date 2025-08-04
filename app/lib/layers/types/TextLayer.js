@@ -1,8 +1,6 @@
 import { TextPropertiesPanel } from "@/app/components/core/menu/TextEditPanel";
 import Layer from "./AbstractLayer";
 import { direction } from "direction";
-import fitty from "fitty";
-
 
 // Defaults
 import { TEXT_DEFAULTS } from "@/app/lib/defaults";
