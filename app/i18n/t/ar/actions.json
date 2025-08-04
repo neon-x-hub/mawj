@@ -42,5 +42,7 @@
     "change_base_layer": "تغيير الطبقة الأساسية",
     "add_template_to_start_your_project": "اضف قالبا لتبدأ مشروعك",
     "swap": "تبديل",
-    "upload_file": "تحميل ملف"
+    "upload_file": "تحميل ملف",
+    "mark_done": "تم",
+    "mark_pending": "قيد الانتظار"
 }
