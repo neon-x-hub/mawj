@@ -35,9 +35,15 @@ export default function ActionsDropdown({
     const [isLoading, setIsLoading] = useState(false);
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, type, files, value, multiple } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === "file"
+                ? (multiple ? Array.from(files) : files[0])
+                : value
+        }));
     };
+
 
     const handleSave = async (onClose) => {
         if (activeModal?.action) {
