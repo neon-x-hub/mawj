@@ -2,7 +2,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDi
 import { useState } from "react";
 import ActionButton from "./actionButton";
 
-function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrimary, onClick, modal }) {
+function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrimary, onClick, modal, ...props }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [formData, setFormData] = useState({}); // <-- store form data here
 
@@ -26,6 +26,7 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
                 endIconSize={endIconSize}
                 isPrimary={isPrimary}
                 onClick={onClick}
+                {...props}
             />
         );
     }
@@ -38,6 +39,7 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
                 endIconSize={endIconSize}
                 isPrimary={isPrimary}
                 onClick={onOpen}
+                {...props}
             />
 
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
