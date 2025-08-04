@@ -13,15 +13,13 @@ export default function ProjectHead({ project }) {
             title={`${project.name}`}
             iconUrl={'/icons/coco/bold/Bag.svg'}
             options={{
-                actions: [
-                    {
-                        key: 'new',
-                        label: 'Add New Project',
-                        description: 'Create a new project',
-                        icon: '/icons/coco/bold/Note-add.svg',
-                    },
-                ],
-                danger: [],
+                actions: [],
+                danger: [{
+                    key: 'delete',
+                    label: t('actions.generic.delete.label', { object: t('common.the_project') }),
+                    description: t('actions.generic.delete.desc', { object: t('common.the_project') }),
+                    icon: '/icons/coco/bold/Trash-2.svg',
+                }],
             }}
             buttons={[
                 {
@@ -32,7 +30,7 @@ export default function ProjectHead({ project }) {
                     endIconSize: '20px',
                     modal: {
                         title: 'بدء عملية التوليد',
-                        content: (
+                        content: ({ formData, handleInputChange }) => (
                             <div className="space-y-4">
                                 {/* Summary Section */}
                                 <div className="p-3 bg-gray-50 rounded-md">
