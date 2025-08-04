@@ -5,7 +5,7 @@ import { t } from '@/app/i18n'
 import { SectionHead } from '../../shared/SectionHead'
 import { Input } from '@heroui/react'
 import { useProjects } from '../../context/projects/projectsContext'
-export default function DataSectionHead({ project }) {
+export default function DataSectionHead({ project, data, setData }) {
     const { uploadProjectDataFile } = useProjects();
     return (
         <SectionHead
@@ -44,6 +44,8 @@ export default function DataSectionHead({ project }) {
                                     const res = await uploadProjectDataFile(project.id, data.file);
                                     console.log('Data file uploaded successfully:', res);
 
+                                    window.location.reload();
+
                                 } catch (err) {
                                     console.error('❌ Failed to upload data file:', err);
                                 }
@@ -54,7 +56,6 @@ export default function DataSectionHead({ project }) {
                 ],
                 danger: [],
             }}
-            onSort={() => console.log('Sort clicked')}
             search={{
                 placeholder: t('common.placeholder.search', { pl: t('common.data') }),
                 onSearch: (q) => console.log('Search:', q),
