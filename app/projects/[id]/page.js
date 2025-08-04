@@ -2,8 +2,7 @@ import React from 'react';
 import { t } from '@/app/i18n';
 import ProjectHead from '@/app/components/features/projects/ProjectHead';
 import ProjectBanner from '@/app/components/features/projects/ProjectBanner';
-import DataSectionHead from '@/app/components/features/projects/DataSectionHead';
-import DataTable from '@/app/components/tables/DataTable';
+import DataSection from '@/app/components/features/projects/DataSections';
 
 export default async function ProjectPage({ params }) {
     const { id } = await params;
@@ -22,8 +21,7 @@ export default async function ProjectPage({ params }) {
         <>
             <ProjectHead project={project} />
             <ProjectBanner project={project} />
-            <DataSectionHead project={project} />
-            <DataTable project={project} />
+            <DataSection project={project} />
         </>
     );
 }
