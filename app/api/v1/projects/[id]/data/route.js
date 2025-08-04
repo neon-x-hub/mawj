@@ -57,85 +57,49 @@ export async function GET(request, { params }) {
 }
 
 
+export async function POST(request, { params }) {
+    const { id } = await params;
 
-export async function DELETE(request, { params }) {
-    await params;
     try {
-        const { searchParams } = new URL(request.url);
-        const provider = await data.getDataProvider(params.id);
+        const body = await request.json();
 
-        // Handle file deletion
-        if (searchParams.has('file')) {
-            const fileName = searchParams.get('file');
-            const metadata = await provider.getMetadata();
+        if (!Array.isArray(body)) {
+            return Response.json({ error: "Invalid input, expected an array" }, { status: 400 });
+        }
 
-            if (!metadata.files.includes(fileName)) {
-                return Response.json(
-                    { error: 'File not found in project' },
-                    { status: 404 }
-                );
+        const provider = await datarows.getDataProvider();
+
+        // ✅ Separate updates and deletes
+        const updates = [];
+        const deletes = [];
+
+        for (const item of body) {
+            if (!item?.id) continue; // skip invalid entries
+            if (item.updates === null) {
+                deletes.push(item.id);
+            } else {
+                updates.push({ id: item.id, data: item.updates });
             }
-
-            // Count rows in file before deletion
-            const filePath = path.join(DATA_DIR, params.id, 'data', fileName);
-            const content = await fs.readFile(filePath, 'utf8');
-            const rowCount = parse(content, { columns: true }).length;
-
-            await fs.unlink(filePath);
-
-            // Update metadata
-            await fs.writeFile(
-                path.join(DATA_DIR, params.id, 'data', 'metadata.json'),
-                JSON.stringify({
-                    ...metadata,
-                    files: metadata.files.filter(f => f !== fileName),
-                    totalRows: metadata.totalRows - rowCount
-                }, null, 2)
-            );
-
-            return Response.json({
-                success: true,
-                deletedFile: fileName,
-                deletedRows: rowCount
-            });
         }
-        // Handle row deletion
-        else if (searchParams.has('rowId')) {
-            const rowId = searchParams.get('rowId');
-            const deleted = await provider.deleteRow(rowId);
 
-            if (!deleted) {
-                return Response.json(
-                    { error: 'Row not found' },
-                    { status: 404 }
-                );
-            }
+        // ✅ Perform bulk operations
+        if (updates.length > 0) {
+            await provider.bulkUpdate(id, updates);
+        }
 
-            return Response.json({
-                success: true,
-                deletedRow: rowId
-            });
+        if (deletes.length > 0) {
+            await provider.bulkDelete(id, deletes);
         }
-        // Handle bulk deletion with filters
-        else if (searchParams.has('filter')) {
-            const filter = JSON.parse(searchParams.get('filter'));
-            const deletedCount = await provider.deleteRows(filter);
 
-            return Response.json({
-                success: true,
-                deletedCount,
-                filter
-            });
-        }
-        else {
-            return Response.json(
-                { error: 'Specify either file, rowId, or filter parameter' },
-                { status: 400 }
-            );
-        }
+        return Response.json({
+            success: true,
+            updated: updates.map(u => u.id),
+            deleted: deletes
+        });
     } catch (error) {
+        console.error("❌ Bulk update/delete error:", error);
         return Response.json(
-            { error: 'Deletion failed', details: error.message },
+            { error: "Failed to process data", details: error.message },
             { status: 500 }
         );
     }
