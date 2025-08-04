@@ -1,35 +1,25 @@
-import { CsvDataProvider } from './csv.js';
+import JSONProvider from '../db/json3.js';
 
 let dataProviderInstance = null;
 let initializationPromise = null;
 
 /**
- * Get the singleton DataProvider instance for a specific project
- * @param {string} projectId
- * @returns {Promise<CsvDataProvider>}
+ * Get the singleton JSONProvider instance for datarows
+ * @returns {Promise<JSONProvider>}
  */
-async function getDataProvider(projectId) {
-    if (!projectId) throw new Error('Project ID is required');
-
-    // Cache key based on projectId
-    const cacheKey = `project-${projectId}`;
-
-    if (dataProviderInstance?.[cacheKey]) {
-        return dataProviderInstance[cacheKey];
-    }
+async function getDataProvider() {
+    if (dataProviderInstance) return dataProviderInstance;
 
     if (!initializationPromise) {
         initializationPromise = (async () => {
-            const instance = {
-                [cacheKey]: new CsvDataProvider(projectId)
-            };
-            // Perform any initialization here if needed
+            const instance = new JSONProvider(process.env.DATA_DIR ? `${process.env.DATA_DIR}/datarows` : './data/datarows');
+            // Perform any additional initialization here if needed
             return instance;
         })();
     }
 
     dataProviderInstance = await initializationPromise;
-    return dataProviderInstance[cacheKey];
+    return dataProviderInstance;
 }
 
 /**
@@ -40,9 +30,9 @@ function _reset() {
     initializationPromise = null;
 }
 
-const data = {
+const datarows = {
     getDataProvider,
     _reset // Export for testing only
 };
 
-export default data;
+export default datarows;
