@@ -48,5 +48,7 @@
     "updated_at": "تاريخ التحديث",
     "dimensions": "الأبعاد",
     "type": "النوع",
-    "base_layers": "الطبقات الأساسية"
+    "base_layers": "الطبقات الأساسية",
+    "output_format": "صيغة التصدير",
+    "progress": "التقدم"
 }
