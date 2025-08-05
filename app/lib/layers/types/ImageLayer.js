@@ -1,6 +1,7 @@
 import Layer from './AbstractLayer';
-import { IMAGE_DEFAULTS } from "@/app/lib/defaults";
-import { ImagePropertiesPanel } from "@/app/components/core/menu/ImageEditPanel";
+import { IMAGE_DEFAULTS } from '../../defaults';
+import { ImagePropertiesPanel } from '../../../components/core/menu/ImageEditPanel';
+
 
 class ImageLayer extends Layer {
     constructor({ id, title, subtitle, options = {}, canvas = null }) {
