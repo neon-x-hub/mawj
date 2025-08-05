@@ -20,7 +20,6 @@ export async function GET(req) {
     file = decodeURIComponent(file);
 
     const fontPath = path.join(USER_FONT_DIR, file);
-    console.log(`Fetching font file: ${fontPath}`);
 
     if (!fs.existsSync(fontPath)) return new Response('Not found', { status: 404 });
 
