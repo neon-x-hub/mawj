@@ -1,13 +1,70 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { t } from '@/app/i18n'
 import { SectionHead } from '../../shared/SectionHead'
 import { useProjects } from '@/app/components/context/projects/projectsContext';
-
+import {
+    Select,
+    SelectItem,
+    Progress,
+    Checkbox
+} from '@heroui/react'
 
 export default function ProjectHead({ project }) {
     const defaultOutputPath = `/projects/${project.id}/output/`
+    const [progress, setProgress] = useState(0)
+    const [isProcessing, setIsProcessing] = useState(false)
+
+    const handleGenerate = async (formData, onClose) => {
+        setIsProcessing(true)
+        setProgress(0)
+
+        try {
+            // Start generation
+            const requestBody = {
+                options: {
+                    ...formData,
+                    range: 'all'
+                },
+                project: project.id
+            }
+
+            console.log('requestBody', requestBody);
+
+
+            const res = await fetch('/api/v1/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+            })
+
+            if (!res.ok) throw new Error('Generation failed to start')
+
+            const { jobId } = await res.json()
+
+            // Poll for progress
+            while (progress < 100) {
+                await new Promise(resolve => setTimeout(resolve, 1000))
+
+                const statusRes = await fetch(`/api/v1/generate/status/${jobId}`)
+                if (!statusRes.ok) throw new Error('Failed to get status')
+
+                const status = await statusRes.json()
+                const newProgress = status.progress || progress + 10 // Fallback
+                setProgress(Math.min(newProgress, 100))
+
+                if (newProgress >= 100) break
+            }
+
+        } catch (error) {
+            console.error('Generation error:', error)
+            // Optionally show error to user
+        } finally {
+            setIsProcessing(false)
+        }
+    }
+
     return (
         <SectionHead
             title={`${project.name}`}
@@ -29,57 +86,66 @@ export default function ProjectHead({ project }) {
                     isPrimary: true,
                     endIconSize: '20px',
                     modal: {
-                        title: 'بدء عملية التوليد',
+                        title: t('actions.start_generation_process'),
                         content: ({ formData, handleInputChange }) => (
                             <div className="space-y-4">
-                                {/* Summary Section */}
-                                <div className="p-3 bg-gray-50 rounded-md">
-                                    <p>📦 <strong>عدد العناصر:</strong> {'256'}</p>
-                                    <p>⏱️ <strong>الوقت المقدر:</strong> ~{'5'} دقيقة</p>
-                                    <p className="text-sm text-red-500">{'⚠️ بعض البيانات غير مكتملة!'}</p>
-                                </div>
-
-                                {/* Essential Settings */}
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-medium">صيغة الإخراج</label>
-                                    <select className="w-full border rounded p-2">
-                                        <option>PNG</option>
-                                        <option>JPG</option>
-                                        <option>WEBP</option>
-                                        {project.type === 'video' && <option>MP4</option>}
-                                        {project.type === 'booklet' && <option>PDF</option>}
-                                    </select>
-
-                                    <label className="block text-sm font-medium">مجلد الإخراج</label>
-                                    <input type="text" defaultValue={defaultOutputPath} className="w-full border rounded p-2" />
-                                </div>
-
-                                {/* Advanced Options */}
-                                <details className="mt-3">
-                                    <summary className="cursor-pointer font-medium">⚙️ خيارات متقدمة</summary>
-                                    <div className="mt-2 space-y-2">
-                                        <label className="block text-sm">نمط اسم الملف</label>
-                                        <input type="text" placeholder="{{card_id}}_{{name}}" className="w-full border rounded p-2" />
-
-                                        {project.type === 'video' && (
-                                            <label className="flex items-center space-x-2">
-                                                <input type="checkbox" /> <span>تسريع باستخدام GPU</span>
-                                            </label>
-                                        )}
-
-                                        {project.type === 'booklet' && (
-                                            <label className="block text-sm">نطاق الصفحات</label>
-                                        )}
-                                        {project.type === 'booklet' && (
-                                            <input type="text" placeholder="مثال: 1-5" className="w-full border rounded p-2" />
-                                        )}
+                                {/* Progress bar - shown only during processing */}
+                                {isProcessing && (
+                                    <div className="mb-4">
+                                        <div className="flex justify-between mb-1">
+                                            <span className="text-sm font-medium">
+                                                {t('common.progress')}: {Math.round(progress)}%
+                                            </span>
+                                        </div>
+                                        <Progress
+                                            value={progress}
+                                            minValue={0}
+                                            maxValue={100}
+                                            color="primary"
+                                            className="w-full"
+                                        />
                                     </div>
-                                </details>
+                                )}
+
+                                {/* Format Selection */}
+                                <Select
+                                    className="w-full"
+                                    label={t('common.output_format')}
+                                    placeholder="Select output format"
+                                    selectedKeys={new Set([formData.outputFormat || 'png'])}
+                                    variant="bordered"
+                                    onSelectionChange={(keys) => {
+                                        // Convert Set to single value
+                                        const selectedFormat = Array.from(keys)[0] || 'png';
+                                        handleInputChange({ target: { name: 'format', value: selectedFormat } });
+                                    }}
+                                    disabled={isProcessing}
+                                >
+                                    <SelectItem key="png">PNG</SelectItem>
+                                    <SelectItem key="jpg">JPG</SelectItem>
+                                    <SelectItem key="webp">WebP</SelectItem>
+                                    {project.type === 'video' && <SelectItem key="mp4">MP4</SelectItem>}
+                                    {project.type === 'booklet' && <SelectItem key="pdf">PDF</SelectItem>}
+                                </Select>
+
+                                {/* Regenerate Done Checkbox */}
+                                <Checkbox
+                                    isSelected={formData.regenerate_done || false}
+                                    onValueChange={(isChecked) =>
+                                        handleInputChange({ target: { name: 'regenerate_done', value: isChecked } })
+                                    }
+                                    isDisabled={isProcessing}
+                                >
+                                    {t('actions.regenerate_done')}
+                                </Checkbox>
                             </div>
                         ),
-                        actionLabel: 'بدء التوليد',
-                        closeLabel: 'إلغاء',
-                        action: () => console.log("Generate clicked"),
+                        actionLabel: t('actions.generate'),
+                        closeLabel: t('actions.cancel'),
+                        action: async (formData, onClose) => {
+                            await handleGenerate(formData, onClose)
+                        },
+                        isProcessing, // Pass processing state to modal
                     }
                 },
                 {
