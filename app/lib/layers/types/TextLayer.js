@@ -1,9 +1,10 @@
-import { TextPropertiesPanel } from "@/app/components/core/menu/TextEditPanel";
-import Layer from "./AbstractLayer";
-import { direction } from "direction";
+// lib/layers/types/TextLayer.js
+import { TextPropertiesPanel } from '../../../components/core/menu/TextEditPanel';
+import Layer from './AbstractLayer';
+import { direction } from 'direction';
 
 // Defaults
-import { TEXT_DEFAULTS } from "@/app/lib/defaults";
+import { TEXT_DEFAULTS } from '../../defaults';
 
 // Text Layer implementation
 class TextLayer extends Layer {
