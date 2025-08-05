@@ -44,5 +44,7 @@
     "swap": "تبديل",
     "upload_file": "تحميل ملف",
     "mark_done": "تم",
-    "mark_pending": "قيد الانتظار"
+    "mark_pending": "قيد الانتظار",
+    "regenerate_done": "إعادة إنشاء العناصر التي تم وضع علامة عليها بالفعل على أنها تم إنجازها",
+    "start_generation_process": "بدء عملية الانشاء"
 }
