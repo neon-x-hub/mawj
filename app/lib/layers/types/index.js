@@ -1,5 +1,5 @@
-import TextLayer from "./TextLayer";
-import ImageLayer from "./ImageLayer";
+import TextLayer from "./TextLayer.js";
+import ImageLayer from "./ImageLayer.js";
 
 const LayerRegistry = {
     text: TextLayer,
