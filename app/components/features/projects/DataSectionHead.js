@@ -58,7 +58,39 @@ export default function DataSectionHead({ project, data, setData }) {
             }}
             search={{
                 placeholder: t('common.placeholder.search', { pl: t('common.data') }),
-                onSearch: (q) => console.log('Search:', q),
+                onSearch: async (q) => {
+
+                    // ✅ Regex to match key:'value', 'key':value, key:value, etc.
+                    const regex = /'([^']+)'\s*:\s*'([^']+)'|'([^']+)'\s*:\s*(\S+)|(\w+)\s*:\s*'([^']+)'|(\w+)\s*:\s*(\S+)/g;
+                    const params = {};
+
+                    let match;
+                    while ((match = regex.exec(q)) !== null) {
+                        const key = match[1] || match[3] || match[5] || match[7];
+                        const value = match[2] || match[4] || match[6] || match[8];
+                        params[key] = value;
+                    }
+
+                    const queryString = new URLSearchParams(params).toString();
+
+                    try {
+                        const res = await fetch(`/api/v1/projects/${project.id}/data?${queryString}`);
+                        if (!res.ok) throw new Error('Failed to fetch project data');
+
+                        const result = await res.json();
+                        console.log('Fetched Data:', result);
+                        const apiRows = result.data.map((doc) => ({
+                            key: doc.id,
+                            status: doc.status,
+                            ...doc.data,
+                        }));
+
+                        setData(apiRows);
+                    } catch (error) {
+                        console.error('Search error:', error);
+                    }
+                }
+
             }}
         />
     )
