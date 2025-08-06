@@ -53,9 +53,6 @@ export async function POST(request) {
         // 5. Add to queue
         const jobId = enqueueRenderJob(jobData);
 
-        console.log(queue.jobs);
-
-
         return Response.json({ jobId, status: 'queued' });
 
     } catch (err) {

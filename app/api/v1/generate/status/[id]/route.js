@@ -7,8 +7,6 @@ export async function GET(request, { params }) {
     try {
         const job = queue.getJob(id);
 
-        console.log(queue.jobs); // Map(0) {}
-
         if (!job) {
             return Response.json({ error: 'Job not found' }, { status: 404 });
         }
