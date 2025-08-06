@@ -53,7 +53,7 @@ export default function ProjectHead({ project }) {
                 if (!statusRes.ok) throw new Error('Failed to get status')
 
                 const status = await statusRes.json()
-                const newProgress = status.progress || progress + 10 // Fallback
+                const newProgress = status.progress || progress
                 setProgress(Math.min(newProgress, 100))
 
                 if (newProgress >= 100) break
@@ -64,6 +64,7 @@ export default function ProjectHead({ project }) {
             // Optionally show error to user
         } finally {
             setIsProcessing(false)
+            window.location.reload();
         }
     }
 
@@ -120,6 +121,12 @@ export default function ProjectHead({ project }) {
                                         handleInputChange({ target: { name: 'format', value: selectedFormat } });
                                     }}
                                     disabled={isProcessing}
+                                    description={
+                                        <details >
+                                            <summary className='cursor-pointer'>{t('tips.quick_tip') + " : " + t('tips.image_format')}</summary>
+                                            <span className='whitespace-pre-line'>{t('tips.image_format_tip_png_vs_jpg')}</span>
+                                        </details>
+                                    }
                                 >
                                     <SelectItem key="png">PNG</SelectItem>
                                     <SelectItem key="jpg">JPG</SelectItem>
