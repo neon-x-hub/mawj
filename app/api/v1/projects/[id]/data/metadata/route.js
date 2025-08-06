@@ -1,17 +1,28 @@
-import data from "@/app/lib/providers/datarows";
+import datarows from "@/app/lib/providers/datarows";
 
 export async function GET(_, { params }) {
+    const { id } = await params;
     try {
-        const provider = await data.getDataProvider(params.id);
-        const metadata = await provider.getMetadata();
+        const provider = await datarows.getDataProvider();
+
+        // a function that returns the number of done and undone rows
+        const allRows = await provider.find(id);
+
+        if (!allRows) {
+            return Response.json({ error: 'Project not found' }, { status: 404 });
+        }
+
+        const metadata = {}
+
+        metadata.done = allRows.filter(row => row.status).length;
+        metadata.total = allRows.length;
 
         return Response.json({
-            projectId: params.id,
             ...metadata
         });
     } catch (error) {
         return Response.json(
-            { error: 'Failed to fetch metadata', details: error.message },
+            { error: 'Failed to fetch allRows', details: error.message },
             { status: 500 }
         );
     }
