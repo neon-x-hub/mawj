@@ -1,4 +1,3 @@
-// lib/engine/image/renderer.js
 import fs from 'fs';
 import path from 'path';
 import puppeteer from 'puppeteer';
@@ -7,7 +6,6 @@ import Mustache from 'mustache';
 import { buildLayer } from '../../layers/types/index.js';
 import { loadFontInPuppeteer } from './injectFont.js';
 import { getFontByName } from '../../fonts/manager.js';
-import generateId from '../../id/generate.js';
 
 const BASE_URL = process.env.ASSET_HOST || 'http://localhost:3000';
 
@@ -33,9 +31,6 @@ async function loadProjectFonts(page, layers) {
     }
 }
 
-/**
- * Bulk renderer: renders all datarows using one Puppeteer instance.
- */
 export async function render(
     project,
     template,
@@ -44,15 +39,27 @@ export async function render(
     onRowRenderCompleted
 ) {
     const { renderToString } = await import('react-dom/server');
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--single-process',
+            '--disable-gpu'
+        ]
+    });
     const page = await browser.newPage();
 
-    // 1. Load Base HTML once
+    // ✅ 1. Set viewport once (no clip needed later)
+    const baseLayer = template.baseLayers[0];
+    await page.setViewport({ width: baseLayer.width, height: baseLayer.height });
+
+    // ✅ 2. Load Base HTML once
     const baseHTML = fs.readFileSync(path.resolve('./app/lib/engine/image/base.html'), 'utf8');
     await page.setContent(baseHTML);
 
-    // 2. Set Canvas background
-    const baseLayer = template.baseLayers[0];
+    // ✅ 3. Set Canvas background
     await page.evaluate(({ width, height, name, templateId, BASE_URL }) => {
         const canvas = document.getElementById('canvas');
         canvas.style.width = `${width}px`;
@@ -60,67 +67,84 @@ export async function render(
         canvas.style.background = `url('${BASE_URL}/api/v1/templates/${templateId}/base/${name}') center/cover no-repeat`;
     }, { ...baseLayer, templateId: template.id, BASE_URL });
 
-    // ✅ Wait for the base background image to finish loading
-    await page.evaluate(() => {
-        return new Promise((resolve) => {
-            const canvas = document.getElementById('canvas');
-            const url = canvas.style.background.match(/url\(['"]?(.*?)['"]?\)/)?.[1];
-            if (!url) return resolve(true);
-            const img = new Image();
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
-            img.src = url;
-        });
-    });
+    // ✅ Wait for background to load
+    await page.evaluate(() => new Promise((resolve) => {
+        const canvas = document.getElementById('canvas');
+        const url = canvas.style.background.match(/url\(['"]?(.*?)['"]?\)/)?.[1];
+        if (!url) return resolve(true);
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+    }));
 
-    // 3. Load all required fonts once
+    // ✅ 4. Load all fonts once
     await loadProjectFonts(page, template.layers);
 
-    // 4. Ensure output directory exists
+    // ✅ 5. Prepare output directory
     const outputDir = path.resolve(`./data/projects/outputs/${project.id}`);
     fs.mkdirSync(outputDir, { recursive: true });
 
+    const startTime = Date.now();
     const results = [];
 
-    // 5. Render rows sequentially
-    for (const row of rows) {
-        // ✅ Preprocess row keys (spaces -> underscores)
-        const preprocessedRow = {
-            id: row.id,
-            ...Object.fromEntries(
-                Object.entries(row.data || {}).map(([key, value]) => [
-                    key.replace(/\s+/g, '_'),
-                    value
-                ])
-            )
-        };
+    // ✅ 6. Separate static and dynamic layers
+    const staticLayers = template.layers.filter(l => !l.options?.props?.templateText);
+    const dynamicLayers = template.layers.filter(l => l.options?.props?.templateText);
 
-
-        // ✅ Clear previous row’s dynamic layers completely
-        await page.evaluate(() => {
-            const old = document.getElementById('row-container');
-            if (old) old.remove();
-            const container = document.getElementById('canvas');
-            const wrapper = document.createElement('div');
-            wrapper.id = 'row-container';
-            container.appendChild(wrapper);
-        });
-
-        // ✅ Render all layers for this row
-        for (const layerConfig of template.layers) {
-            layerConfig.options.props.content = '';
-
-            if (layerConfig.options?.props?.templateText) {
-                const mustacheTemplate = layerConfig.options.props.templateText;
-                const hydrated = Mustache.render(mustacheTemplate, preprocessedRow || {});
-                layerConfig.options.props.content = hydrated;
-            }
-
+    // ✅ 7. Render static layers once and keep them in DOM
+    async function renderLayers(page, layers) {
+        for (const layerConfig of layers) {
             const layer = buildLayer(layerConfig.id, layerConfig);
             const htmlString = renderToString(layer.renderContent({ node_key: layerConfig.id }));
 
             await page.evaluate((html) => {
-                const container = document.getElementById('row-container');
+                const container = document.getElementById('canvas');
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('static-layer');
+                wrapper.innerHTML = html;
+                container.appendChild(wrapper.firstChild);
+            }, htmlString);
+        }
+    }
+
+    await renderLayers(page, staticLayers);
+
+    // ✅ 8. Render each row (only dynamic layers change)
+    for (const row of rows) {
+        const preprocessedRow = {
+            id: row.id,
+            ...Object.fromEntries(Object.entries(row.data || {}).map(([k, v]) => [k.replace(/\s+/g, '_'), v]))
+        };
+
+        // Clear dynamic container
+        await page.evaluate(() => {
+            const old = document.getElementById('dynamic-container');
+            if (old) old.remove();
+            const container = document.getElementById('canvas');
+            const wrapper = document.createElement('div');
+            wrapper.id = 'dynamic-container';
+            container.appendChild(wrapper);
+        });
+
+        // Render only dynamic layers for this row
+        for (const layerConfig of dynamicLayers) {
+            // Clone props so they don't overwrite original
+            const clonedConfig = {
+                ...layerConfig,
+                options: { ...layerConfig.options, props: { ...layerConfig.options.props } }
+            };
+
+            if (clonedConfig.options.props.templateText) {
+                const mustacheTemplate = clonedConfig.options.props.templateText;
+                clonedConfig.options.props.content = Mustache.render(mustacheTemplate, preprocessedRow);
+            }
+
+            const layer = buildLayer(clonedConfig.id, clonedConfig);
+            const htmlString = renderToString(layer.renderContent({ node_key: clonedConfig.id }));
+
+            await page.evaluate((html) => {
+                const container = document.getElementById('dynamic-container');
                 const wrapper = document.createElement('div');
                 wrapper.classList.add('dynamic-layer');
                 wrapper.innerHTML = html;
@@ -128,17 +152,16 @@ export async function render(
             }, htmlString);
         }
 
-        // ✅ Wait for fonts before taking screenshot
+        // Wait for fonts to settle
         await page.evaluateHandle('document.fonts.ready');
 
-        // ✅ Capture screenshot
+        // ✅ 9. Screenshot without clip (viewport already matches canvas)
         const fileName = `${row.id}.${options.format}`;
         const outputPath = path.join(outputDir, fileName);
 
         await page.screenshot({
             path: outputPath,
-            type: options.format === 'png' ? 'png' : 'jpeg',
-            clip: { x: 0, y: 0, width: baseLayer.width, height: baseLayer.height }
+            type: options.format === 'png' ? 'png' : 'jpeg'
         });
 
         results.push({ rowId: row.id, output: outputPath });
@@ -147,9 +170,11 @@ export async function render(
             onRowRenderCompleted(row.id, outputPath);
         }
 
+        console.log(`✅ Rendered row ${row.id} to ${outputPath}`);
     }
 
-    // ✅ Close browser once after all rows are processed
+    // ✅ 10. Cleanup
     await browser.close();
+    console.log(`==== Rendered ${results.length} rows in ${Date.now() - startTime}ms`);
     return results;
 }
