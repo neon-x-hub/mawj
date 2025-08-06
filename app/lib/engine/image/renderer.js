@@ -45,7 +45,6 @@ export async function render(
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
-            '--single-process',
             '--disable-gpu'
         ]
     });
@@ -112,6 +111,7 @@ export async function render(
 
     // ✅ 8. Render each row (only dynamic layers change)
     for (const row of rows) {
+        console.log(`Rendering row ${row.id}...`);
         const preprocessedRow = {
             id: row.id,
             ...Object.fromEntries(Object.entries(row.data || {}).map(([k, v]) => [k.replace(/\s+/g, '_'), v]))
@@ -126,6 +126,8 @@ export async function render(
             wrapper.id = 'dynamic-container';
             container.appendChild(wrapper);
         });
+
+        console.log("Dynamic container cleared");
 
         // Render only dynamic layers for this row
         for (const layerConfig of dynamicLayers) {
@@ -143,6 +145,9 @@ export async function render(
             const layer = buildLayer(clonedConfig.id, clonedConfig);
             const htmlString = renderToString(layer.renderContent({ node_key: clonedConfig.id }));
 
+            console.log("Dynamic layer rendered to string");
+
+
             await page.evaluate((html) => {
                 const container = document.getElementById('dynamic-container');
                 const wrapper = document.createElement('div');
@@ -155,14 +160,30 @@ export async function render(
         // Wait for fonts to settle
         await page.evaluateHandle('document.fonts.ready');
 
+        console.log("Fonts settled");
+
+
         // ✅ 9. Screenshot without clip (viewport already matches canvas)
         const fileName = `${row.id}.${options.format}`;
         const outputPath = path.join(outputDir, fileName);
 
-        await page.screenshot({
-            path: outputPath,
-            type: options.format === 'png' ? 'png' : 'jpeg'
-        });
+
+        const screenshotOptions = {
+            type: options.format === 'jpg' ? 'jpeg' : (options.format || 'png'),
+        };
+
+        // JPG-specific settings
+        if (screenshotOptions.type === 'jpeg') {
+            screenshotOptions.quality = options.quality || 30; // required to avoid Chromium stall
+            screenshotOptions.omitBackground = true; // flatten transparency
+        }
+
+        screenshotOptions.path = outputPath;
+
+        // Safe capture
+        await page.screenshot(screenshotOptions);
+
+        console.log("Screenshot taken");
 
         results.push({ rowId: row.id, output: outputPath });
 
