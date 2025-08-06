@@ -83,6 +83,15 @@ export default class InMemoryQueue extends AbstractQueue {
     }
 
     /**
+     * Remove a job
+     * @param {string} jobId
+     */
+    removeJob(jobId) {
+        this.queue = this.queue.filter((q) => q.id !== jobId);
+        this.jobs.delete(jobId);
+    }
+
+    /**
      * Cancel a job (optional)
      */
     cancelJob(jobId) {
