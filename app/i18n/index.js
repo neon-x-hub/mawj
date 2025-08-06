@@ -5,7 +5,7 @@ import arCommon from './t/ar/common.json';
 import arActions from './t/ar/actions.json';
 import arMessages from './t/ar/messages.json';
 import arLayers from './t/ar/layers.json';
-//import arAbout from './t/ar/about.json';
+import arTips from './t/ar/tips.json';
 
 // Combine them into one object per language
 const translations = {
@@ -14,6 +14,7 @@ const translations = {
         actions: { ...arActions },
         messages: { ...arMessages },
         layers: { ...arLayers },
+        tips: { ...arTips },
     },
 };
 
