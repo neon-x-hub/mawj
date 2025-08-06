@@ -1,4 +1,5 @@
 import JSONProvider from '../db/json3.js';
+import { normalizeDataRow } from '../../helpers/data/normalise.js';
 
 let dataProviderInstance = null;
 let initializationPromise = null;
@@ -12,8 +13,12 @@ async function getDataProvider() {
 
     if (!initializationPromise) {
         initializationPromise = (async () => {
-            const instance = new JSONProvider(process.env.DATA_DIR ? `${process.env.DATA_DIR}/datarows` : './data/datarows');
-            // Perform any additional initialization here if needed
+            const instance = new JSONProvider(
+                process.env.DATA_DIR ? `${process.env.DATA_DIR}/datarows` : './data/datarows',
+                50 * 1024,
+                6,
+                normalizeDataRow
+            );
             return instance;
         })();
     }
