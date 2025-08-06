@@ -1,5 +1,3 @@
-import fs from 'fs/promises';
-import path from 'path';
 import datarows from "@/app/lib/providers/datarows";
 
 export async function GET(request, { params }) {
@@ -14,24 +12,53 @@ export async function GET(request, { params }) {
         const limit = parseInt(searchParams.get('limit')) || 100;
         const offset = (page - 1) * limit;
 
-        // ✅ Filters (excluding pagination params)
+        // ✅ Sorting
+        const sortAttribute = searchParams.get('sort');
+        const sortOrder = searchParams.get('sd') || '0'; // 0 = asc, 1 = desc
+        const isMetaSort = sortAttribute?.startsWith('m.');
+
+        // ✅ Filters (excluding special keys)
         const filters = {};
         for (const [key, value] of searchParams.entries()) {
-            if (!['page', 'limit'].includes(key)) filters[key] = value;
+            if (!['page', 'limit', 'sort', 'sd'].includes(key)) {
+                filters[key] = value;
+                if (key === 'm.status') filters['m.status'] = value === 'true';
+            }
         }
 
         // ✅ Fetch raw rows from provider
-        const rawRows = await provider.find(id, filters, {
-            limit: limit + 1, // fetch extra record to check for next page
-            offset
-        });
+        const rawRows = await provider.find(
+            id,
+            filters,
+            { limit, offset }
+        );
 
-        // ✅ Normalize into {id, status, data}
+        // ✅ Normalize rows
         const allRows = rawRows.map((row, index) => ({
-            id: row.id || `${offset + index + 1}`,   // fallback id if missing
-            status: typeof row.status === "boolean" ? row.status : false,
-            data: row.data || row                    // fallback to whole row if no data key
+            id: row.id || `${offset + index + 1}`,
+            status: typeof row.status === 'boolean' ? row.status : false,
+            createdAt: row.createdAt ? new Date(row.createdAt) : null,
+            updatedAt: row.updatedAt ? new Date(row.updatedAt) : null,
+            data: row.data || row
         }));
+
+        // ✅ Sort
+        if (sortAttribute) {
+            const attr = isMetaSort ? sortAttribute.slice(2) : sortAttribute;
+
+            allRows.sort((a, b) => {
+                const aVal = isMetaSort ? a[attr] : a.data?.[attr];
+                const bVal = isMetaSort ? b[attr] : b.data?.[attr];
+
+                if (aVal == null && bVal == null) return 0;
+                if (aVal == null) return sortOrder === '0' ? -1 : 1;
+                if (bVal == null) return sortOrder === '0' ? 1 : -1;
+
+                if (aVal < bVal) return sortOrder === '0' ? -1 : 1;
+                if (aVal > bVal) return sortOrder === '0' ? 1 : -1;
+                return 0;
+            });
+        }
 
         // ✅ Extract columns from nested data objects
         const columns = new Set();
@@ -45,7 +72,7 @@ export async function GET(request, { params }) {
             hasNextPage: rawRows.length > limit,
             page,
             limit,
-            data: allRows.slice(0, limit) // Return paginated normalized docs
+            data: allRows.slice(0, limit)
         });
     } catch (error) {
         console.error("❌ Fetch project data error:", error);
