@@ -1,16 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 // Design Tokens
 import { colors } from '@/app/styles/designTokens';
 // Components
 import SectionHeadTitle from './SectionHeadTitle';
 import { Input, } from '@heroui/react';
-import ActionButton from '../core/buttons/actionButton';
-import OptionsMenu from '../core/buttons/OptionMenu';
 import SortAndFilter from '../core/buttons/SortFilterButtonGroup';
 import ActionsDropdown from '../core/menu/OptionMenu';
 import ActionButtonWithOptionalModal from '../core/buttons/ActionButtonWithModal';
+import { direction } from 'direction';
 
 
 export function SectionHead({
@@ -22,6 +21,8 @@ export function SectionHead({
     onSort = null,
     onFilter = null
 }) {
+
+    const [searchInput, setSearchInput] = useState('');
 
     return (
         <div className="w-full flex items-center justify-between gap-4">
@@ -38,6 +39,8 @@ export function SectionHead({
                         placeholder={search.placeholder}
                         className="!min-w-[200px] r30"
                         onKeyDown={(e) => e.key === 'Enter' && search.onSearch(e.target.value)}
+                        onValueChange={(value) => setSearchInput(value)}
+                        style={{direction: direction(searchInput) === 'ltr' ? 'ltr' : 'rtl'}}
                     />
                 )}
 
