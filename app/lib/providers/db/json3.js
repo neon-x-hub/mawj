@@ -4,12 +4,17 @@ import DBProvider from './provider.js';
 import generateId from '../../id/generate.js';
 
 class JSONProvider extends DBProvider {
-    constructor(basePath = './data', segmentSize = 50 * 1024, idLength = 6) {
+    constructor(basePath = './data',
+        segmentSize = 50 * 1024,
+        idLength = 6,
+        normaliseDocument = (doc) => doc
+    ) {
         super();
         this.basePath = basePath;
         this.segmentSize = segmentSize;
         this.locks = new Map();
         this.idLength = idLength;
+        this.normaliseDocument = normaliseDocument;
     }
 
     /* ------------------- PUBLIC API ------------------- */
@@ -253,25 +258,40 @@ class JSONProvider extends DBProvider {
     }
 
     _matchesFilter(doc, filter) {
-        return Object.entries(filter).every(([key, value]) => {
-            const field = doc[key];
-            if (typeof value === 'function') return value(field);
-            if (typeof field === 'string' && typeof value === 'string')
-                return field.toLowerCase().includes(value.toLowerCase());
-            if (typeof value === 'object' && value !== null) {
-                const { min, max } = value;
-                if (typeof field === 'number' || field instanceof Date) {
-                    const fVal = field instanceof Date ? field.getTime() : field;
+        const normalizedDoc = this.normaliseDocument(doc);
+
+        const matchField = (docField, filterVal) => {
+            if (typeof filterVal === 'function') {
+                return filterVal(docField);
+            }
+
+            if (typeof filterVal === 'object' && filterVal !== null && !Array.isArray(filterVal)) {
+                const { min, max } = filterVal;
+                if (typeof docField === 'number' || docField instanceof Date) {
+                    const value = docField instanceof Date ? docField.getTime() : docField;
                     const minVal = min instanceof Date ? min.getTime() : min;
                     const maxVal = max instanceof Date ? max.getTime() : max;
-                    if (min !== undefined && fVal < minVal) return false;
-                    if (max !== undefined && fVal > maxVal) return false;
+                    if (min !== undefined && value < minVal) return false;
+                    if (max !== undefined && value > maxVal) return false;
                     return true;
                 }
+
+                return false;
             }
-            return field === value;
-        });
+
+            if (typeof docField === 'string' && typeof filterVal === 'string') {
+                return docField.toLowerCase().includes(filterVal.toLowerCase());
+            }
+
+            return docField === filterVal;
+        };
+
+        return Object.entries(filter).every(([key, value]) =>
+            matchField(normalizedDoc[key], value)
+        );
     }
+
+
 
     /* ------------------- SIMPLE MUTEX ------------------- */
     async _lock(name) {
