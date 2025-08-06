@@ -44,7 +44,7 @@ export async function workerRenderer(jobData, onProgress) {
             scheduleFlush();
         }
     };
-    console.log("Starting to render...");
+
     const result = await render(project, template, rows, options, onRowRenderCompleted);
 
     // final flush to ensure all updates are sent
@@ -52,13 +52,3 @@ export async function workerRenderer(jobData, onProgress) {
 
     return result;
 }
-
-
-/*
-Optimisation proposal:
-Batch onRowRenderCompleted calls together
-+ use async bulkUpdate(collectionName, updatesArray) such that updatesArray is an array of { id, data (the updates, in this case { status: true }) }
-
-Update:
-- No significant speedup
-*/
