@@ -62,6 +62,8 @@ export async function POST(request, { params }) {
         // ✅ 5. Transform records into expected format
         const documents = rawRecords.map((record) => ({
             status: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
             data: record
         }));
 
