@@ -3,12 +3,12 @@
 import React, { useState } from 'react'
 import { t } from '@/app/i18n'
 import { SectionHead } from '../../shared/SectionHead'
-import { useProjects } from '@/app/components/context/projects/projectsContext';
 import {
     Select,
     SelectItem,
     Progress,
-    Checkbox
+    Checkbox,
+    NumberInput
 } from '@heroui/react'
 
 export default function ProjectHead({ project }) {
@@ -24,7 +24,9 @@ export default function ProjectHead({ project }) {
             // Start generation
             const requestBody = {
                 options: {
-                    ...formData,
+                    format: formData.format ?? 'png',
+                    regenerate_done: formData.regenerate_done ?? false,
+                    parallelWorkers: formData.parallelWorkers ?? 1,
                     range: 'all'
                 },
                 project: project.id
@@ -112,10 +114,8 @@ export default function ProjectHead({ project }) {
                                     className="w-full"
                                     label={t('common.output_format')}
                                     placeholder="Select output format"
-                                    selectedKeys={new Set([formData.outputFormat || 'png'])}
-                                    variant="bordered"
+                                    selectedKeys={new Set([formData.format || 'png'])}
                                     onSelectionChange={(keys) => {
-                                        // Convert Set to single value
                                         const selectedFormat = Array.from(keys)[0] || 'png';
                                         handleInputChange({ target: { name: 'format', value: selectedFormat } });
                                     }}
@@ -127,6 +127,20 @@ export default function ProjectHead({ project }) {
                                     {project.type === 'video' && <SelectItem key="mp4">MP4</SelectItem>}
                                     {project.type === 'booklet' && <SelectItem key="pdf">PDF</SelectItem>}
                                 </Select>
+
+                                {/* Parallel Workers Input */}
+                                <NumberInput
+                                    className="w-full"
+                                    label={t('common.parallel_workers')}
+                                    placeholder="Enter number of workers"
+                                    value={formData.parallelWorkers ?? 1} // default to 1
+                                    onValueChange={(val) =>
+                                        handleInputChange({ target: { name: 'parallelWorkers', value: Number(val) } })
+                                    }
+                                    min={1}
+                                    description={t('common.parallel_workers_desc')}
+                                    isDisabled={isProcessing}
+                                />
 
                                 {/* Regenerate Done Checkbox */}
                                 <Checkbox
