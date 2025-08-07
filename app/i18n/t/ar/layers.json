@@ -27,6 +27,8 @@
         "relative": "نسبي (%)",
         "size": "الحجم",
         "autoSize": "الحجم التلقائي",
-        "fixedSize": "حجم ثابت"
+        "fixedSize": "حجم ثابت",
+        "template": "القالب نصي",
+        "template_placeholder": "اكتب قالب النص الخاص بك هنا..."
     }
 }
