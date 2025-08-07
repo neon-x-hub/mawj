@@ -12,6 +12,7 @@ import {
 } from "@heroui/react";
 import ActionButtonWithOptionalModal from "../core/buttons/ActionButtonWithModal";
 import { t } from "@/app/i18n";
+import GenerateImageModal from "../core/modal/GenerateImageModal";
 
 function StatusCell({ value }) {
     const isDone = value === true || value === "Done";
@@ -24,6 +25,8 @@ function StatusCell({ value }) {
 
 export default function DataTable({ data, setData, columns, project }) {
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+    const [progress, setProgress] = useState(0)
+    const [isProcessing, setIsProcessing] = useState(false)
 
     /** ✅ Helper to call the POST bulk endpoint */
     const sendBulkUpdate = async (updates) => {
@@ -86,6 +89,55 @@ export default function DataTable({ data, setData, columns, project }) {
         );
     };
 
+    const handleGenerate = async (formData, onClose) => {
+        setIsProcessing(true)
+        setProgress(0)
+
+        try {
+            const requestBody = {
+                options: {
+                    format: formData.format ?? 'png',
+                    regenerate_done: formData.regenerate_done ?? false,
+                    parallelWorkers: formData.parallelWorkers ?? 1,
+                    range: Array.from(selectedKeys)
+                },
+                project: project.id
+            }
+
+            console.log('Generation request:', requestBody);
+
+
+            const res = await fetch('/api/v1/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+            })
+
+            if (!res.ok) throw new Error('Generation failed to start')
+
+            const { jobId } = await res.json()
+
+            while (progress < 100) {
+                await new Promise(r => setTimeout(r, 1000))
+
+                const statusRes = await fetch(`/api/v1/generate/status/${jobId}`)
+                if (!statusRes.ok) throw new Error('Failed to get status')
+
+                const status = await statusRes.json()
+                const newProgress = status.progress || progress
+                setProgress(Math.min(newProgress, 100))
+
+                if (newProgress >= 100) break
+            }
+
+        } catch (error) {
+            console.error('Generation error:', error)
+        } finally {
+            setIsProcessing(false)
+            window.location.reload()
+        }
+    }
+
     /** ✅ Render table cells */
     const renderCell = (item, columnKey) => {
         const value = item[columnKey];
@@ -146,6 +198,26 @@ export default function DataTable({ data, setData, columns, project }) {
                 action: handleEdit,
             },
         },
+        {
+            /* Quick Generation */
+            label: t("actions.generate"),
+            isPrimary: true,
+            modal: {
+                content: (props) => (
+                    project.type === 'card' && <GenerateImageModal
+                        project={project}
+                        {...props}
+                        isProcessing={isProcessing}
+                        progress={progress}
+                    />
+                ), actionLabel: t("actions.generate"),
+                hasCancelButton: false,
+                action: async (formData, onClose) => {
+                    await handleGenerate(formData, onClose)
+                },
+                isProcessing,
+            }
+        }
     ];
 
     return (
