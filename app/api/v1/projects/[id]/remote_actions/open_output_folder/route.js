@@ -1,8 +1,7 @@
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import path from 'path';
 import db from '@/app/lib/providers/db';
 
-// GET /api/projects/abc123/open
 export async function GET(_, { params }) {
     const { id } = await params;
 
@@ -20,7 +19,12 @@ export async function GET(_, { params }) {
     const folderPath = path.resolve(`./data/projects/outputs/${id}`);
 
     try {
-        exec(`powershell -WindowStyle Normal -Command "Start-Process explorer.exe -ArgumentList '${folderPath}'"`);
+        // Use explorer directly
+        spawn('explorer.exe', [folderPath], {
+            detached: true,
+            stdio: 'ignore'
+        }).unref();
+
         return Response.json({ success: true, opened: folderPath });
     } catch (err) {
         console.error(err);
