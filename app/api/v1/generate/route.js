@@ -33,7 +33,7 @@ export async function POST(request) {
             dataRows = await dataRowsInstance.find(project.id, opts.regenerate_done ? {} : { status: false });
         } else if (Array.isArray(opts.range)) {
             // find specific data rows by IDs
-            dataRows = await dataRowsInstance.bulkFindByIds(opts.range);
+            dataRows = await dataRowsInstance.bulkFindByIds(project.id, opts.range);
         } else {
             return Response.json({ error: 'Invalid range option' }, { status: 400 });
         }
