@@ -1,3 +1,5 @@
+'use client';
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -22,37 +24,53 @@ ChartJS.register(
     Filler
 );
 
-export default function LegacyConvertedGradientChart() {
+export default function LegacyConvertedGradientChart({ data, eventType }) {
     const chartRef = useRef(null);
     const [gradient, setGradient] = useState(null);
 
-    const labels = ["02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "00:00"];
-    const values = [25.0, 32.4, 22.2, 39.4, 34.2, 22.0, 23.2, 24.1, 20.0, 18.4, 19.1, 17.4];
+    // Extract daily stats for the current eventType
+    const dailyStats = data?.stats?.[eventType]?.daily || {};
+
+    // Prepare chart data
+    const labels = Object.keys(dailyStats).sort();
+    const values = labels.map(date => {
+        const stat = dailyStats[date];
+        return stat?.count || stat?.totalCount || 0;
+    });
 
     useEffect(() => {
         const chart = chartRef.current;
         if (!chart) return;
+
         const ctx = chart.ctx;
-        const height = chart.chartArea?.bottom || 400;
+        const chartArea = chart.chartArea;
 
-        const grad = ctx.createLinearGradient(0, 0, 0, height);
-        grad.addColorStop(0, colors.primary_rgba(0.7));
-        grad.addColorStop(1, colors.primary_rgba(0));
+        if (!chartArea) return;
 
-        setGradient(grad);
-    }, []);
+        const gradient = ctx.createLinearGradient(
+            0, chartArea.top,
+            0, chartArea.bottom
+        );
 
-    const data = {
-        labels: labels,
+        gradient.addColorStop(0, colors.primary_rgba(0.7));
+        gradient.addColorStop(1, colors.primary_rgba(0));
+
+        setGradient(gradient);
+    }, [data, eventType]);
+
+    const chartData = {
+        labels,
         datasets: [
             {
-                label: 'Temperature',
+                label: `${eventType.replace(/_/g, ' ')} per day`,
                 data: values,
                 borderColor: colors.primary,
                 backgroundColor: gradient,
                 fill: true,
                 pointBackgroundColor: '#fff',
                 pointBorderColor: colors.primary,
+                pointBorderWidth: 2,
+                pointRadius: 4,
                 tension: 0.4,
             },
         ],
@@ -61,37 +79,65 @@ export default function LegacyConvertedGradientChart() {
     const options = {
         responsive: true,
         maintainAspectRatio: false,
-        elements: {
-            point: {
-                radius: 2,
-                borderWidth: 1,
-            },
-            line: {
-                borderWidth: 3,
-            },
-        },
         plugins: {
+            legend: {
+                display: false
+            },
             tooltip: {
                 backgroundColor: 'rgba(0,0,0,0.8)',
                 titleFont: { weight: 'bold' },
                 callbacks: {
-                    label: (context) => `${context.parsed.y}°C`,
-                    title: (context) => `${context[0].label} hod`,
+                    label: (context) => {
+                        const date = context.label;
+                        const stats = dailyStats[date] || {};
+                        return [
+                            `Events: ${stats.count || stats.totalCount || 0}`,
+                            `Time: ${stats.timeTaken || 0}ms`,
+                        ];
+                    },
+                    title: (context) => context[0].label,
                 },
             },
         },
         scales: {
+            x: {
+                grid: {
+                    display: false
+                }
+            },
             y: {
+                beginAtZero: true,
                 ticks: {
-                    callback: (value) => `${value}°C`,
+                    callback: (value) => Number.isInteger(value) ? value : '',
                 },
+                grid: {
+                    color: 'rgba(0,0,0,0.05)'
+                }
             },
         },
     };
 
+    if (labels.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-full p-4">
+                <div className="text-center">
+                    <div className="text-gray-400 mb-2">📊</div>
+                    <p className="text-sm text-gray-500">
+                        No {eventType.replace(/_/g, ' ')} activity recorded yet
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div style={{ height: '100%' }}>
-            {<Line ref={chartRef} data={data} options={options} />}
+        <div className="w-full h-full">
+            <Line
+                ref={chartRef}
+                data={chartData}
+                options={options}
+                redraw={true}
+            />
         </div>
     );
 }
