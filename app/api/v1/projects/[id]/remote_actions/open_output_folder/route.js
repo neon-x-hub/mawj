@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import db from '@/app/lib/providers/db';
+import config from '@/app/lib/providers/config';
 
 export async function GET(_, { params }) {
     const { id } = await params;
@@ -16,7 +17,10 @@ export async function GET(_, { params }) {
         return Response.json({ error: "Project not found" }, { status: 404 });
     }
 
-    const folderPath = path.resolve(`./data/projects/outputs/${id}`);
+    const folderPath = path.resolve(`${await config.get('baseFolder') ?? './data'}/projects/outputs/${id}`);
+
+    console.log('Opening folder:', folderPath);
+
 
     try {
         // Use explorer directly
