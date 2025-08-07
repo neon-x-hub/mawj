@@ -1,8 +1,11 @@
 import path from 'path';
+import config from '@/app/lib/providers/config';
 
-export default function getProjectStatsFile(projectId) {
+const DATA_DIR = await config.get('baseFolder') || './data';
+
+export default  function getProjectStatsFile(projectId) {
     return path.join(
-        process.env.BASE_DIR || './data',
+        DATA_DIR,
         'projects',
         projectId,
         'stats',
