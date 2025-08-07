@@ -2,8 +2,9 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
+import config from '@/app/lib/providers/config';
 
-const DATA_DIR = process.env.DATA_DIR || './data';
+const DATA_DIR = await config.get('baseFolder') || './data';
 
 export async function GET(_, { params }) {
     const { id, name } = await params;
