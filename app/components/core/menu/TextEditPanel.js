@@ -12,6 +12,7 @@ import TransformSection from "@/app/components/features/templates/edit_page/pane
 import TextAlignSection from "../../features/templates/edit_page/panel/text_align/TextAlignSection";
 import TypographySection from "../../features/templates/edit_page/panel/typo/TypographySection";
 import ColorSection from "../../features/templates/edit_page/panel/colors/ColorSection";
+import TextTemplateSection from "../../features/templates/edit_page/panel/text_template/TextTemplateSection";
 
 export const TextPropertiesPanel = ({ value, onChange }) => {
 
@@ -20,6 +21,10 @@ export const TextPropertiesPanel = ({ value, onChange }) => {
     return (
         <Card className="w-full" >
             <CardBody className={`flex flex-col gap-6 ${getLang() === "ar" ? "text-right" : ""} `}>
+                {/* Section: Text Template */}
+                <TextTemplateSection value={value} update={update} />
+                <Divider />
+
                 {/* Section: Transformations */}
                 <TransformSection value={value} update={update} />
                 <Divider />
