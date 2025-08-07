@@ -60,7 +60,22 @@ export default function ProjectHead({ project }) {
             title={`${project.name}`}
             iconUrl={'/icons/coco/bold/Bag.svg'}
             options={{
-                actions: [],
+                actions: [{
+                    key: 'open_output_folder',
+                    label: t('actions.open_output_folder'),
+                    description: t('actions.open_output_folder_desc'),
+                    icon: '/icons/coco/bold/Folder.svg',
+                    do: async () => {
+                        const res = await fetch(`/api/v1/projects/${project.id}/remote_actions/open_output_folder`);
+                        const json = await res.json();
+
+                        if (res.ok) {
+                            console.log('✅ Folder opened:', json.message);
+                        } else {
+                            console.error('❌ Failed to open folder:', json.error);
+                        }
+                    }
+                }],
                 danger: [{
                     key: 'delete',
                     label: t('actions.generic.delete.label', { object: t('common.the_project') }),
