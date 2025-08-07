@@ -72,7 +72,6 @@ buildStyle() {
         direction: userDirection || inferredDirection,
         textAlign: userTextAlign || inferredTextAlign,
         wordWrap: 'break-word',
-        whiteSpace: 'normal',
         overflowWrap: 'break-word',
     };
 
