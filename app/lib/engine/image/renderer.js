@@ -6,6 +6,7 @@ import Mustache from 'mustache';
 import { buildLayer } from '../../layers/types/index.js';
 import { loadFontInPuppeteer } from './injectFont.js';
 import { getFontByName } from '../../fonts/manager.js';
+import config from '@/app/lib/providers/config';
 
 const BASE_URL = process.env.ASSET_HOST || 'http://localhost:3000';
 
@@ -81,7 +82,7 @@ export async function render(
     await loadProjectFonts(page, template.layers);
 
     // ✅ 5. Prepare output directory
-    const outputDir = options.outputDir || path.resolve(`./data/projects/outputs/${project.id}`);
+    const outputDir = options.outputDir || path.resolve(`${await config.get('baseFolder') || './data'}/projects/outputs/${project.id}`);
     fs.mkdirSync(outputDir, { recursive: true });
 
     const startTime = Date.now();
