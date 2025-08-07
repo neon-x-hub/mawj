@@ -81,7 +81,7 @@ export async function render(
     await loadProjectFonts(page, template.layers);
 
     // ✅ 5. Prepare output directory
-    const outputDir = path.resolve(`./data/projects/outputs/${project.id}`);
+    const outputDir = options.outputDir || path.resolve(`./data/projects/outputs/${project.id}`);
     fs.mkdirSync(outputDir, { recursive: true });
 
     const startTime = Date.now();
@@ -156,7 +156,7 @@ export async function render(
         await page.evaluateHandle('document.fonts.ready');
 
         // ✅ 9. Screenshot without clip (viewport already matches canvas)
-        const fileName = `${row.id}.${options.format}`;
+        const fileName = options.outputName || `${row.id}.${options.format}`;
         const outputPath = path.join(outputDir, fileName);
 
 
@@ -166,7 +166,7 @@ export async function render(
 
         // JPG-specific settings
         if (screenshotOptions.type === 'jpeg') {
-            screenshotOptions.quality = options.quality || 30; // required to avoid Chromium stall
+            screenshotOptions.quality = options.quality || 80; // required to avoid Chromium stall
             screenshotOptions.omitBackground = true; // flatten transparency
         }
 
