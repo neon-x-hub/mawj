@@ -2,9 +2,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import DBProvider from './provider.js';
 import generateId from '../../id/generate.js';
+import config from '@/app/lib/providers/config';
+
+const DATA_DIR = await config.get('baseFolder') || './data';
 
 class JSONProvider extends DBProvider {
-    constructor(basePath = './data',
+    constructor(
+        basePath = DATA_DIR,
         segmentSize = 50 * 1024,
         idLength = 6,
         normaliseDocument = (doc) => doc
