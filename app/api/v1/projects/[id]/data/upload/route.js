@@ -1,10 +1,13 @@
 import datarows from "@/app/lib/providers/datarows";
 import { parse } from "csv-parse/sync";
+import stats from "@/app/lib/helpers/stats";
 
 export async function POST(request, { params }) {
     const { id } = await params;
 
     try {
+        const startTime = Date.now(); // ✅ for timeTaken stat
+
         // ✅ 1. Parse FormData & get uploaded file
         const formData = await request.formData();
         const file = formData.get("file");
@@ -71,7 +74,19 @@ export async function POST(request, { params }) {
         const provider = await datarows.getDataProvider();
         const result = await provider.bulkCreate(id, documents);
 
-        // ✅ 7. Respond with success
+        const endTime = Date.now();
+
+        // ✅ 7. Log stats event
+        await stats.add({
+            projectId: id,
+            action: "data_ingestion",
+            data: {
+                count: documents.length,
+                timeTaken: endTime - startTime,
+            },
+        });
+
+        // ✅ 8. Respond with success
         return Response.json(
             {
                 success: true,
