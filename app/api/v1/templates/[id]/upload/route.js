@@ -3,8 +3,9 @@ import fs from 'fs/promises';
 import sharp from 'sharp'; // ✅ for reading image dimensions
 import db from '@/app/lib/providers/db';
 import generateId from '@/app/lib/id/generate';
+import config from '@/app/lib/providers/config';
 
-const DATA_DIR = process.env.DATA_DIR || './data';
+const DATA_DIR = await config.get('baseFolder') || './data';
 
 export async function POST(request, { params }) {
     const dbInstance = await db.getDB();
