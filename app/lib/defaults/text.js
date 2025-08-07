@@ -1,4 +1,5 @@
 const TEXT_DEFAULTS = {
+    textTemplate: '',
     display: 'flex',
     position: 'absolute',
     x: 0,
@@ -15,6 +16,8 @@ const TEXT_DEFAULTS = {
     responsiveFont: true,
     minFontSize: '16px',
     maxFontSize: '240px',
+    // Space wrapping preline
+    whiteSpace: 'pre-line',
 }
 
 export default TEXT_DEFAULTS
