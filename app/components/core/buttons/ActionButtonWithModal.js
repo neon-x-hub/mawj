@@ -62,7 +62,7 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
                                 }
                             </ModalBody>
                             <ModalFooter>
-                                {modal.hasCancelButtons && <Button color="danger" variant="light" onPress={onClose} disabled={isLoading}>
+                                {modal.hasCancelButton && <Button color="danger" variant="light" onPress={onClose} disabled={isLoading}>
                                     {modal.closeLabel || "Close"}
                                 </Button>}
                                 {modal.action && (
