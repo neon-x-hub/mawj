@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import db from "@/app/lib/providers/db";
 import { generatePreview } from '@/app/lib/helpers/preview/GeneratePreview';
-
+import config from '@/app/lib/providers/config';
 const PREVIEW_NAME = 'preview.jpg';
 
 export async function GET(request, { params }) {
@@ -12,7 +12,7 @@ export async function GET(request, { params }) {
     const template = await dbInstance.findById('templates', id);
     if (!template) return new Response('Template not found', { status: 404 });
 
-    const previewDir = path.resolve(`./data/templates/${id}/previews`);
+    const previewDir = path.resolve(`${await config.get('baseFolder') || './data'}/templates/${id}/previews`);
     const previewPath = path.join(previewDir, PREVIEW_NAME);
 
     // Ensure preview exists (render it if needed)
