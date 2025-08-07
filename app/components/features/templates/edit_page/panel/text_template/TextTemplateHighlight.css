@@ -1,0 +1,37 @@
+.highlight-overlay {
+    pointer-events: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: transparent;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: 1.5;
+    position: absolute;
+    inset: 0;
+    padding: 8px 12px;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.highlight-textarea {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    color: #111;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    padding: 8px 12px;
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    height: 120px;
+}
+
+.mustache-highlight {
+    color: #d6336c;
+    background-color: #fbe6ec;
+    font-weight: bold;
+}
