@@ -1,5 +1,6 @@
 import { render } from './renderer.js';
 import datarows from '../../providers/datarows/index.js';
+import stats from '../../helpers/stats';
 
 export async function workerRenderer(jobData, onProgress) {
     const { project, template, rows, options } = jobData;
@@ -45,7 +46,18 @@ export async function workerRenderer(jobData, onProgress) {
         }
     };
 
+    const startTime = Date.now();
+
     const result = await render(project, template, rows, options, onRowRenderCompleted);
+
+    const endTime = Date.now();
+    const duration = endTime - startTime;
+
+    stats.add({
+        projectId: project.id,
+        action: 'generation',
+        data: { timeTaken: duration, count: rows.length },
+    })
 
     // final flush to ensure all updates are sent
     await flushBuffer();
