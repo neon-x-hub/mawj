@@ -1,5 +1,6 @@
 import path from "path";
 import { render } from "../../engine/image/renderer";
+import config from "../../providers/config";
 
 export async function generatePreview(template) {
     // Clone and modify the template
@@ -24,7 +25,7 @@ export async function generatePreview(template) {
         {
             format: 'jpg',
             outputName: 'preview.jpg',
-            outputDir: path.resolve(`./data/templates/${template.id}/previews`),
+            outputDir: path.resolve(`${await config.get('baseFolder') || './data'}/templates/${template.id}/previews`),
         }
     );
 }
