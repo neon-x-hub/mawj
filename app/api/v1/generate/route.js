@@ -30,7 +30,7 @@ export async function POST(request) {
         const opts = data.options || { range: 'all', regenerate_done: false, format: 'png' };
         if (opts.range === 'all') {
             // find all data rows for this project
-            dataRows = await dataRowsInstance.find(project.id, opts.regenerate_done ? {} : { status: false });
+            dataRows = await dataRowsInstance.find(project.id, opts.regenerate_done ? {} : { 'm.status': false });
         } else if (Array.isArray(opts.range)) {
             // find specific data rows by IDs
             dataRows = await dataRowsInstance.bulkFindByIds(project.id, opts.range);
