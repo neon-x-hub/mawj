@@ -1,4 +1,5 @@
 import JSONProvider from './json3.js';
+import config from '@/app/lib/providers/config';
 
 let dbInstance = null;
 let initializationPromise = null;
@@ -12,7 +13,7 @@ async function getDB() {
 
     if (!initializationPromise) {
         initializationPromise = (async () => {
-            const instance = new JSONProvider(process.env.DATA_DIR || './data');
+            const instance = new JSONProvider(await config.get('baseFolder') || './data');
             // Perform any initialization here if needed
             return instance;
         })();
