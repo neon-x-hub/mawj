@@ -42,3 +42,4 @@ next-env.d.ts
 
 # local env files
 /data
+mawj.config.json
