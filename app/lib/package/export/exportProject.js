@@ -52,7 +52,14 @@ export async function createProjectBundle(project, template, options = {}) {
     };
 
     return new Promise(async (resolve, reject) => {
-        output.on('close', () => resolve(zipPath));
+        output.on('close', () => {
+            try {
+                cleanupBundle(outputDir, zipPath);
+            } catch (err) {
+                console.error("Cleanup failed:", err);
+            }
+            resolve(zipPath);
+        });
         archive.on('error', reject);
         archive.pipe(output);
 
@@ -173,11 +180,11 @@ export async function createProjectBundle(project, template, options = {}) {
 }
 
 
-export function cleanupBundle(zipPath) {
-    const tempDir = path.dirname(zipPath);
+export async function cleanupBundle(outputDir, zipPath) {
     try {
-        fs.rmSync(tempDir, { recursive: true, force: true });
+        await fs.promises.rm(path.join(outputDir, 'assets'), { recursive: true, force: true });
+        await fs.promises.rm(path.join(outputDir, 'template'), { recursive: true, force: true });
     } catch (error) {
-        console.error('Error cleaning up bundle:', error);
+        console.error("Failed to cleanup bundle:", error);
     }
 }
