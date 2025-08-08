@@ -45,7 +45,7 @@ function ActionButtonWithOptionalModal({ label, endIconUrl, endIconSize, isPrima
                 {...props}
             />
 
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
                 <ModalContent>
                     {(onClose) => (
                         <>
