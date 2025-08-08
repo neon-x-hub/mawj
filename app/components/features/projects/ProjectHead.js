@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { t } from '@/app/i18n'
 import { SectionHead } from '../../shared/SectionHead'
 import GenerateImageModal from '../../core/modal/GenerateImageModal'
+import ExportProjectModal from '../../core/modal/ExportProjectModal'
 
 export default function ProjectHead({ project }) {
     const [progress, setProgress] = useState(0)
@@ -113,8 +114,19 @@ export default function ProjectHead({ project }) {
                     label: t('actions.export'),
                     endIconUrl: '/icons/coco/line/Export.svg',
                     isPrimary: false,
-                    onClick: () => console.log('Export'),
                     endIconSize: '20px',
+                    modal: {
+                        title: t('actions.export_project'),
+                        content: (props) => (
+                            <ExportProjectModal
+                                project={project}
+                                {...props}
+                            />
+                        ),
+                        actionLabel: t('actions.export'),
+                        hasCancelButton: false,
+                        action: () => { },
+                    }
                 }
             ]}
         />
