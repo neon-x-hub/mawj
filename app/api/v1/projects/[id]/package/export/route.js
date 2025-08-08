@@ -82,7 +82,7 @@ export async function POST(request, { params }) {
                     outputs: true,
                     fonts: true,
                 },
-                outputDir: options.outputDir, // Optional output path
+                outputDir: options.outputDir,
             },
         });
 
