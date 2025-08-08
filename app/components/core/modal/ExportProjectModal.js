@@ -20,8 +20,6 @@ export default function ExportProjectModal({
         { key: 'fonts', label: t('common.fonts'), desc: t('common.fonts_desc') }
     ]
 
-    console.log('🚀 ~ file: ExportProjectModal.js:24 ~ formData:', formData);
-
 
     return (
         <div className="space-y-4">
@@ -50,11 +48,11 @@ export default function ExportProjectModal({
                     {includeOptions.map(opt => (
                         <div key={opt.key} className="flex flex-col space-y-1">
                             <Checkbox
-                                isSelected={formData.options?.include?.[opt.key] || (['datarows', 'outputs'].includes(opt.key) ? false : true)}
+                                isSelected={formData.include?.[opt.key] || (['datarows', 'outputs'].includes(opt.key) ? false : true)}
                                 onValueChange={(checked) =>
                                     handleInputChange({
                                         target: {
-                                            name: `options.include.${opt.key}`,
+                                            name: `${opt.key}`,
                                             value: checked
                                         }
                                     })
@@ -78,12 +76,12 @@ export default function ExportProjectModal({
                 <Input
                     type="text"
                     placeholder={t('common.output_directory_placeholder')}
-                    value={formData.options?.outputDir}
-                    onChange={(e) => handleInputChange({ target: { name: 'options.outputDir', value: e.target.value } })}
+                    value={formData.outputDir}
+                    onChange={(e) => handleInputChange({ target: { name: 'outputDir', value: e.target.value } })}
                     isDisabled={isProcessing}
                     description={t('common.output_directory_desc')}
                     style={{
-                        direction: direction(formData['options.outputDir']) === 'ltr' ? 'ltr' : 'rtl'
+                        direction: direction(formData?.outputDir) === 'ltr' ? 'ltr' : 'rtl'
                     }}
                 />
             </div>
