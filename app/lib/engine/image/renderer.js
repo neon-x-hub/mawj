@@ -10,7 +10,7 @@ import config from '@/app/lib/providers/config';
 
 const BASE_URL = process.env.ASSET_HOST || 'http://localhost:3000';
 
-function collectFontsFromLayers(layers) {
+export function collectFontsFromLayers(layers) {
     const fonts = new Set();
     for (const layer of layers) {
         if (layer.type === 'text' && layer.options?.props?.fontFamily) {
