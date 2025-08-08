@@ -17,7 +17,7 @@ export async function GET(_, { params }) {
         return Response.json({ error: "Project not found" }, { status: 404 });
     }
 
-    const folderPath = path.resolve(`${await config.get('baseFolder') ?? './data'}/projects/outputs/${id}`);
+    const folderPath = path.resolve(`${await config.get('baseFolder') || './data'}/projects/outputs/${id}`);
 
     console.log('Opening folder:', folderPath);
 
