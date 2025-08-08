@@ -8,6 +8,10 @@ export default function DataSection({ project }) {
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]);
     const [loading, setLoading] = useState(true);
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const rowsPerPage = 10; // Adjust as needed
 
     useEffect(() => {
         if (!project?.id) return;
@@ -15,7 +19,10 @@ export default function DataSection({ project }) {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const res = await fetch(`/api/v1/projects/${project.id}/data?page=1&limit=100`);
+                const res = await fetch(
+                    `/api/v1/projects/${project.id}/data?page=${page}&limit=${rowsPerPage}`
+                );
+
                 if (!res.ok) throw new Error("Failed to load project data");
                 const result = await res.json();
 
@@ -35,6 +42,11 @@ export default function DataSection({ project }) {
                     { key: "status", label: "STATUS" },
                 ]);
                 setData(apiRows);
+
+                // Calculate total pages
+                if (result.total) {
+                    setTotalPages(Math.ceil(result.total / rowsPerPage));
+                }
             } catch (err) {
                 console.error("❌ Failed to fetch data table:", err);
             } finally {
@@ -43,7 +55,7 @@ export default function DataSection({ project }) {
         };
 
         fetchData();
-    }, [project?.id]);
+    }, [project?.id, page]); // Add page to dependencies
 
     // ✅ Show loading skeleton if data is being fetched
     if (loading) {
@@ -59,7 +71,6 @@ export default function DataSection({ project }) {
                         </div>
                     </div>
                 </div>
-
             </>
         )
     }
@@ -72,6 +83,11 @@ export default function DataSection({ project }) {
                 data={data}
                 setData={setData}
                 columns={columns}
+                // Pagination props
+                page={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                rowsPerPage={rowsPerPage}
             />
         </>
     );
