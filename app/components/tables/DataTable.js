@@ -118,9 +118,11 @@ export default function DataTable({ data, setData, columns, project }) {
             const { jobId } = await res.json()
 
             while (progress < 100) {
-                await new Promise(r => setTimeout(r, 1000))
+                await new Promise(r => setTimeout(r, 500))
 
                 const statusRes = await fetch(`/api/v1/generate/status/${jobId}`)
+                console.log('Generation status:', statusRes);
+
                 if (!statusRes.ok) throw new Error('Failed to get status')
 
                 const status = await statusRes.json()
@@ -129,6 +131,7 @@ export default function DataTable({ data, setData, columns, project }) {
 
                 if (newProgress >= 100) break
             }
+            await new Promise(r => setTimeout(r, 1000)) // Wait for 1 second, just for the UI progress to animate
 
         } catch (error) {
             console.error('Generation error:', error)
