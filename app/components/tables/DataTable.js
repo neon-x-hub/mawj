@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Table,
@@ -9,6 +9,7 @@ import {
     TableRow,
     TableCell,
     Chip,
+    Pagination,
 } from "@heroui/react";
 import ActionButtonWithOptionalModal from "../core/buttons/ActionButtonWithModal";
 import { t } from "@/app/i18n";
@@ -23,10 +24,27 @@ function StatusCell({ value }) {
     );
 }
 
-export default function DataTable({ data, setData, columns, project }) {
+export default function DataTable({
+    project,
+    data,
+    setData,
+    columns,
+    // Pagination props
+    page,
+    totalPages,
+    onPageChange,
+    rowsPerPage
+}) {
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const [progress, setProgress] = useState(0)
     const [isProcessing, setIsProcessing] = useState(false)
+
+    useEffect(() => {
+        if (data) {
+            setSelectedKeys(new Set([]));
+        }
+    }, [data])
+
 
     /** ✅ Helper to call the POST bulk endpoint */
     const sendBulkUpdate = async (updates) => {
@@ -121,8 +139,6 @@ export default function DataTable({ data, setData, columns, project }) {
                 await new Promise(r => setTimeout(r, 500))
 
                 const statusRes = await fetch(`/api/v1/generate/status/${jobId}`)
-                console.log('Generation status:', statusRes);
-
                 if (!statusRes.ok) throw new Error('Failed to get status')
 
                 const status = await statusRes.json()
@@ -206,6 +222,7 @@ export default function DataTable({ data, setData, columns, project }) {
             label: t("actions.generate"),
             isPrimary: true,
             modal: {
+                title: t("actions.start_generation_process"),
                 content: (props) => (
                     project.type === 'card' && <GenerateImageModal
                         project={project}
@@ -254,32 +271,48 @@ export default function DataTable({ data, setData, columns, project }) {
             </AnimatePresence>
 
             {/* ✅ Table */}
-            {data.length > 0 ? <Table
-                aria-label="Project data table"
-                isStriped
-                selectionMode="multiple"
-                checkboxesProps={{
-                    classNames: {
-                        wrapper: "after:bg-primary after:text-background text-background",
-                    },
-                }}
-                onSelectionChange={(keys) => {
-                    if (keys === 'all') keys = new Set(data.map((item) => item.key));
-                    setSelectedKeys(keys)
-                }}
-            >
-                <TableHeader columns={columns}>
-                    {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-                </TableHeader>
+            {data.length > 0 ? (
+                <Table
+                    aria-label="Project data table"
+                    isStriped
+                    selectionMode="multiple"
+                    checkboxesProps={{
+                        classNames: {
+                            wrapper: "after:bg-primary after:text-background text-background",
+                        },
+                    }}
+                    onSelectionChange={(keys) => {
+                        if (keys === "all") keys = new Set(data.map((item) => item.key));
+                        setSelectedKeys(keys);
+                    }}
+                    bottomContent={
+                        totalPages > 1 && (
+                            <div className="flex w-full justify-center">
+                                <Pagination
+                                    isCompact
+                                    showControls
+                                    showShadow
+                                    color="primary"
+                                    page={page}
+                                    total={totalPages}
+                                    onChange={onPageChange}
+                                />
+                            </div>
+                        )
+                    }
+                >
+                    <TableHeader columns={columns}>
+                        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                    </TableHeader>
 
-                <TableBody items={data}>
-                    {(item) => (
-                        <TableRow key={item.key}>
-                            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table> : (
+                    <TableBody items={data}>
+                        {(item) => (
+                            <TableRow key={item.key}>
+                                {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>) : (
                 <div className="text-center font-bold text-2xl opacity-80 h-52 flex items-center justify-center text-gray-500">
                     <p className="text-gray-500">{t("messages.error.no_data")}</p>
                 </div>
