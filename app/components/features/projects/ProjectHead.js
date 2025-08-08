@@ -56,6 +56,58 @@ export default function ProjectHead({ project }) {
         }
     }
 
+    const handleExport = async (formData, onClose) => {
+        setIsProcessing(true)
+        setProgress(0)
+
+        try {
+            const requestBody = {
+                include: {
+                    metadata: formData.metadata || true,
+                    template: formData.template || true,
+                    baseLayers: formData.baseLayers || true,
+                    datarows: formData.datarows || false,
+                    outputs: formData.outputs || false,
+                    fonts: formData.fonts || true,
+                },
+                outputDir: formData.outputDir
+            }
+
+            console.log("Request body: ", requestBody);
+
+            const res = await fetch(`/api/v1/projects/${project.id}/package/export`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+            })
+
+            if (!res.ok) throw new Error('Generation failed to start')
+
+            const { jobId } = await res.json()
+
+            while (progress < 100) {
+                await new Promise(r => setTimeout(r, 1000))
+
+                const statusRes = await fetch(`/api/v1/projects/${project.id}/package/export/status/${jobId}`)
+                if (!statusRes.ok) throw new Error('Failed to get status')
+
+                const status = await statusRes.json()
+                const newProgress = status.progress || progress
+                setProgress(Math.min(newProgress, 100))
+
+                if (newProgress >= 100) break
+            }
+
+            await new Promise(r => setTimeout(r, 1000)) // Wait for 1 second, just for the UI progress to animate
+
+        } catch (error) {
+            console.error('Generation error:', error)
+        } finally {
+            setIsProcessing(false)
+        }
+    }
+
+
     return (
         <SectionHead
             title={`${project.name}`}
@@ -121,11 +173,16 @@ export default function ProjectHead({ project }) {
                             <ExportProjectModal
                                 project={project}
                                 {...props}
+                                isProcessing={isProcessing}
+                                progress={progress}
                             />
                         ),
                         actionLabel: t('actions.export'),
                         hasCancelButton: false,
-                        action: () => { },
+                        action: async (formData, onClose) => {
+                            await handleExport(formData, onClose)
+                        },
+                        isProcessing,
                     }
                 }
             ]}
