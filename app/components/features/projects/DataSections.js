@@ -28,7 +28,7 @@ export default function DataSection({ project }) {
 
                 const apiColumns = result.columns.map((col) => ({
                     key: col,
-                    label: col.toUpperCase(),
+                    label: col,
                 }));
 
                 const apiRows = result.data.map((doc) => ({
