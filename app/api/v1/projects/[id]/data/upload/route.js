@@ -1,12 +1,14 @@
 import datarows from "@/app/lib/providers/datarows";
 import { parse } from "csv-parse/sync";
 import stats from "@/app/lib/helpers/stats";
+import config from "@/app/lib/providers/config";
+import { MetadataProvider, revalidators } from "@/app/lib/fam";
 
 export async function POST(request, { params }) {
     const { id } = await params;
 
     try {
-        const startTime = Date.now(); // ✅ for timeTaken stat
+        const startTime = Date.now();
 
         // ✅ 1. Parse FormData & get uploaded file
         const formData = await request.formData();
@@ -15,7 +17,7 @@ export async function POST(request, { params }) {
             return Response.json({ error: "No file uploaded" }, { status: 400 });
         }
 
-        // ✅ 2. Determine file extension (safe handling)
+        // ✅ 2. Determine file extension
         let extension = "";
         if (file.name) {
             extension = file.name.toLowerCase().split(".").pop();
@@ -62,7 +64,7 @@ export async function POST(request, { params }) {
             );
         }
 
-        // ✅ 5. Transform records into expected format
+        // ✅ 5. Transform records
         const documents = rawRecords.map((record) => ({
             status: false,
             createdAt: new Date().toISOString(),
@@ -70,13 +72,45 @@ export async function POST(request, { params }) {
             data: record
         }));
 
-        // ✅ 6. Use datarows singleton & save to DB
+        // ✅ 6. Save to DB
         const provider = await datarows.getDataProvider();
-        const result = await provider.bulkCreate(id, documents);
+        await provider.bulkCreate(id, documents);
+
+        // ✅ 7. Update metadata provider incrementally
+        const DATA_DIR = await config.get("baseFolder") || "./data";
+        const metadataFilePath = `${DATA_DIR}/datarows/${id}/fam.json`;
+
+        const metadata = new MetadataProvider({
+            filePath: metadataFilePath,
+            revalidators,
+            provider
+        });
+        await metadata.load({ projectId: id });
+
+        // Update rowCount incrementally
+        const currentCount = metadata.get("rowCount") || 0;
+        metadata.set("rowCount", currentCount + documents.length);
+
+        // Update columns incrementally
+        const currentColumns = metadata.get("columns") || [];
+        const colMap = new Map(currentColumns.map(c => [c.n, c.c]));
+
+        documents.forEach(doc => {
+            Object.keys(doc.data || {}).forEach(key => {
+                colMap.set(key, (colMap.get(key) || 0) + 1);
+            });
+        });
+
+        metadata.set(
+            "columns",
+            Array.from(colMap.entries()).map(([n, c]) => ({ n, c }))
+        );
+
+        await metadata.save();
 
         const endTime = Date.now();
 
-        // ✅ 7. Log stats event
+        // ✅ 8. Log stats event
         await stats.add({
             projectId: id,
             action: "data_ingestion",
@@ -86,7 +120,7 @@ export async function POST(request, { params }) {
             },
         });
 
-        // ✅ 8. Respond with success
+        // ✅ 9. Respond
         return Response.json(
             {
                 success: true,
