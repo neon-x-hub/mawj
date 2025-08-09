@@ -1,4 +1,6 @@
 import datarows from "@/app/lib/providers/datarows";
+import config from "@/app/lib/providers/config";
+import { MetadataProvider, revalidators } from "@/app/lib/fam";
 
 export async function GET(request, { params }) {
     const { id } = await params;
@@ -6,6 +8,16 @@ export async function GET(request, { params }) {
     try {
         const { searchParams } = new URL(request.url);
         const provider = await datarows.getDataProvider();
+
+        // ✅ Setup metadata provider
+        const DATA_DIR = await config.get('baseFolder') || './data';
+        const metadataFilePath = `${DATA_DIR}/datarows/${id}/fam.json`;
+        const metadata = new MetadataProvider({
+            filePath: metadataFilePath,
+            revalidators,
+            provider
+        });
+        await metadata.load({ projectId: id });
 
         // ✅ Pagination
         const page = parseInt(searchParams.get('page')) || 1;
@@ -17,7 +29,7 @@ export async function GET(request, { params }) {
         const sortOrder = searchParams.get('sd') || '0'; // 0 = asc, 1 = desc
         const isMetaSort = sortAttribute?.startsWith('m.');
 
-        // ✅ Filters (excluding special keys)
+        // ✅ Filters
         const filters = {};
         for (const [key, value] of searchParams.entries()) {
             if (!['page', 'limit', 'sort', 'sd'].includes(key)) {
@@ -26,7 +38,7 @@ export async function GET(request, { params }) {
             }
         }
 
-        // ✅ Fetch raw rows from provider
+        // ✅ Fetch page of rows
         const rawRows = await provider.find(
             id,
             filters,
@@ -60,19 +72,26 @@ export async function GET(request, { params }) {
             });
         }
 
-        // ✅ Extract columns from nested data objects
+        // ✅ Extract columns for this page
         const columns = new Set();
         allRows.forEach(doc => {
             Object.keys(doc.data || {}).forEach(key => columns.add(key));
         });
 
+        // ✅ Get total row count from metadata (revalidate if missing)
+        let totalRows = metadata.get("rowCount");
+        if (typeof totalRows !== "number") {
+            totalRows = await metadata.revalidate("rowCount", { projectId: id });
+        }
+
         return Response.json({
             projectId: id,
             columns: Array.from(columns),
-            hasNextPage: rawRows.length > limit,
+            total: totalRows,
+            hasNextPage: (offset + limit) < totalRows,
             page,
             limit,
-            data: allRows.slice(0, limit)
+            data: allRows
         });
     } catch (error) {
         console.error("❌ Fetch project data error:", error);
