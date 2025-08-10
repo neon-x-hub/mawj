@@ -293,6 +293,9 @@ export default function DataTable({
                                     showControls
                                     showShadow
                                     color="primary"
+                                    classNames={{
+                                        cursor: "text-white",
+                                    }}
                                     page={page}
                                     total={totalPages}
                                     onChange={onPageChange}
