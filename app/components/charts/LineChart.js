@@ -13,6 +13,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import React, { useRef, useEffect, useState } from 'react';
 import { colors } from '@/app/styles/designTokens';
+import { t } from '@/app/i18n';
 
 ChartJS.register(
     CategoryScale,
@@ -123,7 +124,7 @@ export default function LegacyConvertedGradientChart({ data, eventType }) {
                 <div className="text-center">
                     <div className="text-gray-400 mb-2">📊</div>
                     <p className="text-sm text-gray-500">
-                        No {eventType.replace(/_/g, ' ')} activity recorded yet
+                        {t('messages.no_activity_for')} : {t(`common.${eventType}`)}
                     </p>
                 </div>
             </div>
