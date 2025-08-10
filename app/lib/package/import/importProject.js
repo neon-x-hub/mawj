@@ -139,23 +139,31 @@ export async function importProjectBundle(
                     .filter((f) => f.startsWith("segment_") && f.endsWith(".json"));
 
                 for (const file of rowFiles) {
-                    const rows = JSON.parse(fs.readFileSync(path.join(datarowsDir, file), "utf8"));
-                    const transformed = rows.map((row) => {
-                        let newId = VALID_ID_REGEX.test(row.id) ? row.id : generateId();
-                        rowIdMap.set(row.id, newId);
+                    const raw = JSON.parse(
+                        fs.readFileSync(path.join(datarowsDir, file), "utf8")
+                    );
 
-                        return {
-                            id: newId,
-                            status: row.status ?? false,
-                            createdAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString(),
-                            data: row.data,
-                        };
+                    const rowsArray = Array.isArray(raw) ? raw : Object.values(raw);
+
+                    const preparedRows = rowsArray.map((row) => ({
+                        status: row.status ?? false,
+                        createdAt: row.createdAt ?? new Date().toISOString(),
+                        updatedAt: row.updatedAt ?? new Date().toISOString(),
+                        data: row.data,
+                    }));
+
+                    const createdRows = await dataProvider.bulkCreate(newProjectId, preparedRows);
+
+                    createdRows.forEach((created, index) => {
+                        const oldId = rowsArray[index].id;
+                        if (oldId) {
+                            rowIdMap.set(oldId, created.id);
+                        }
                     });
-                    await dataProvider.bulkCreate(newProjectId, transformed);
                 }
             }
         }
+
         step++;
         progress();
 
