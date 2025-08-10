@@ -2,8 +2,7 @@ import db from "@/app/lib/providers/db";
 
 export async function GET(req, { params }) {
     const dbInstance = await db.getDB();
-    await params;
-    const id = params.id;
+    const { id } = await params;
 
     try {
         // ✅ Fetch all folders
