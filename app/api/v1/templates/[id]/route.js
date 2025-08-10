@@ -1,10 +1,15 @@
 import db from "@/app/lib/providers/db";
+import fs from 'fs'
+import path from "path";
+import config from "@/app/lib/providers/config";
+
+const DATA_DIR = await config.get('baseFolder') || './data';
 
 // GET /api/templates/:id
 export async function GET(_, { params }) {
     const dbInstance = await db.getDB();
 
-  const { id } = await params;
+    const { id } = await params;
 
     try {
         const template = await dbInstance.findById('templates', id);
@@ -66,9 +71,10 @@ export async function PUT(request, { params }) {
 // DELETE /api/templates/:id
 export async function DELETE(_, { params }) {
     const dbInstance = await db.getDB();
+    const { id } = await params;
 
     try {
-        const template = await dbInstance.findById('templates', params.id);
+        const template = await dbInstance.findById('templates', id);
         if (!template) {
             return Response.json(
                 { error: 'Template not found' },
@@ -78,19 +84,22 @@ export async function DELETE(_, { params }) {
 
         // Check if template is in use
         const projects = await dbInstance.find('projects', {
-            'defaultTemplate': params.id
+            'template': id
         });
         if (projects.length > 0) {
-            return Response.json(
-                {
-                    error: 'Template is in use by projects',
-                    projectCount: projects.length
-                },
-                { status: 409 }
-            );
+            const updates = await dbInstance.bulkUpdate('projects', projects.map(project => ({
+                id: project.id,
+                data: {
+                    ...project,
+                    template: null
+                }
+            })))
         }
 
-        await dbInstance.delete('templates', params.id);
+        await dbInstance.delete('templates', id);
+
+        fs.rmSync(path.join(DATA_DIR, 'templates', id), { recursive: true });
+
         return Response.json({
             success: true,
             deletedId: params.id
