@@ -11,9 +11,9 @@ export default function ImportProjectModal() {
     const [isProcessing, setIsProcessing] = useState(false)
     const [inspectionResult, setInspectionResult] = useState(null)
     const [extractionOptions, setExtractionOptions] = useState({
-        includeDataRows: true,
+        includeDatarows: true,
         includeOutputs: true,
-        fontFolder: ''
+        outputFontsDir: ''
     })
 
     const formatSize = (bytes) => {
