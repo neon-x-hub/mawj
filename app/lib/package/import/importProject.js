@@ -12,7 +12,7 @@ import stats from "../../helpers/stats";
 
 const pipe = promisify(pipeline);
 
-const VALID_ID_REGEX = /^[0-9]+_[a-z0-9]+$/;
+const VALID_ID_REGEX = /^[0-9]+_[a-zA-Z0-9]+$/;
 const BASE_LAYER_EXTS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 const OUTPUT_EXTS = new Set([...BASE_LAYER_EXTS, ".mp4", ".mov"]);
 
