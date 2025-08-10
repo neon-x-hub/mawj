@@ -5,6 +5,7 @@ import { t } from '@/app/i18n';
 import { useProjects } from '../../context/projects/projectsContext';
 import { SectionHead } from '../../shared/SectionHead';
 import { Input, Select, SelectItem } from '@heroui/react';
+import ImportProjectModal from '../../core/modal/ImportProjectModal';
 
 export default function ProjectSectionHead() {
     const { addProject, setProjects, projects, getProjects } = useProjects();
@@ -143,6 +144,10 @@ export default function ProjectSectionHead() {
                     isPrimary: true,
                     onClick: () => console.log('Import clicked'),
                     endIconSize: '18px',
+                    modal: {
+                        title: t('actions.import'),
+                        content: () => <ImportProjectModal />,
+                    },
                 },
             ]}
         />
