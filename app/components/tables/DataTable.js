@@ -10,6 +10,7 @@ import {
     TableCell,
     Chip,
     Pagination,
+    Input,
 } from "@heroui/react";
 import ActionButtonWithOptionalModal from "../core/buttons/ActionButtonWithModal";
 import { t } from "@/app/i18n";
@@ -67,6 +68,7 @@ export default function DataTable({
     const handleEdit = async (formData) => {
         const selected = Array.from(selectedKeys);
         if (selected.length !== 1) return;
+        if (!formData) return;
 
         const payload = [
             { id: selected[0], updates: { data: formData } }
@@ -202,18 +204,24 @@ export default function DataTable({
                 title: t("actions.edit_item"),
                 content: ({ formData, handleInputChange }) => (
                     <form className="space-y-2">
-                        <input
-                            type="text"
-                            name="title"
-                            placeholder="New title"
-                            value={formData.title || ""}
-                            onChange={handleInputChange}
-                            className="border p-2 w-full"
-                        />
+                        {/* For each column, render an input and a label, except for STATUS */}
+                        {columns.map((column) => (
+                            column.key !== "status" &&
+                            <div key={column.key}>
+                                <label htmlFor={column.key}>{column.label}</label>
+                                <Input
+                                    type="text"
+                                    id={column.key}
+                                    name={column.key}
+                                    value={formData[column.key] || data.filter((row) => selectedKeys.has(row.key))[0][column.key] } // Default to the value of the selected row
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        ))}
                     </form>
                 ),
-                actionLabel: "Save Changes",
-                closeLabel: "Cancel",
+                actionLabel: t("actions.save"),
+                closeLabel: t("actions.cancel"),
                 action: handleEdit,
             },
         },
@@ -254,7 +262,7 @@ export default function DataTable({
                         className="flex gap-2 items-center text-white"
                     >
                         {actionButtons.map((btn, idx) => (
-                            <ActionButtonWithOptionalModal
+                            !btn.disabledCondition?.() && <ActionButtonWithOptionalModal
                                 key={idx}
                                 label={btn.label}
                                 endIconUrl={btn.endIconUrl}
@@ -262,7 +270,6 @@ export default function DataTable({
                                 onClick={btn.onClick}
                                 modal={btn.modal}
                                 endIconSize="18px"
-                                disabled={btn.disabledCondition?.()}
                                 className="w-auto text-[15px] h-[30px] px-4 r30 gap-1"
                             />
                         ))}
