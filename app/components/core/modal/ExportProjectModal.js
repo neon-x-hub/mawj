@@ -48,7 +48,7 @@ export default function ExportProjectModal({
                     {includeOptions.map(opt => (
                         <div key={opt.key} className="flex flex-col space-y-1">
                             <Checkbox
-                                isSelected={formData.include?.[opt.key] || (['datarows', 'outputs'].includes(opt.key) ? false : true)}
+                                isSelected={formData[opt.key] ?? !['datarows', 'outputs'].includes(opt.key)}
                                 onValueChange={(checked) =>
                                     handleInputChange({
                                         target: {
