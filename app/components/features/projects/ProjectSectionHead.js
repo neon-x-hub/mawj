@@ -59,9 +59,7 @@ export default function ProjectSectionHead() {
                             placeholder={t('common.types.select')}
                             selectedKeys={new Set([formData.type || 'card'])}
                             onSelectionChange={(keys) => {
-                                // Convert Set to string
                                 const selectedType = Array.from(keys)[0];
-                                // Manually call handleInputChange with a mock event
                                 handleInputChange({
                                     target: {
                                         name: 'type',
