@@ -49,5 +49,7 @@
     "start_generation_process": "بدء عملية الانشاء",
     "open_output_folder": "فتح مجلد المخرجات",
     "open_output_folder_desc": "حيث توجد مخرجات مشروعك",
-    "export_project": "تصدير المشروع"
+    "export_project": "تصدير المشروع",
+    "inspection": "تفحص",
+    "extraction": "استخراج"
 }
