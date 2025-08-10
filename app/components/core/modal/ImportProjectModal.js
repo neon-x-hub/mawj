@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { t } from '@/app/i18n'
-import { Tabs, Tab, Button, Input, Checkbox, Spinner } from '@heroui/react'
+import { Tabs, Tab, Button, Input, Checkbox, Spinner, Progress } from '@heroui/react'
 import MaskedIcon from '../icons/Icon'
 
 export default function ImportProjectModal() {
@@ -15,6 +15,8 @@ export default function ImportProjectModal() {
         includeOutputs: true,
         outputFontsDir: ''
     })
+    const [progress, setProgress] = useState(0)
+    const [jobId, setJobId] = useState(null)
 
     const formatSize = (bytes) => {
         if (bytes === 0) return `0 ${t('common.bytes')}`
@@ -26,13 +28,14 @@ export default function ImportProjectModal() {
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0])
-        setInspectionResult(null) // Reset previous results
+        setInspectionResult(null)
     }
 
     const handleInspect = async () => {
         if (!file) return
 
         setIsProcessing(true)
+        setProgress(0)
         const formData = new FormData()
         formData.append('file', file)
 
@@ -42,9 +45,8 @@ export default function ImportProjectModal() {
                 body: formData
             })
             const data = await res.json()
-            console.log('Inspection result:', data);
             setInspectionResult(data)
-            if (data.success) setActiveTab('extraction')
+            //if (data.success) setActiveTab('extraction')
         } catch (error) {
             console.error('Inspection error:', error)
             setInspectionResult({
@@ -53,6 +55,7 @@ export default function ImportProjectModal() {
             })
         } finally {
             setIsProcessing(false)
+            setProgress(100)
         }
     }
 
@@ -60,6 +63,7 @@ export default function ImportProjectModal() {
         if (!inspectionResult?.success) return
 
         setIsProcessing(true)
+        setProgress(0)
         const formData = new FormData()
         formData.append('file', file)
         formData.append('options', JSON.stringify(extractionOptions))
@@ -70,15 +74,36 @@ export default function ImportProjectModal() {
                 body: formData
             })
             const data = await res.json()
-            if (data.success) {
-                // Handle successful extraction (e.g., close modal)
+            if (data.success && data.jobId) {
+                setJobId(data.jobId)
+                await pollExtractionProgress(data.jobId)
             } else {
-                console.error('Extraction failed:', data.message)
+                console.error('Extraction failed to start:', data.message)
             }
         } catch (error) {
             console.error('Extraction error:', error)
         } finally {
             setIsProcessing(false)
+        }
+    }
+
+    const pollExtractionProgress = async (jobId) => {
+        while (progress < 100) {
+            await new Promise(r => setTimeout(r, 600))
+
+            try {
+                const statusRes = await fetch(`/api/v1/projects/package/import/status/${jobId}`)
+                if (!statusRes.ok) throw new Error('Failed to get status')
+
+                const status = await statusRes.json()
+                const newProgress = status.progress || progress
+                setProgress(Math.min(newProgress, 100))
+
+                if (newProgress >= 100) break
+            } catch (error) {
+                console.error('Progress polling error:', error)
+                break
+            }
         }
     }
 
@@ -91,11 +116,35 @@ export default function ImportProjectModal() {
 
     return (
         <div className="space-y-4">
+            {/* Progress bar - shown only during processing */}
+            {isProcessing && (
+                <div className="mb-4">
+                    <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium">
+                            {activeTab === 'inspection'
+                                ? t('actions.inspecting')
+                                : t('actions.extracting')}: {Math.round(progress)}%
+                        </span>
+                    </div>
+                    <Progress
+                        value={progress}
+                        minValue={0}
+                        maxValue={100}
+                        color="primary"
+                        className="w-full"
+                        aria-label={activeTab === 'inspection'
+                            ? t('actions.inspecting_progress')
+                            : t('actions.extracting_progress')}
+                    />
+                </div>
+            )}
+
             <Tabs
                 aria-label="Import project steps"
                 selectedKey={activeTab}
                 onSelectionChange={setActiveTab}
-                disabledKeys={inspectionResult?.success ? [] : ['extraction']}
+                disabledKeys={isProcessing ? ['inspection', 'extraction'] :
+                    (inspectionResult?.success ? [] : ['extraction'])}
                 color='primary'
                 classNames={{
                     tabList: 'bg-gray-300',
@@ -161,9 +210,9 @@ export default function ImportProjectModal() {
 
                     <div className='flex justify-end w-full'>
                         <Button
-                            onPress={() => handleInspect()}
-                            isLoading={isProcessing}
-                            disabled={!file || isProcessing}
+                            onPress={handleInspect}
+                            isLoading={isProcessing && activeTab === 'inspection'}
+                            disabled={!file || (isProcessing && activeTab === 'inspection')}
                             color="primary"
                             className=' text-white font-medium'
                         >
@@ -191,8 +240,8 @@ export default function ImportProjectModal() {
                 >
                     <div className="flex flex-col space-y-3 mb-4">
                         <Checkbox
-                            isSelected={extractionOptions.includeDataRows}
-                            onValueChange={(val) => handleOptionChange('includeDataRows', val)}
+                            isSelected={extractionOptions.includeDatarows}
+                            onValueChange={(val) => handleOptionChange('includeDatarows', val)}
                             classNames={{
                                 icon: "after:bg-primary after:text-background text-background"
                             }}
@@ -215,19 +264,20 @@ export default function ImportProjectModal() {
 
                     <Input
                         label={t('common.font_folder')}
-                        value={extractionOptions.fontFolder}
-                        onChange={(e) => handleOptionChange('fontFolder', e.target.value)}
+                        value={extractionOptions.outputFontsDir}
+                        onChange={(e) => handleOptionChange('outputFontsDir', e.target.value)}
                         placeholder={t('common.font_folder_placeholder')}
                         description={t('common.font_folder_desc')}
+                        disabled={isProcessing}
                     />
 
                     <div className='flex justify-end w-full'>
                         <Button
                             onClick={handleExtract}
-                            isLoading={isProcessing}
+                            isLoading={isProcessing && activeTab === 'extraction'}
                             color="primary"
                             className=' text-white font-medium'
-                            disabled={!inspectionResult?.success}
+                            disabled={!inspectionResult?.success || (isProcessing && activeTab === 'extraction')}
                         >
                             {t('actions.import')}
                         </Button>
