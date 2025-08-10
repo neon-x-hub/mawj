@@ -6,7 +6,7 @@ import config from '@/app/lib/providers/config';
 export async function GET(_, { params }) {
     const { id } = await params;
 
-    if (!/^[0-9]+_[a-z0-9]+$/.test(id)) {
+    if (!/^[0-9]+_[a-zA-Z0-9]+$/.test(id)) { // Should 0_itCZ7g pass?
         return Response.json({ error: "Invalid project ID format" }, { status: 400 });
     }
 
