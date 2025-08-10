@@ -66,11 +66,9 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(_, { params }) {
     const dbInstance = await db.getDB();
-    await params;
+    const { id } = await params;
 
     try {
-        const id = params.id;
-
         if (!id) {
             return Response.json(
                 { error: 'Folder ID is required in URL' },
