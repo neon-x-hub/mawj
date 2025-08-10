@@ -68,9 +68,11 @@ export async function PUT(request, { params }) {
 export async function DELETE(_, { params }) {
     const dbInstance = await db.getDB();
 
+    const { id } = await params;
+
     try {
         // Validate route param ID
-        if (!params.id) {
+        if (!id) {
             return Response.json(
                 { error: 'Project ID is required in URL' },
                 { status: 400 }
@@ -78,7 +80,7 @@ export async function DELETE(_, { params }) {
         }
 
         // Optional: Check if project exists first
-        const project = await dbInstance.findById('projects', params.id);
+        const project = await dbInstance.findById('projects', id);
         if (!project) {
             return Response.json(
                 { error: 'Project not found' },
@@ -86,10 +88,10 @@ export async function DELETE(_, { params }) {
             );
         }
 
-        const deleted = await dbInstance.delete('projects', params.id);
+        const deleted = await dbInstance.delete('projects', id);
         return Response.json({
             success: true,
-            deletedId: params.id,
+            deletedId: id,
             timestamp: new Date().toISOString()
         });
     } catch (error) {
