@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import puppeteer from 'puppeteer';
 import Mustache from 'mustache';
+import he from 'he';
 
 import { buildLayer } from '../../layers/types/index.js';
 import { loadFontInPuppeteer } from './injectFont.js';
@@ -138,11 +139,14 @@ export async function render(
 
             if (clonedConfig.options.props.templateText) {
                 const mustacheTemplate = clonedConfig.options.props.templateText;
-                clonedConfig.options.props.content = Mustache.render(mustacheTemplate, preprocessedRow);
+                const mustacheRender = Mustache.render(mustacheTemplate, preprocessedRow);
+                clonedConfig.options.props.content = he.decode(mustacheRender);
             }
 
             const layer = buildLayer(clonedConfig.id, clonedConfig);
             const htmlString = renderToString(layer.renderContent({ node_key: clonedConfig.id }));
+            console.log("Rendered layer: ", htmlString);
+
 
             await page.evaluate((html) => {
                 const container = document.getElementById('dynamic-container');
