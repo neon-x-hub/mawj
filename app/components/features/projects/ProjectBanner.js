@@ -6,6 +6,7 @@ import HoverCard from '../../core/cards/HoverCard';
 import LineChart from '../../charts/LineChart'; // LegacyConvertedGradientChart
 import { Chip, Button, Spinner } from '@heroui/react';
 import { useRouter } from 'next/navigation';
+import MaskedIcon from '../../core/icons/Icon';
 
 export default function ProjectBanner({ project }) {
     const router = useRouter();
@@ -70,10 +71,21 @@ export default function ProjectBanner({ project }) {
             <div className='flex-1 bg-white p-4 shadow-lg h-full r30 flex flex-col'>
                 <div className='flex justify-between items-center mb-2'>
                     <h3 className='text-md font-semibold'>
-                        {eventType === 'generation' ? 'Generations' : 'Data Ingestion'} Activity
+                        {t('common.stats')} - {eventType === 'generation' ? t('common.generation') : t('common.data_ingestion')}
                     </h3>
-                    <Button size="sm" variant="outline" onClick={toggleEventType}>
-                        Switch to {eventType === 'generation' ? 'Data Ingestion' : 'Generations'}
+                    <Button size="sm"
+                        onClick={toggleEventType}
+                        className='font-medium'
+                        endContent={
+                            <MaskedIcon
+                                src={eventType === 'generation' ? '/icons/coco/line/Todo.svg' : '/icons/coco/line/Star-1.svg'}
+                                color="#000000"
+                                height="18px"
+                                width="18px"
+                            />
+                        }
+                    >
+                        {eventType === 'generation' ? t('common.data_ingestion') : t('common.generation')}
                     </Button>
                 </div>
                 <div className='flex-1 min-h-[200px]'>
