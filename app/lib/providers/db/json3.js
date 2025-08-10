@@ -118,7 +118,7 @@ class JSONProvider extends DBProvider {
             const records = await this._readSegment(collectionName, segmentFile);
             if (!records[id]) return null;
 
-            records[id] = { ...records[id], ...updates };
+            records[id] = this._deepMerge(records[id], updates);
             await this._writeSegment(collectionName, segmentFile, records);
             return records[id];
         } finally {
@@ -132,7 +132,7 @@ class JSONProvider extends DBProvider {
             const grouped = {};
             for (const { id, data } of updatesArray) {
                 const seg = this._segmentFromId(id);
-                grouped[seg] = grouped[seg] || [];
+                if (!grouped[seg]) grouped[seg] = [];
                 grouped[seg].push({ id, data });
             }
 
@@ -140,12 +140,14 @@ class JSONProvider extends DBProvider {
             for (const [seg, items] of Object.entries(grouped)) {
                 const file = `segment_${seg}.json`;
                 const records = await this._readSegment(collectionName, file);
+
                 for (const { id, data } of items) {
                     if (records[id]) {
-                        records[id] = { ...records[id], ...data };
+                        records[id] = this._deepMerge(records[id], data);
                         updated.push(records[id]);
                     }
                 }
+
                 await this._writeSegment(collectionName, file, records);
             }
             return updated;
@@ -195,6 +197,25 @@ class JSONProvider extends DBProvider {
     }
 
     /* ------------------- INTERNAL HELPERS ------------------- */
+
+    _deepMerge(target, source) {
+        if (!source || typeof source !== 'object') return target;
+        if (!target || typeof target !== 'object') target = {};
+
+        for (const key of Object.keys(source)) {
+            if (
+                source[key] &&
+                typeof source[key] === 'object' &&
+                !Array.isArray(source[key])
+            ) {
+                target[key] = this._deepMerge(target[key], source[key]);
+            } else {
+                target[key] = source[key];
+            }
+        }
+        return target;
+    }
+
 
     async _getCollectionPath(name) {
         const dir = path.join(this.basePath, name);
