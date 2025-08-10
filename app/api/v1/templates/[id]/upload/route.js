@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs/promises';
-import sharp from 'sharp'; // ✅ for reading image dimensions
+import sharp from 'sharp';
 import db from '@/app/lib/providers/db';
 import generateId from '@/app/lib/id/generate';
 import config from '@/app/lib/providers/config';
@@ -76,6 +76,16 @@ export async function POST(request, { params }) {
         const updatedTemplate = await dbInstance.update('templates', id, {
             baseLayers: updatedBaseLayers,
         });
+
+
+        //  Delete every file in /data/templates/{id}/base_layers if it's not in updatedBaseLayers
+        const filesToDelete = await fs.readdir(uploadDir);
+        for (const file of filesToDelete) {
+            if (!updatedBaseLayers.find(layer => layer.name === file)) {
+                await fs.unlink(path.join(uploadDir, file));
+            }
+        }
+
 
 
         // ✅ 7. Return success with updated base layers
