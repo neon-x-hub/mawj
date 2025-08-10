@@ -24,9 +24,9 @@ const TemplateMetadata = ({ template }) => {
             <div>
                 <span className="font-semibold">{t('common.layers')}:</span> {template.layers?.length || 0}
             </div>
-            {template.baseLayers && (
+            {template.baseLayers.length > 0 && (
                 <div>
-                    <span className="font-semibold">{t('common.dimensions')}:</span> {template.baseLayers[0].width} × {template.baseLayers[0].height}
+                    <span className="font-semibold">{t('common.dimensions')}:</span> {template.baseLayers[0]?.width} × {template.baseLayers[0]?.height}
                 </div>
             )}
             <div>
