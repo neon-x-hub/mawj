@@ -13,7 +13,11 @@ async function getDB() {
 
     if (!initializationPromise) {
         initializationPromise = (async () => {
-            const instance = new JSONProvider(await config.get('baseFolder') || './data');
+            const instance = new JSONProvider(
+                await config.get('baseFolder') || './data',
+                50 * 1024,
+                10
+            );
             // Perform any initialization here if needed
             return instance;
         })();
