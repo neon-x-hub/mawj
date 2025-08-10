@@ -170,7 +170,7 @@ export async function POST(request, { params }) {
         // --- BULK UPDATE ---
         if (updates.length > 0) {
             const ids = updates.map(u => u.id);
-            const existingRows = await provider.bulkFindById(id, ids);
+            const existingRows = await provider.bulkFindByIds(id, ids);
             const rowMap = new Map(existingRows.map(r => [r.id, r]));
 
             let doneCount = metadata.get("doneCount") || 0;
