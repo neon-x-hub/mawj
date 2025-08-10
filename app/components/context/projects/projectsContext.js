@@ -72,11 +72,16 @@ export function ProjectsProvider({ children }) {
 
     // ✅ Create project
     const addProject = async (projectData) => {
+        const requestBody = {
+            name: projectData.name || 'مشروع جديد',
+            type: projectData.type || 'card',
+            ...projectData
+        }
         try {
             const res = await fetch('/api/v1/projects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(projectData),
+                body: JSON.stringify(requestBody),
             });
             if (!res.ok) throw new Error('Failed to create project');
             const created = await res.json();
