@@ -76,7 +76,7 @@ export default function TemplatesPage() {
                                 value: template.description,
                                 onEdit: (newDesc) => updateTemplate(template.id, { description: newDesc }),
                             }}
-                            previews={template.previews || []}
+                            previews={template.previews || [`/api/v1/templates/${template.id}/preview`]}
                             onPress={() => router.push(`/templates/${template.id}`)}
                             optionsContent={<TemplateDirectOptions template={template} />}
                         />
