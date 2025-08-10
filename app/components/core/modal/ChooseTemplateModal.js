@@ -61,11 +61,16 @@ export default function ChooseTemplateModal({ isOpen, onClose, onChoose, templat
                                     {templates.map(template => (
                                         <Button
                                             key={template.id}
-                                            className="w-full justify-start bg-gray-100 hover:bg-gray-200"
+                                            className="w-full justify-between bg-gray-100 hover:bg-gray-200"
                                             onPress={() => {
                                                 onChoose(template);
                                                 onClose();
                                             }}
+                                            endContent={
+                                                <img src={template.preview || `/api/v1/templates/${template.id}/preview`} alt={`${template.name} preview`}
+                                                className='h-[90%] w-auto object-contain rounded-sm'
+                                                />
+                                            }
                                         >
                                             {template.name}
                                         </Button>
