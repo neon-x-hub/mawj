@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { t } from '@/app/i18n';
 import { Card, Chip } from '@heroui/react';
 import ButtonWithPopover from '../buttons/AddButtonWithPopover';
 
@@ -49,19 +50,30 @@ export default function GenericCard({
         >
             {/* ✅ Preview Section */}
             <div className="flex">
-                {hasPreviews
-                    ? Array.from({ length: 2 }).map((_, i) => (
-                        <RenderPreview key={i} src={previews[i]} index={i} />
-                    ))
-                    : Array.from({ length: 2 }).map((_, i) => (
+                {hasPreviews ? (
+                    previews.length === 1 ? (
+                        // Single preview, full width, no extra placeholders
+                        <div className="w-full px-1">
+                            <RenderPreview src={previews[0]} index={0} fullWidth />
+                        </div>
+                    ) : (
+                        // Two previews side by side
+                        previews.slice(0, 2).map((src, i) => (
+                            <RenderPreview key={i} src={src} index={i} />
+                        ))
+                    )
+                ) : (
+                    // No previews, show two placeholders
+                    Array.from({ length: 2 }).map((_, i) => (
                         <div key={i} className="w-1/2 px-1">
                             <div className="w-full h-[180px] bg-gray-200 rounded-xl" />
                         </div>
-                    ))}
+                    ))
+                )}
             </div>
 
             {/* ✅ Card Content */}
-            <div className="absolute bottom-0 pr-5 pl-2 py-3 bg-white shadow-lg left-0 w-full flex justify-between items-center gap-4 z-10">
+            <div className="absolute bottom-0 pr-5 pl-2 py-3 bg-white/50 backdrop-blur-md shadow-lg left-0 w-full flex justify-between items-center gap-4 z-10">
                 <div className="text-right">
                     {/* 🔹 Editable Title */}
                     <div
@@ -110,7 +122,7 @@ export default function GenericCard({
                                 className="cursor-pointer"
                                 title="Double click to edit"
                             >
-                                {description.value || 'No description'}
+                                {description.value || t('common.no_description')}
                             </span>
                         )}
                     </div>
@@ -140,19 +152,19 @@ export default function GenericCard({
     );
 }
 
-const RenderPreview = ({ src, index }) => {
+const RenderPreview = ({ src, index, fullWidth = false }) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     if (!src) {
         return (
-            <div className="w-1/2 px-1">
+            <div className={fullWidth ? "w-full px-1" : "w-1/2 px-1"}>
                 <div className="w-full h-[180px] bg-gray-300 rounded-xl" />
             </div>
         );
     }
 
     return (
-        <div className="w-1/2 px-1">
+        <div className={fullWidth ? "w-full px-1" : "w-1/2 px-1"}>
             <div className="relative w-full h-full rounded-xl overflow-hidden">
                 {!isLoaded && (
                     <div className="w-full h-full inset-0 animate-pulse bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 rounded-xl z-0" />
@@ -160,8 +172,7 @@ const RenderPreview = ({ src, index }) => {
                 <img
                     src={src}
                     alt={`Preview ${index + 1}`}
-                    className={`object-cover rounded-xl w-full h-full transition-opacity duration-300 z-10 ${isLoaded ? 'opacity-100' : 'opacity-0'
-                        }`}
+                    className={`object-cover rounded-xl w-full h-full transition-opacity duration-300 z-10 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                     onLoad={() => setIsLoaded(true)}
                 />
             </div>
