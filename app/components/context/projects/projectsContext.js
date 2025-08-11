@@ -133,7 +133,7 @@ export function ProjectsProvider({ children }) {
 
     const addProjectData = async (id, payload) => {
         try {
-            const res = await fetch(`/api/v1/projects/${id}/data`, {
+            const res = await fetch(`/api/v1/projects/${id}/data/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
