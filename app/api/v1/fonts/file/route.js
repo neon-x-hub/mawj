@@ -11,6 +11,17 @@ const MIME_TYPES = {
     '.woff2': 'font/woff2',
 };
 
+function createContentDisposition(filename) {
+    // Always ASCII in filename= for compatibility
+    const fallbackName = filename.replace(/[^\x20-\x7E]/g, '_');
+
+    // UTF-8 encoded filename for modern browsers
+    const encodedName = encodeURIComponent(filename);
+
+    return `inline; filename="${fallbackName}"; filename*=UTF-8''${encodedName}`;
+}
+
+
 async function streamFile(filePath) {
     const nodeStream = fs.createReadStream(filePath);
 
@@ -57,8 +68,9 @@ export async function GET(request) {
         'Content-Type': contentType,
         'Content-Length': stats.size.toString(),
         'Cache-Control': 'public, max-age=31536000',
-        'Content-Disposition': `inline; filename="${path.basename(fontPath)}"`,
+        'Content-Disposition': createContentDisposition(path.basename(fontPath)),
     });
+
 
     return new Response(stream, { status: 200, headers });
 }
