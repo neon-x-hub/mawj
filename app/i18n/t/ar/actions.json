@@ -18,6 +18,10 @@
         "delete_all": {
             "label": "حذف جميع {{object}}",
             "desc": "حذف جميع {{object}} بشكل دائم"
+        },
+        "upload": {
+            "label": "تحميل {{object}}",
+            "desc": "تحميل {{object}} جديدة"
         }
     },
     "search": "بحث",
