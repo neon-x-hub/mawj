@@ -67,6 +67,7 @@ async function render(imagePath, audioPath, outputPath, options = {}) {
     const videoPreset = preset ?? (useGpu ? "p4" : "medium");
 
     const args = [
+        "-y",
         "-loop", "1",
         "-i", imagePath,
         "-i", audioPath,
