@@ -5,6 +5,7 @@ import { t } from '@/app/i18n'
 import { SectionHead } from '../../shared/SectionHead'
 import GenerateImageModal from '../../core/modal/GenerateImageModal'
 import ExportProjectModal from '../../core/modal/ExportProjectModal'
+import GenerateVideoModal from '../../core/modal/GenerateVideoModal'
 
 export default function ProjectHead({ project }) {
     const [progress, setProgress] = useState(0)
@@ -20,7 +21,14 @@ export default function ProjectHead({ project }) {
                     format: formData.format ?? 'png',
                     regenerate_done: formData.regenerate_done ?? false,
                     parallelWorkers: formData.parallelWorkers ?? 1,
-                    range: 'all'
+                    range: 'all',
+                    keepThumbnails: formData.keepThumbnails ?? false,
+                    useTrimming: formData.useTrimming ?? true,
+                    videoBitrate: formData.videoBitrate ?? '5M',
+                    codec: formData.codec ?? 'h264',
+                    useGpu: formData.useGpu ?? false,
+                    gpuBrand: formData.gpuBrand ?? 'nvidia',
+                    audioBitrate: formData.audioBitrate ?? '192k'
                 },
                 project: project.id
             }
@@ -146,12 +154,21 @@ export default function ProjectHead({ project }) {
                     modal: {
                         title: t('actions.start_generation_process'),
                         content: (props) => (
+                            /* Depends on the project type if it is video or card or other */
                             project.type === 'card' && <GenerateImageModal
                                 project={project}
                                 {...props}
                                 isProcessing={isProcessing}
                                 progress={progress}
                             />
+                            ||
+                            project.type === 'video' && <GenerateVideoModal
+                                project={project}
+                                {...props}
+                                isProcessing={isProcessing}
+                                progress={progress}
+                            />
+
                         ),
                         actionLabel: t('actions.generate'),
                         hasCancelButton: false,
