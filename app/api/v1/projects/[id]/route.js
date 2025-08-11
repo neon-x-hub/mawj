@@ -22,11 +22,13 @@ export async function GET(_, { params }) {
 export async function PUT(request, { params }) {
     const dbInstance = await db.getDB();
 
+    const { id } = await params;
+
     try {
         const updates = await request.json();
 
         // Validate ID from route params
-        if (!params.id) {
+        if (!id) {
             return Response.json(
                 { error: 'Project ID is required in URL' },
                 { status: 400 }
@@ -42,7 +44,7 @@ export async function PUT(request, { params }) {
         // Prevent ID change through payload
         delete updateData.id;
 
-        const updatedProject = await dbInstance.update('projects', params.id, updateData);
+        const updatedProject = await dbInstance.update('projects', id, updateData);
 
         if (!updatedProject) {
             return Response.json(
