@@ -28,7 +28,7 @@
         "size": "الحجم",
         "autoSize": "الحجم التلقائي",
         "fixedSize": "حجم ثابت",
-        "template": "القالب نصي",
+        "template": "القالب النصي",
         "template_placeholder": "اكتب قالب النص الخاص بك هنا..."
     }
 }

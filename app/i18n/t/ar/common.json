@@ -95,5 +95,9 @@
     "use_gpu": "استخدام وحدة معالجة الرسوميات",
     "keep_thumbnails": "الاحتفاظ بالصور المصغرة",
     "soon": "قريبا",
-    "estimated_speed": "السرعة المقدرة"
+    "estimated_speed": "السرعة المقدرة",
+    "base_folder": "المجلد الأساسي",
+    "base_folder_desc": "المجلد الأساسي لتخزين البيانات",
+    "language": "اللغة",
+    "license": "الرخصة"
 }
