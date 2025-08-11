@@ -5,8 +5,9 @@ import { t } from '@/app/i18n'
 import { SectionHead } from '../../shared/SectionHead'
 import { Input } from '@heroui/react'
 import { useProjects } from '../../context/projects/projectsContext'
+import AddRowDynamicModal from '../../core/modal/AddRowDynamicModal'
 export default function DataSectionHead({ project, data, setData }) {
-    const { uploadProjectDataFile } = useProjects();
+    const { uploadProjectDataFile, addProjectData } = useProjects();
     return (
         <SectionHead
             title={t('common.data')}
@@ -15,12 +16,12 @@ export default function DataSectionHead({ project, data, setData }) {
                 actions: [
                     {
                         key: 'new',
-                        label: t('actions.generic.add.label', { object: t('common.data') }),
-                        description: t('actions.generic.add.desc', { object: t('common.data') }),
-                        icon: '/icons/coco/bold/Note-add.svg',
+                        label: t('actions.generic.upload.label', { object: t('common.data') }),
+                        description: t('actions.generic.upload.desc', { object: t('common.data') }),
+                        icon: '/icons/coco/bold/Arrow-Top-3.svg',
                         modal: {
-                            title: t('actions.generic.add.label', { object: t('common.data') }),
-                            actionLabel: t('actions.generic.add.label', { object: t('common.data') }),
+                            title: t('actions.generic.upload.label', { object: t('common.data') }),
+                            actionLabel: t('actions.generic.upload.label', { object: t('common.data') }),
                             content: ({ formData, handleInputChange }) => (
                                 <form className="flex flex-col gap-3 border-none">
                                     {/* File Upload */}
@@ -51,8 +52,28 @@ export default function DataSectionHead({ project, data, setData }) {
                                 }
                             }
                         }
+                    },
+                    {
+                        label: t('actions.generic.add.label', { object: t('common.data') }),
+                        description: t('actions.generic.add.desc', { object: t('common.data') }),
+                        icon: '/icons/coco/bold/Add.svg',
+                        modal: {
+                            title: t('actions.generic.add.label', { object: t('common.data') }),
+                            actionLabel: t('actions.generic.add.label', { object: t('common.data') }),
+                            content: ({ formData, handleInputChange }) => (
+                                <AddRowDynamicModal projectId={project.id} formData={formData} handleInputChange={handleInputChange} />
+                            ),
+                            action: async (data) => {
+                                try {
+                                    const res = await addProjectData(project.id, [data]);
+                                    console.log('Data added successfully:', res);
+                                    window.location.reload();
+                                } catch (err) {
+                                    console.error('❌ Failed to add data:', err);
+                                }
+                            }
+                        }
                     }
-                    ,
                 ],
                 danger: [],
             }}
