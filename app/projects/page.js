@@ -87,7 +87,7 @@ export default function ProjectsPage() {
                                 value: project.description,
                                 onEdit: (newDesc) => updateProject(project.id, { description: newDesc }),
                             }}
-                            previews={project.previews || [`/api/v1/templates/${project.template}/preview`]}
+                            previews={project.previews || (project.template ? [`/api/v1/templates/${project.template}/preview`] : [])}
                             onPress={() => router.push(`/projects/${project.id}`)}
                             optionsContent={<ProjectDirectOptions project={project} />}
                         />
