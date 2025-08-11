@@ -63,7 +63,12 @@ export default function Home() {
                                 value: folder.description,
                                 onEdit: (newDesc) => updateFolder(folder.id, { description: newDesc }),
                             }}
-                            previews={folder.previews || []}
+                            previews={
+                                folder.previews ||
+                                (folder.projects
+                                    ? folder.projects.map((p) => `/api/v1/projects/${p.id}/preview`)
+                                    : [])
+                            }
                             onPress={() => router.push(`/projects?f=${folder.id}`)}
                             optionsContent={<FolderDirectOptions folder={folder} />}
                         />
