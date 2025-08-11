@@ -8,43 +8,13 @@ import datarows from "../../providers/datarows/index.js";
 import stats from "../../helpers/stats";
 import axios from "axios";
 import config from "../../providers/config/index.js";
+import { MetadataProvider, revalidators } from "@/app/lib/fam";
+import { extractAudioSegment, downloadAudio } from "@/app/lib/audio"
+
 
 const DATA_DIR = await config.get('baseFolder') || './data';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/**
- * Downloads an audio file from a URL and saves it to a directory.
- * @param {string} url - URL to download from
- * @param {string} downloadDir - Directory to save the file to
- * @returns {Promise<string|null>} A promise that resolves to the path of the downloaded file, or null if there was an error.
- */
-async function downloadAudio(url, downloadDir) {
-    try {
-        const fileName = path.basename(new URL(url).pathname);
-        const destPath = path.join(downloadDir, fileName);
-
-        // Use fsSync for createWriteStream
-        const writer = fsSync.createWriteStream(destPath);
-
-        const response = await axios({
-            method: "get",
-            url,
-            responseType: "stream",
-        });
-
-        response.data.pipe(writer);
-
-        await new Promise((resolve, reject) => {
-            writer.on("finish", resolve);
-            writer.on("error", reject);
-        });
-
-        return destPath;
-    } catch (err) {
-        console.error(`Error downloading audio from ${url}: ${err.message}`);
-        return null;
-    }
-}
 
 async function fileExists(filePath) {
     try {
@@ -55,8 +25,24 @@ async function fileExists(filePath) {
     }
 }
 
+function isValidTimeFormat(timeStr) {
+    return /^\d{2}:\d{2}:\d{2}\.\d{3}$/.test(timeStr);
+}
+
 export async function workerVideoRenderer(jobData, onProgress) {
+
     const { project, template, rows, options } = jobData;
+
+    const dataRowsInstance = datarows.getDataProvider();
+
+    const metadataFilePath = `${DATA_DIR}/datarows/${id}/fam.json`;
+    const metadata = new MetadataProvider({
+        filePath: metadataFilePath,
+        revalidators,
+        dataRowsInstance
+    });
+    await metadata.load({ projectId: id });
+
     const total = rows.length;
     let completed = 0;
 
@@ -110,15 +96,57 @@ export async function workerVideoRenderer(jobData, onProgress) {
     // Now iterate rowsWithAudio to render videos individually
     for (const { row, audioPath } of rowsWithAudio) {
         try {
+            let finalAudioPath = audioPath;
+            let tempTrimmedAudio = null;
+
+            // Audio trimming logic
+            if (options.useTrimming && row.data?.from && row.data?.to) {
+                const { from, to } = row.data;
+
+                if (isValidTimeFormat(from) && isValidTimeFormat(to)) {
+                    try {
+                        const trimmedOutputPath = path.join(
+                            tmpAudioDir,
+                            `trimmed_${row.id}_${path.basename(audioPath)}`
+                        );
+
+                        await extractAudioSegment(
+                            audioPath,
+                            from,
+                            to,
+                            trimmedOutputPath
+                        );
+
+                        finalAudioPath = trimmedOutputPath;
+                        tempTrimmedAudio = trimmedOutputPath;
+                        downloadedAudioFiles.push(trimmedOutputPath);
+                    } catch (trimErr) {
+                        console.error(`Audio trimming failed for row ${row.id}: ${trimErr.message}`);
+                        // Fall back to original audio
+                    }
+                } else {
+                    console.warn(`Invalid time format for row ${row.id}: from=${from}, to=${to}`);
+                }
+            }
+
             const thumbnailPath = path.join(thumbnailDir, `${row.id}.jpg`);
             const outputPath = path.join(DATA_DIR, "projects", "outputs", project.id, `${row.id}.${options.format}`);
 
             await renderVideo(
                 thumbnailPath,
-                audioPath,
+                finalAudioPath,
                 outputPath,
                 options
             );
+
+
+            await dataRowsInstance.update(row.id, { status: true });
+
+            let doneCount = metadata.get("doneCount") || 0;
+            doneCount = doneCount + 1;
+            metadata.set("doneCount", doneCount);
+
+            await metadata.save();
 
             completed++;
             if (onProgress) {
@@ -141,7 +169,6 @@ export async function workerVideoRenderer(jobData, onProgress) {
 
     // Clean all thumbnail files if !options.keepThumbnails
     if (!options.keepThumbnails) {
-        // import fs from 'fs/promises'
         await fs.rm(thumbnailDir, { recursive: true, force: true });
     }
 
