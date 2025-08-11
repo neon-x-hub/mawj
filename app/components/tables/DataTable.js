@@ -159,6 +159,17 @@ export default function DataTable({
         }
     }
 
+    const openWithWindowsDefaultApp = () => {
+        // POST request to /api/v1/projects/{projectId}/data/remote_actions/open
+        // body is {"ids": [id1, id2, ...]}
+        const ids = Array.from(selectedKeys)
+        const res = fetch(`/api/v1/projects/${project.id}/data/remote_actions/open`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids })
+        })
+    }
+
     /** ✅ Render table cells */
     const renderCell = (item, columnKey) => {
         const value = item[columnKey];
@@ -245,6 +256,11 @@ export default function DataTable({
                 },
                 isProcessing,
             }
+        },
+        {
+            label: t("actions.open"),
+            isPrimary: true,
+            onClick: () => openWithWindowsDefaultApp(),
         }
     ];
 
