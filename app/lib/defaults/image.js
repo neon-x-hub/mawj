@@ -5,7 +5,6 @@ const IMAGE_DEFAULTS = {
     x: 0,
     y: 0,
     transform: 'none',
-    src: '/placeholder/1.jpg',
 }
 
 export default IMAGE_DEFAULTS;
