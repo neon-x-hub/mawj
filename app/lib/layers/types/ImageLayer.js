@@ -32,6 +32,8 @@ class ImageLayer extends Layer {
             skewY,
             left,
             top,
+            content,
+            templateText,
             ...styleProps
         } = this.props;
 
@@ -56,17 +58,20 @@ class ImageLayer extends Layer {
     renderContent({ node_key }) {
         // Actual rendering would go here
         const { style } = this.buildStyle();
+        const { content } = this.props;
+
         return <img
             key={node_key}
             alt={this.props.alt || 'Image'}
-            src={`https://placehold.co/400x400/png`}
+            src={content || 'http://localhost:3000/placeholder/placeholder-image.webp'}
             style={style}
         >
-        </img>; // Placeholder for now
+        </img>;
     }
 
     renderPreview() {
         const { style } = this.buildStyle();
+        const { content } = this.props;
 
         const previewStyle = {
             ...style,
@@ -78,7 +83,7 @@ class ImageLayer extends Layer {
 
         return <img
             alt={this.props.alt || 'Image'}
-            src={`https://placehold.co/400x400/png`}
+            src={content || 'http://localhost:3000/placeholder/placeholder-image.webp'}
             style={previewStyle}
         >
         </img>;
