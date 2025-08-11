@@ -87,5 +87,13 @@
     "no_description": "بدون وصف",
     "stats": "احصائيات",
     "data_ingestion": "إضافة البيانات",
-    "generation": "عمليات التوليد"
+    "generation": "عمليات التوليد",
+    "total_videos": "إجمالي مقاطع الفيديو",
+    "codec": "الترميز",
+    "video_bitrate": "معدل البت للفيديو",
+    "use_trimming": "استخدام القص",
+    "use_gpu": "استخدام وحدة معالجة الرسوميات",
+    "keep_thumbnails": "الاحتفاظ بالصور المصغرة",
+    "soon": "قريبا",
+    "estimated_speed": "السرعة المقدرة"
 }
