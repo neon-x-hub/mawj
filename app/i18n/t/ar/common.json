@@ -15,7 +15,8 @@
         "search": "  ابحث في: {{pl}} ...",
         "name": "اسم {{pl}}",
         "description": "وصف {{pl}}",
-        "select": "اختر {{pl}}"
+        "select": "اختر {{pl}}",
+        "write": " اكتب {{pl}} ..."
     },
     "folder": "مجلد",
     "the_folder": "المجلد",
