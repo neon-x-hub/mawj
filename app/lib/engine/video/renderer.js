@@ -15,14 +15,15 @@ function runFFmpeg(args) {
 
 /**
  * Creates a video by combining an image and audio with ffmpeg.
- * Supports optional GPU encoding and codec choice.
+ * Supports optional GPU encoding, GPU brand selection, and codec choice.
  *
  * @param {string} imagePath - Path to the image file.
  * @param {string} audioPath - Path to the audio file.
  * @param {string} outputPath - Output video file path.
  * @param {Object} [options] - Optional parameters.
- * @param {boolean} [options.useGpu=false] - Whether to use NVIDIA GPU encoding.
- * @param {string} [options.codec] - Video codec to use (overrides default based on GPU).
+ * @param {boolean} [options.useGpu=false] - Whether to use GPU encoding.
+ * @param {string} [options.gpuBrand="nvidia"] - GPU brand ("nvidia" for now).
+ * @param {string} [options.codec] - Video codec to use: "h264", "h265".
  * @param {string} [options.preset] - Video encoding preset.
  * @param {string} [options.videoBitrate] - Video bitrate.
  * @param {string} [options.audioBitrate] - Audio bitrate.
@@ -30,19 +31,39 @@ function runFFmpeg(args) {
 async function render(imagePath, audioPath, outputPath, options = {}) {
     const {
         useGpu = false,
-        codec,
+        gpuBrand = "nvidia",
+        codec = "h264",
         preset,
         videoBitrate = "5M",
-        audioBitrate = "192k",
+        audioBitrate = "192k"
     } = options;
 
-    // Decide codec
-    let videoCodec = codec;
-    if (!videoCodec) {
-        videoCodec = useGpu ? "h264_nvenc" : "libx264";
+    let videoCodec;
+
+    if (useGpu) {
+        // GPU encoding logic (currently NVIDIA only)
+        if (gpuBrand.toLowerCase() === "nvidia") {
+            if (codec === "h264") {
+                videoCodec = "h264_nvenc";
+            } else if (codec === "h265" || codec === "hevc") {
+                videoCodec = "hevc_nvenc";
+            } else {
+                throw new Error(`Unsupported codec for NVIDIA GPU: ${codec}`);
+            }
+        } else {
+            throw new Error(`GPU brand not supported yet: ${gpuBrand}`);
+        }
+    } else {
+        // CPU encoding
+        if (codec === "h264") {
+            videoCodec = "libx264";
+        } else if (codec === "h265" || codec === "hevc") {
+            videoCodec = "libx265";
+        } else {
+            throw new Error(`Unsupported codec for CPU: ${codec}`);
+        }
     }
 
-    // Default preset for GPU vs CPU if not specified
     const videoPreset = preset ?? (useGpu ? "p4" : "medium");
 
     const args = [
