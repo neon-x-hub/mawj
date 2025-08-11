@@ -27,7 +27,6 @@ export const LayerTypesInfo = () => (
 );
 
 export default function AddLayerOptions() {
-    const canvas = { width: 1920, height: 1080 };
     const { layers, setLayers } = useLayers();  // layers = { base: [...], regular: [...] }
     const { get, set } = useLedgex();
 
@@ -39,7 +38,10 @@ export default function AddLayerOptions() {
                 console.log("Adding a Text layer");
                 newLayer = new TextLayer({
                     id: `layer-${layers.regular.length + 1}`,
-                    canvas
+                    canvas: {
+                        width: layers?.base[0]?.width,
+                        height: layers?.base[0]?.height
+                    },
                 });
                 break;
 
@@ -47,7 +49,10 @@ export default function AddLayerOptions() {
                 console.log("Adding an Image layer");
                 newLayer = new ImageLayer({
                     id: `layer-${layers.regular.length + 1}`,
-                    canvas
+                    canvas: {
+                        width: layers?.base[0]?.width,
+                        height: layers?.base[0]?.height
+                    },
                 });
                 break;
 
@@ -66,13 +71,7 @@ export default function AddLayerOptions() {
 
         // ✅ Push to Ledgex for undo/redo
         set({
-            [newLayer.id]: {
-                type: newLayer.type,
-                title: newLayer.title,
-                subtitle: newLayer.subtitle,
-                options: { props: newLayer.options },
-                canvas
-            }
+            [newLayer.id]: newLayer.toObject(),
         });
     };
 
@@ -81,9 +80,11 @@ export default function AddLayerOptions() {
             <LayerTypesInfo />
             <Divider />
             <ListboxWrapper>
-                <Listbox aria-label="Layer Types" onAction={handleAddLayer}>
+                <Listbox aria-label="Layer Types" onAction={handleAddLayer}
+                    disabledKeys={new Set(["custom"])}
+                >
                     <ListboxItem key="text">نص (Text)</ListboxItem>
-                    <ListboxItem key="image">صورة (Image)</ListboxItem>
+                    <ListboxItem key="image">صورة (Image) - تجريبي</ListboxItem>
                     <ListboxItem key="custom">مخصص (Custom)</ListboxItem>
                 </Listbox>
             </ListboxWrapper>
