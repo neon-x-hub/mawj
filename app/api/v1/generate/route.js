@@ -25,9 +25,15 @@ export async function POST(request) {
 
         const dataRowsInstance = await datarows.getDataProvider();
 
+        const defaultFormatByType = {
+            card: 'png',
+            video: 'mp4',
+        };
+
+
         // 3. Create filters based on the options
         let dataRows = [];
-        const opts = data.options || { range: 'all', regenerate_done: false, format: 'png' };
+        const opts = data.options || { range: 'all', regenerate_done: false, format: defaultFormatByType[template.type] || 'png', parallelWorkers: 1 };
         if (opts.range === 'all') {
             // find all data rows for this project
             dataRows = await dataRowsInstance.find(project.id, opts.regenerate_done ? {} : { 'm.status': false });
@@ -49,6 +55,9 @@ export async function POST(request) {
             rows: dataRows,
             options: opts,
         };
+
+        console.log('Job data:', JSON.stringify(jobData, null, 2));
+
 
         // 5. Add to queue
         const jobId = enqueueRenderJob(jobData);
