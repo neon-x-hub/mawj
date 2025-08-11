@@ -1,6 +1,7 @@
 import { t } from '@/app/i18n'
 import Image from 'next/image'
 import { Button } from '@heroui/react'
+import Link from 'next/link'
 
 export default function HeroBanner() {
     return (
@@ -19,9 +20,11 @@ export default function HeroBanner() {
                 <Button variant="light" color="primary" className='r30 px-6 text-lg font-semibold'>
                     {t('common.learn_more')}
                 </Button>
-                <Button variant="solid" color="primary" className='r30 text-white px-6 text-lg font-semibold'>
-                    {t('common.get_started')}
-                </Button>
+                <Link href={'/projects'}>
+                    <Button variant="solid" color="primary" className='r30 text-white px-6 text-lg font-semibold'>
+                        {t('common.get_started')}
+                    </Button>
+                </Link>
 
             </div>
         </div>
