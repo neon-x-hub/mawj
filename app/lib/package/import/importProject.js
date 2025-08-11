@@ -9,6 +9,7 @@ import config from "../../providers/config";
 import datarows from "../../providers/datarows";
 import db from "../../providers/db";
 import stats from "../../helpers/stats";
+import { MetadataProvider, revalidators } from "../../fam";
 
 const pipe = promisify(pipeline);
 
@@ -160,6 +161,38 @@ export async function importProjectBundle(
                             rowIdMap.set(oldId, created.id);
                         }
                     });
+
+                    // ✅ 7. Update metadata provider incrementally
+                    const DATA_DIR = await config.get("baseFolder") || "./data";
+                    const metadataFilePath = `${DATA_DIR}/datarows/${newProjectId}/fam.json`;
+
+                    const metadata = new MetadataProvider({
+                        filePath: metadataFilePath,
+                        revalidators,
+                        datarows
+                    });
+                    await metadata.load({ projectId: newProjectId });
+
+                    // Update rowCount incrementally
+                    const currentCount = metadata.get("rowCount") || 0;
+                    metadata.set("rowCount", currentCount + createdRows.length);
+
+                    // Update columns incrementally
+                    const currentColumns = metadata.get("columns") || [];
+                    const colMap = new Map(currentColumns.map(c => [c.n, c.c]));
+
+                    createdRows.forEach(doc => {
+                        Object.keys(doc.data || {}).forEach(key => {
+                            colMap.set(key, (colMap.get(key) || 0) + 1);
+                        });
+                    });
+
+                    metadata.set(
+                        "columns",
+                        Array.from(colMap.entries()).map(([n, c]) => ({ n, c }))
+                    );
+
+                    await metadata.save();
                 }
             }
         }
