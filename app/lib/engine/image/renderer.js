@@ -145,7 +145,6 @@ export async function render(
 
             const layer = buildLayer(clonedConfig.id, clonedConfig);
             const htmlString = renderToString(layer.renderContent({ node_key: clonedConfig.id }));
-            console.log("Rendered layer: ", htmlString);
 
 
             await page.evaluate((html) => {
