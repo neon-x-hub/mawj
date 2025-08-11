@@ -41,7 +41,7 @@ export default function ProjectBanner({ project }) {
                     project={project}
                     onEditClick={() => {
                         if (project.template) {
-                            router.push(`/templates/${project.template}`);
+                            router.push(`/templates/${project.template}?pid=${project.id}`);
                         } else {
                             alert(t('messages.no_template_selected') || 'No template has been selected for this project');
                         }
