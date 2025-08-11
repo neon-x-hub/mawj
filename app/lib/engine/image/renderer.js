@@ -152,12 +152,31 @@ export async function render(
                 const wrapper = document.createElement('div');
                 wrapper.classList.add('dynamic-layer');
                 wrapper.innerHTML = html;
-                container.appendChild(wrapper.firstChild);
+                while (wrapper.firstChild) {
+                    container.appendChild(wrapper.firstChild);
+                }
             }, htmlString);
         }
 
         // Wait for fonts to settle
         await page.evaluateHandle('document.fonts.ready');
+
+        await page.evaluate(() => {
+            const images = Array.from(document.querySelectorAll('#canvas img'));
+            return Promise.all(
+                images.map(img =>
+                    new Promise((resolve) => {
+                        if (img.complete && img.naturalHeight !== 0) {
+                            resolve(true);
+                        } else {
+                            img.onload = () => resolve(true);
+                            img.onerror = () => resolve(false);
+                        }
+                    })
+                )
+            );
+        });
+
 
         // ✅ 9. Screenshot without clip (viewport already matches canvas)
         const fileName = options.outputName || `${row.id}.${options.format}`;
