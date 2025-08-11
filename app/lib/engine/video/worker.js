@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import fsSync from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { render as renderImage } from "../image/renderer.js";
@@ -11,12 +12,19 @@ import config from "../../providers/config/index.js";
 const DATA_DIR = await config.get('baseFolder') || './data';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Downloads an audio file from a URL and saves it to a directory.
+ * @param {string} url - URL to download from
+ * @param {string} downloadDir - Directory to save the file to
+ * @returns {Promise<string|null>} A promise that resolves to the path of the downloaded file, or null if there was an error.
+ */
 async function downloadAudio(url, downloadDir) {
     try {
         const fileName = path.basename(new URL(url).pathname);
         const destPath = path.join(downloadDir, fileName);
 
-        const writer = fs.createWriteStream(destPath);
+        // Use fsSync for createWriteStream
+        const writer = fsSync.createWriteStream(destPath);
 
         const response = await axios({
             method: "get",
@@ -103,7 +111,7 @@ export async function workerVideoRenderer(jobData, onProgress) {
     for (const { row, audioPath } of rowsWithAudio) {
         try {
             const thumbnailPath = path.join(thumbnailDir, `${row.id}.jpg`);
-            const outputPath = path.join(DATA_DIR, "projects", "outputs", project.id, `${row.id}.mp4`);
+            const outputPath = path.join(DATA_DIR, "projects", "outputs", project.id, `${row.id}.${options.format}`);
 
             await renderVideo(
                 thumbnailPath,
@@ -129,6 +137,12 @@ export async function workerVideoRenderer(jobData, onProgress) {
         } catch (err) {
             console.warn(`Failed to delete temp audio file ${filePath}: ${err.message}`);
         }
+    }
+
+    // Clean all thumbnail files if !options.keepThumbnails
+    if (!options.keepThumbnails) {
+        // import fs from 'fs/promises'
+        await fs.rm(thumbnailDir, { recursive: true, force: true });
     }
 
     stats.add({
