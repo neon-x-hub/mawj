@@ -260,8 +260,17 @@ class JSONProvider extends DBProvider {
         await fs.writeFile(file, JSON.stringify(records, null, 2));
     }
 
-    _generateId(segment) {
-        return `${segment}_${generateId(this.idLength)}`;
+    _generateId(segment, existingRecords = null) {
+        let attempts = 0;
+        const maxAttempts = 3;
+
+        while (attempts < maxAttempts) {
+            const generatedId = generateId(this.idLength);
+            const id = `${segment}_${generatedId}`;
+            if (!existingRecords || !existingRecords[id]) return id;
+            attempts++;
+        }
+        throw new Error(`Failed to generate unique ID after ${maxAttempts} attempts`);
     }
 
     _segmentFromId(id) {
