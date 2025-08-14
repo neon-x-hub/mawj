@@ -2,6 +2,7 @@ import db from "@/app/lib/providers/db";
 import fs from 'fs'
 import path from "path";
 import config from "@/app/lib/providers/config";
+import { generatePreview } from '@/app/lib/helpers/preview/GeneratePreview';
 
 const DATA_DIR = await config.get('baseFolder') || './data';
 
@@ -59,6 +60,9 @@ export async function PUT(request, { params }) {
                 { status: 404 }
             );
         }
+
+        Promise.resolve().then(() => generatePreview(updatedTemplate));
+
         return Response.json(updatedTemplate);
     } catch (error) {
         return Response.json(
@@ -102,7 +106,7 @@ export async function DELETE(_, { params }) {
 
         return Response.json({
             success: true,
-            deletedId: params.id
+            deletedId: id
         });
     } catch (error) {
         return Response.json(
