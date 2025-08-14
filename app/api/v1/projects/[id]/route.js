@@ -1,4 +1,6 @@
+import fs from "fs/promises";
 import db from "@/app/lib/providers/db";
+import config from "@/app/lib/providers/config";
 
 // GET /api/projects/abc123
 export async function GET(_, { params }) {
@@ -91,6 +93,29 @@ export async function DELETE(_, { params }) {
         }
 
         const deleted = await dbInstance.delete('projects', id);
+        const outputsFolder = `${await config.get('baseFolder') || './data'}/projects/outputs/${id}`;
+        const datarowsFolder = `${await config.get('baseFolder') || './data'}/datarows/${id}`;
+        const projectPrivateFolder = `${await config.get('baseFolder') || './data'}/projects/${id}`;
+
+        try {
+            // Check if the folder exist
+            if (await fs.stat(outputsFolder).catch(() => false)) {
+                // Folder exists
+                await fs.rm(outputsFolder, { recursive: true, force: true });
+            }
+            // Check if the folder exist
+            if (await fs.stat(datarowsFolder).catch(() => false)) {
+                await fs.rm(datarowsFolder, { recursive: true, force: true });
+            }
+            // Check if the folder exist
+            if (await fs.stat(projectPrivateFolder).catch(() => false)) {
+                await fs.rm(projectPrivateFolder, { recursive: true, force: true });
+            }
+        } catch (error) {
+            console.error('Cleanup error:', error);
+            throw error;
+        }
+
         return Response.json({
             success: true,
             deletedId: id,
