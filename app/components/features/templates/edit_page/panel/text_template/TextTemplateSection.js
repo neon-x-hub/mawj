@@ -61,7 +61,7 @@ export default function TextTemplateSection({ value, update }) {
 
     const handleChipClick = (columnName) => {
         const normalized = `{{${normalizeKey(columnName)}}}`;
-        update({ templateText: value.templateText + normalized });
+        update({ templateText: value.templateText ? value.templateText + normalized : '' + normalized });
     };
 
     // Don't render if critical data is missing
