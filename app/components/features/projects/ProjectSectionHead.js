@@ -58,6 +58,7 @@ export default function ProjectSectionHead() {
                             aria-label={t('common.project_types.label')}
                             placeholder={t('common.types.select')}
                             selectedKeys={new Set([formData.type || 'card'])}
+                            disabledKeys={new Set(['booklet'])}
                             onSelectionChange={(keys) => {
                                 const selectedType = Array.from(keys)[0];
                                 handleInputChange({
