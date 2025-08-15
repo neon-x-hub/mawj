@@ -1,4 +1,5 @@
 import db from "@/app/lib/providers/db";
+import { t } from "@/app/i18n";
 
 export async function GET(request) {
     const dbInstance = await db.getDB();
@@ -34,7 +35,7 @@ export async function GET(request) {
         });
     } catch (error) {
         return Response.json(
-            { error: 'Failed to fetch projects' },
+            { error: t('messages.error.project.listing.failed') },
             { status: 500 }
         );
     }
@@ -47,7 +48,7 @@ export async function POST(request) {
     // Validate required fields
     if (!data.name || !data.type) {
         return Response.json(
-            { error: 'Missing required fields (name, type)' },
+            { error: t('messages.error.project.addition.name_and_type_requred') },
             { status: 400 }
         );
     }
@@ -67,7 +68,7 @@ export async function POST(request) {
         return Response.json(newProject, { status: 201 });
     } catch (error) {
         return Response.json(
-            { error: 'Failed to create project' },
+            { error: t('messages.error.project.addition.failed') },
             { status: 500 }
         );
     }

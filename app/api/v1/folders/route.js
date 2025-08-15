@@ -1,4 +1,5 @@
 import db from "@/app/lib/providers/db";
+import { t } from "@/app/i18n";
 
 export async function GET(request) {
     const dbInstance = await db.getDB();
@@ -55,11 +56,9 @@ export async function GET(request) {
         });
 
     } catch (error) {
-        console.error('Failed to fetch folders:', error);
         return Response.json(
             {
-                error: 'Failed to fetch folders',
-                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+                error: t('messages.error.folder.listing.failed'),
             },
             { status: 500 }
         );
@@ -75,7 +74,7 @@ export async function POST(request) {
         // Enhanced validation
         if (!data.name || typeof data.name !== 'string' || data.name.trim().length < 2) {
             return Response.json(
-                { error: 'Folder name must be at least 2 characters' },
+                { error: t('messages.error.folder.addition.name_must_be_at_least_2_characters') },
                 { status: 400 }
             );
         }
@@ -98,10 +97,9 @@ export async function POST(request) {
         });
 
     } catch (error) {
-        console.error('Failed to create folder:', error);
         return Response.json(
             {
-                error: 'Failed to create folder',
+                error: t('messages.error.folder.addition.failed'),
                 details: process.env.NODE_ENV === 'development' ? error.message : undefined
             },
             { status: 500 }

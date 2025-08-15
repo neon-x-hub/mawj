@@ -1,4 +1,5 @@
 import db from "@/app/lib/providers/db";
+import { t } from "@/app/i18n";
 
 export async function PUT(request, { params }) {
     const dbInstance = await db.getDB();
@@ -11,7 +12,7 @@ export async function PUT(request, { params }) {
         // Validate route parameter ID
         if (!routeId) {
             return Response.json(
-                { error: 'Folder ID is required in URL' },
+                { error: t('messages.error.folder.update.id_required') },
                 { status: 400 }
             );
         }
@@ -19,7 +20,7 @@ export async function PUT(request, { params }) {
         // Reject if IDs in URL and body don't match
         if (payloadId && payloadId !== routeId) {
             return Response.json(
-                { error: 'Folder ID in body does not match URL' },
+                { error: t('messages.error.folder.update.id_mismatch') },
                 { status: 400 }
             );
         }
@@ -27,7 +28,7 @@ export async function PUT(request, { params }) {
         // Validate updates
         if (updates.name && (typeof updates.name !== 'string' || updates.name.trim().length < 2)) {
             return Response.json(
-                { error: 'Folder name must be at least 2 characters' },
+                { error: t('messages.error.folder.update.name_must_be_at_least_2_characters') },
                 { status: 400 }
             );
         }
@@ -37,7 +38,6 @@ export async function PUT(request, { params }) {
             updatedAt: new Date().toISOString()
         };
 
-        // Prevent overwriting critical fields
         delete updateData.createdAt;
         delete updateData.id;
 
@@ -45,7 +45,7 @@ export async function PUT(request, { params }) {
 
         if (!updatedFolder) {
             return Response.json(
-                { error: 'Folder not found' },
+                { error: t('messages.error.folder.listing.not_found') },
                 { status: 404 }
             );
         }
@@ -56,7 +56,7 @@ export async function PUT(request, { params }) {
         console.error('Failed to update folder:', error);
         return Response.json(
             {
-                error: 'Failed to update folder',
+                error: t('messages.error.folder.update.failed'),
                 details: process.env.NODE_ENV === 'development' ? error.message : undefined
             },
             { status: 500 }
@@ -71,40 +71,35 @@ export async function DELETE(_, { params }) {
     try {
         if (!id) {
             return Response.json(
-                { error: 'Folder ID is required in URL' },
+                { error: t('messages.error.folder.deletion.id_required') },
                 { status: 400 }
             );
         }
 
-        // First check if folder exists
         const folder = await dbInstance.findById('folders', id);
         if (!folder) {
             return Response.json(
-                { error: 'Folder not found' },
+                { error: t('messages.error.folder.deletion.not_found') },
                 { status: 404 }
             );
         }
 
-        // Check if folder has projects
         const projectIds = folder.projects || [];
         if (projectIds.length > 0) {
-            // Bulk find projects by their IDs
             const projects = await dbInstance.bulkFindByIds('projects', projectIds);
 
             if (projects.length > 0) {
-                // Update each project by removing this folder id from their folders array
                 const updatedProjects = projects.map(project => ({
                     ...project,
                     folders: (project.folders || []).filter(folderId => folderId !== id)
                 }));
 
-                // Bulk update projects
                 await dbInstance.bulkUpdate('projects', updatedProjects);
             }
         }
 
-        // Finally delete the folder
-        const deleted = await dbInstance.delete('folders', id);
+        await dbInstance.delete('folders', id);
+
         return Response.json({
             success: true,
             deletedId: id,
@@ -115,7 +110,7 @@ export async function DELETE(_, { params }) {
         console.error('Failed to delete folder:', error);
         return Response.json(
             {
-                error: 'Failed to delete folder',
+                error: t('messages.error.folder.deletion.failed'),
                 details: process.env.NODE_ENV === 'development' ? error.message : undefined
             },
             { status: 500 }

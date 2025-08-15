@@ -1,4 +1,5 @@
 import db from "@/app/lib/providers/db";
+import { t } from "@/app/i18n";
 
 // GET /api/templates
 export async function GET() {
@@ -12,7 +13,7 @@ export async function GET() {
         });
     } catch (error) {
         return Response.json(
-            { error: 'Failed to fetch templates' },
+            { error: t('messages.error.template.listing.failed') },
             { status: 500 }
         );
     }
@@ -26,7 +27,7 @@ export async function POST(request) {
     try {
         if (!data.name || data.name.trim().length < 2) {
             return Response.json(
-                { error: 'Template name must be at least 2 characters' },
+                { error: t('messages.error.template.addition.name_must_be_at_least_2_characters') },
                 { status: 400 }
             );
         }
@@ -34,7 +35,7 @@ export async function POST(request) {
         const templateData = {
             name: data.name.trim(),
             description: data.description || '',
-            type: data.type || 'card', // Default to 'card' if not provided
+            type: data.type || 'card',
             baseLayers: [],
             layers: [],
             createdAt: new Date().toISOString(),
@@ -45,7 +46,7 @@ export async function POST(request) {
         return Response.json(newTemplate, { status: 201 });
     } catch (error) {
         return Response.json(
-            { error: 'Failed to create template' },
+            { error: t('messages.error.template.addition.failed') },
             { status: 500 }
         );
     }
