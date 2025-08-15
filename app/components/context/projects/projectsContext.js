@@ -1,4 +1,5 @@
 'use client';
+import { addToast } from '@heroui/react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const ProjectsContext = createContext();
@@ -39,12 +40,19 @@ export function ProjectsProvider({ children }) {
             const query = buildQuery(filter);
             const url = query ? `/api/v1/projects?${query}` : '/api/v1/projects';
             const res = await fetch(url);
-            if (!res.ok) throw new Error('Failed to fetch filtered projects');
+            if (!res.ok){
+                const payload = await res.json();
+                throw new Error(payload.error || 'Failed to fetch filtered projects');
+            }
             const data = await res.json();
             return data.data || [];
         } catch (err) {
             console.error('Filter fetch error:', err);
-            throw err;
+            addToast({
+                title: 'حدث خطأ في التحميل',
+                description: err.message,
+                color: 'danger',
+            })
         } finally {
             setLoading(false);
         }
@@ -55,14 +63,19 @@ export function ProjectsProvider({ children }) {
             const response = await fetch(`/api/v1/projects/${id}`);
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                const payload = await response.json();
+                throw new Error(payload.error || 'Failed to fetch project');
             }
 
             const project = await response.json();
             return project;
         } catch (error) {
             console.error('Failed to fetch project:', error);
-            throw error; // rethrow so the caller can handle it
+            addToast({
+                title: 'حدث خطأ في التحميل',
+                description: error.message,
+                color: 'danger',
+            })
         } finally {
             setLoading(false);
         }
@@ -83,13 +96,24 @@ export function ProjectsProvider({ children }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody),
             });
-            if (!res.ok) throw new Error('Failed to create project');
+            if (!res.ok) {
+                const payload = await res.json();
+                throw new Error(payload.error || 'Failed to create project');
+            };
             const created = await res.json();
             setProjects((prev) => [...prev, created.data || created]);
+            addToast({
+                title: 'تم الإضافة بنجاح',
+                color: 'success',
+            })
             return created;
         } catch (err) {
-            console.error('Add project error:', err);
-            throw err;
+            console.log('Add project error:', err);
+            addToast({
+                title: 'حدث خطأ في الإضافة',
+                description: err.message,
+                color: 'danger',
+            })
         }
     };
 
@@ -101,10 +125,22 @@ export function ProjectsProvider({ children }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, ...updates }),
             });
-            if (!res.ok) throw new Error('Failed to update project');
+            if (!res.ok) {
+                const payload = await res.json();
+                throw new Error(payload.error || 'Failed to update project');
+            }
             setProjects((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
+            addToast({
+                title: 'تم التحديث بنجاح',
+                color: 'success',
+            })
         } catch (err) {
             console.error('Update project error:', err);
+            addToast({
+                title: 'حدث خطأ في التحديث',
+                description: err.message,
+                color: 'danger',
+            })
         }
     };
 
@@ -112,10 +148,23 @@ export function ProjectsProvider({ children }) {
     const deleteProject = async (id) => {
         try {
             const res = await fetch(`/api/v1/projects/${id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Failed to delete project');
+            if (!res.ok) {
+                const payload = await res.json();
+                throw new Error(payload.error || 'Failed to delete project');
+
+            }
             setProjects((prev) => prev.filter((p) => p.id !== id));
+            addToast({
+                title: 'تم الحذف بنجاح',
+                color: 'success',
+            })
         } catch (err) {
             console.error('Delete project error:', err);
+            addToast({
+                title: 'حدث خطأ في الحذف',
+                description: err.message,
+                color: 'danger',
+            })
         }
     };
 

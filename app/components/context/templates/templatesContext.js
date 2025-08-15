@@ -1,5 +1,6 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { addToast } from '@heroui/react';
 
 const TemplatesContext = createContext();
 
@@ -76,14 +77,25 @@ export function TemplatesProvider({ children }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(templateData),
             });
-            if (!res.ok) throw new Error('Failed to create template');
+            if (!res.ok) {
+                const payload = await res.json();
+                throw new Error(payload.error || 'Failed to create template');
+            };
 
             const created = await res.json();
             setTemplates((prev) => [...prev, created.data || created]);
+            addToast({
+                title: 'تم الإضافة بنجاح',
+                color: 'success',
+            })
             return created.data || created;
         } catch (err) {
             console.error('Add template error:', err);
-            throw err;
+            addToast({
+                title: 'حدث خطأ في الإضافة',
+                description: err.message,
+                color: 'danger',
+            })
         }
     };
 
@@ -95,11 +107,23 @@ export function TemplatesProvider({ children }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, ...updates }),
             });
-            if (!res.ok) throw new Error('Failed to update template');
+            if (!res.ok) {
+                const payload = await res.json();
+                throw new Error(payload.error || 'Failed to update template');
+            };
 
             setTemplates((prev) => prev.map((t) => (t.id === id ? { ...t, ...updates } : t)));
+            addToast({
+                title: 'تم التحديث بنجاح',
+                color: 'success',
+            })
         } catch (err) {
             console.error('Update template error:', err);
+            addToast({
+                title: 'حدث خطأ في التحديث',
+                description: err.message,
+                color: 'danger',
+            })
         }
     };
 
@@ -107,11 +131,22 @@ export function TemplatesProvider({ children }) {
     const deleteTemplate = async (id) => {
         try {
             const res = await fetch(`/api/v1/templates/${id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Failed to delete template');
-
+            if (!res.ok) {
+                const payload = await res.json();
+                throw new Error(payload.error || 'Failed to delete template');
+            };
             setTemplates((prev) => prev.filter((t) => t.id !== id));
+            addToast({
+                title: 'تم الحذف بنجاح',
+                color: 'success',
+            })
         } catch (err) {
             console.error('Delete template error:', err);
+            addToast({
+                title: 'حدث خطأ في الحذف',
+                description: err.message,
+                color: 'danger',
+            })
         }
     };
 
@@ -121,7 +156,14 @@ export function TemplatesProvider({ children }) {
             method: 'POST',
             body: formData
         });
-        if (!res.ok) throw new Error('Upload failed');
+        if (!res.ok) {
+            const payload = await res.json();
+            addToast({
+                title: 'حدث خطأ في تحميل الطبقة الأساسية',
+                description: payload.error,
+                color: 'danger',
+            })
+        };
         return await res.json();
     }
 
