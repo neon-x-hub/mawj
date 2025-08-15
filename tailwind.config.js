@@ -20,7 +20,10 @@ module.exports = {
                     primary: "#397fa3",   // 👉 Your new primary color
                     secondary: "#EE457E", // optional: override more
                     background: "#F4E8D1",
-                    danger: "#e43350"
+                    danger: {
+                        foreground: "#ff0000",
+                        background: "#e43350"
+                    }
                 }
             },
             dark: {
