@@ -13,7 +13,7 @@ export default function TemplateSectionHead() {
     const templateTypes = [
         { key: 'card', label: t('common.template_types.card') },
         { key: 'video', label: t('common.template_types.video') },
-        { key: 'booklet', label: t('common.template_types.booklet') },
+        { key: 'booklet', label: `${t('common.template_types.booklet')} - ${t('common.soon')}` },
     ];
 
     const actions = [
@@ -57,6 +57,7 @@ export default function TemplateSectionHead() {
                             aria-label={t('common.template_types.label')}
                             placeholder={t('common.types.select')}
                             selectedKeys={new Set([formData.type || 'card'])}
+                            disabledKeys={new Set(['booklet'])}
                             onSelectionChange={(keys) => {
                                 const selectedType = Array.from(keys)[0];
                                 handleInputChange({

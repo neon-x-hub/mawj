@@ -14,7 +14,7 @@ export default function ProjectSectionHead() {
     const projectTypes = [
         { key: 'card', label: t('common.project_types.card') },
         { key: 'video', label: t('common.project_types.video') },
-        { key: 'booklet', label: t('common.project_types.booklet') },
+        { key: 'booklet', label: `${t('common.template_types.booklet')} - ${t('common.soon')}` },
     ];
 
     const actions = [
