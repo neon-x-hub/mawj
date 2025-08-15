@@ -71,7 +71,6 @@ export default function ProjectDirectOptions({ project }) {
                 addProject({
                     ...project,
                     name: `${project.name} (Copy)`,
-                    id: undefined,
                 });
                 break;
             case 'delete':
@@ -110,7 +109,6 @@ export default function ProjectDirectOptions({ project }) {
         try {
             setDeleting(true);
             await deleteProject(project.id);
-            console.log(`✅ Project ${project.name} deleted`);
             onClose();
         } catch (err) {
             console.error('❌ Failed to delete project:', err);
