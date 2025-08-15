@@ -74,7 +74,7 @@ export default function ProjectDirectOptions({ project }) {
                 });
                 break;
             case 'delete':
-                openDeleteModal(); // ✅ open confirmation modal
+                openDeleteModal();
                 break;
             default:
                 console.warn('Unknown project action:', key);
