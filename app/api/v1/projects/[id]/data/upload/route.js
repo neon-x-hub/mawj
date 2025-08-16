@@ -3,6 +3,7 @@ import { parse } from "csv-parse/sync";
 import stats from "@/app/lib/helpers/stats";
 import config from "@/app/lib/providers/config";
 import { MetadataProvider, revalidators } from "@/app/lib/fam";
+import { t } from "@/app/i18n";
 
 export async function POST(request, { params }) {
     const { id } = await params;
@@ -14,7 +15,7 @@ export async function POST(request, { params }) {
         const formData = await request.formData();
         const file = formData.get("file");
         if (!file) {
-            return Response.json({ error: "No file uploaded" }, { status: 400 });
+            return Response.json({ error: t("messages.error.datarows.no_file_uploaded") }, { status: 400 });
         }
 
         // ✅ 2. Determine file extension
@@ -37,11 +38,11 @@ export async function POST(request, { params }) {
             try {
                 rawRecords = JSON.parse(fileContent);
                 if (!Array.isArray(rawRecords)) {
-                    throw new Error("JSON file must contain an array of objects");
+                    throw new Error(t("messages.error.datarows.json_not_array"));
                 }
             } catch (err) {
                 return Response.json(
-                    { error: "Invalid JSON format", details: err.message },
+                    { error: t("messages.error.datarows.invalid_json"), details: err.message },
                     { status: 400 }
                 );
             }
@@ -53,13 +54,13 @@ export async function POST(request, { params }) {
                 });
             } catch (err) {
                 return Response.json(
-                    { error: "Invalid CSV format", details: err.message },
+                    { error: t("messages.error.datarows.invalid_csv"), details: err.message },
                     { status: 400 }
                 );
             }
         } else {
             return Response.json(
-                { error: "Unsupported file type. Only .csv or .json allowed." },
+                { error: t("messages.error.datarows.unsupported_file_type") },
                 { status: 400 }
             );
         }
@@ -132,7 +133,7 @@ export async function POST(request, { params }) {
     } catch (error) {
         console.error("❌ Upload Error:", error);
         return Response.json(
-            { error: "Upload failed", details: error.message },
+            { error: t("messages.error.datarows.upload_failed"), details: error.message },
             { status: 500 }
         );
     }
