@@ -1,3 +1,7 @@
+import fsSync from "fs";
+import path from "path";
+import axios from "axios";
+
 /**
  * Downloads an audio file from a URL and saves it to a directory.
  * @param {string} url - URL to download from
