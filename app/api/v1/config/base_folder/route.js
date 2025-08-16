@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import config from '@/app/lib/providers/config';
+import { t } from '@/app/i18n';
 
 const DATA_DIR = await config.get('baseFolder') || './data';
 
@@ -8,7 +9,10 @@ export async function POST(request) {
     const { baseFolder } = await request.json();
 
     if (!baseFolder) {
-        return Response.json({ error: 'Missing baseFolder parameter' }, { status: 400 });
+        return Response.json(
+            { error: t('messages.error.baseFolder.missing_parameter') },
+            { status: 400 }
+        );
     }
 
     const currentBaseFolder = path.resolve(DATA_DIR);
@@ -17,10 +21,9 @@ export async function POST(request) {
     if (currentBaseFolder === requestedBaseFolder) {
         return Response.json({
             success: false,
-            message: 'The base folder is already set to this path.'
+            message: t('messages.error.baseFolder.already_set')
         });
     }
-
 
     try {
         await fs.mkdir(baseFolder, { recursive: true });
@@ -41,9 +44,12 @@ export async function POST(request) {
 
         return Response.json({
             success: true,
-            message: 'Base folder updated. Restarting server...'
+            message: t('messages.success.baseFolder.updated')
         });
     } catch (error) {
-        return Response.json({ error: error.message }, { status: 500 });
+        return Response.json(
+            { error: t('messages.error.baseFolder.failed'), details: error.message },
+            { status: 500 }
+        );
     }
 }
