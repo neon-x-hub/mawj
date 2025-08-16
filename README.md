@@ -246,7 +246,7 @@ By combining efficient algorithms with GPU acceleration, Mawj delivers unmatched
 Choose an installer based on the version you want and on you OS:
 
 Version 0.2.0:
-- Windows 10/11 x64 | [Installer]()
+- Windows 10/11 x64 | [Installer](https://t.me/mirath_unnubuwa/397)
 
 
 ---
