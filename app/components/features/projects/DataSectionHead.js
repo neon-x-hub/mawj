@@ -3,7 +3,7 @@
 import React from 'react'
 import { t } from '@/app/i18n'
 import { SectionHead } from '../../shared/SectionHead'
-import { Input } from '@heroui/react'
+import { addToast, Input } from '@heroui/react'
 import { useProjects } from '../../context/projects/projectsContext'
 import AddRowDynamicModal from '../../core/modal/AddRowDynamicModal'
 export default function DataSectionHead({ project, data, setData }) {
@@ -37,13 +37,14 @@ export default function DataSectionHead({ project, data, setData }) {
                             action: async (data) => {
                                 try {
                                     if (!data.file) {
-                                        throw new Error('No file selected for upload');
+                                        addToast({
+                                            title: 'لم يتم تحديد أي ملف',
+                                            color: 'danger',
+                                        });
+                                        return
                                     }
 
-                                    console.log('Uploading data file:', data.file);
-
                                     const res = await uploadProjectDataFile(project.id, data.file);
-                                    console.log('Data file uploaded successfully:', res);
 
                                     window.location.reload();
 
