@@ -1,44 +1,44 @@
 {
-  "name": "mawj",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@heroui/react": "^2.7.11",
-    "@uidotdev/usehooks": "^2.4.1",
-    "archiver": "^7.0.1",
-    "axios": "^1.11.0",
-    "chart.js": "^4.5.0",
-    "csv-parse": "^6.1.0",
-    "csv-stringify": "^6.6.0",
-    "direction": "^2.0.1",
-    "fontkit": "^2.0.4",
-    "framer-motion": "^12.23.0",
-    "he": "^1.2.0",
-    "mustache": "^4.2.0",
-    "next": "15.3.5",
-    "puppeteer": "^24.15.0",
-    "react": "^19.0.0",
-    "react-chartjs-2": "^5.3.0",
-    "react-colorful": "^5.6.1",
-    "react-dom": "^19.0.0",
-    "react-hotkeys-hook": "^5.1.0",
-    "react-zoom-pan-pinch": "^3.7.0",
-    "rosetta": "^1.1.0",
-    "sharp": "^0.34.3",
-    "yauzl": "^3.2.0"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.5",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17"
-  }
+    "name": "mawj",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev --turbopack",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@heroui/react": "^2.7.11",
+        "@uidotdev/usehooks": "^2.4.1",
+        "archiver": "^7.0.1",
+        "axios": "^1.11.0",
+        "chart.js": "^4.5.0",
+        "csv-parse": "^6.1.0",
+        "csv-stringify": "^6.6.0",
+        "direction": "^2.0.1",
+        "fontkit": "^2.0.4",
+        "framer-motion": "^12.23.0",
+        "he": "^1.2.0",
+        "mustache": "^4.2.0",
+        "next": "15.3.5",
+        "puppeteer": "^24.15.0",
+        "react": "^19.0.0",
+        "react-chartjs-2": "^5.3.0",
+        "react-colorful": "^5.6.1",
+        "react-dom": "^19.0.0",
+        "react-hotkeys-hook": "^5.1.0",
+        "react-zoom-pan-pinch": "^3.7.0",
+        "rosetta": "^1.1.0",
+        "sharp": "^0.34.3",
+        "yauzl": "^3.2.0"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3",
+        "autoprefixer": "^10.4.21",
+        "eslint": "^9",
+        "eslint-config-next": "15.3.5",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^3.4.17"
+    }
 }
