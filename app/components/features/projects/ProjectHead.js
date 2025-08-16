@@ -15,10 +15,15 @@ export default function ProjectHead({ project }) {
         setIsProcessing(true)
         setProgress(0)
 
+        const defaultFormatByType = {
+            card: 'png',
+            video: 'mp4',
+        };
+
         try {
             const requestBody = {
                 options: {
-                    format: formData.format ?? 'png',
+                    format: formData.format ?? (defaultFormatByType[project.type] || 'png'),
                     regenerate_done: formData.regenerate_done ?? false,
                     parallelWorkers: formData.parallelWorkers ?? 1,
                     range: 'all',
