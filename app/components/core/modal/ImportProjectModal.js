@@ -196,7 +196,7 @@ export default function ImportProjectModal() {
                                             <p className="font-medium text-yellow-800">{t('common.suspicious_items')}:</p>
                                             <ul className="list-disc pl-5 mt-1 text-yellow-700">
                                                 {inspectionResult.suspicious.map((item, idx) => (
-                                                    <li key={idx}>{item}</li>
+                                                    <li key={idx}>{item.reason} - {item.file}</li>
                                                 ))}
                                             </ul>
                                         </div>
