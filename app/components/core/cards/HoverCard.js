@@ -4,11 +4,9 @@ import React, { useState } from 'react';
 import { t, getLang } from '@/app/i18n';
 import { Card, CardHeader, CardFooter } from '@heroui/react';
 import { Button } from '@heroui/react';
-import ActionsDropdown from '../menu/OptionMenu';
 import MaskedIcon from '../icons/Icon';
 import ChooseTemplateModal from '../modal/ChooseTemplateModal';
 import { useProjects } from '../../context/projects/projectsContext';
-import { useDisclosure } from '@heroui/react';
 import ButtonWithPopover from '../buttons/AddButtonWithPopover';
 import ProjectTemplateOptions from '../menu/ProjectTemplateDirectOptions';
 export default function HoverCard({
