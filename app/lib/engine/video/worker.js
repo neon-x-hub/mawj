@@ -1,12 +1,10 @@
 import fs from "fs/promises";
-import fsSync from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { render as renderImage } from "../image/renderer.js";
 import { render as renderVideo } from "../video/renderer.js";
 import datarows from "../../providers/datarows/index.js";
 import stats from "../../helpers/stats";
-import axios from "axios";
 import config from "../../providers/config/index.js";
 import { MetadataProvider, revalidators } from "@/app/lib/fam";
 import { extractAudioSegment, downloadAudio } from "@/app/lib/audio"
@@ -30,21 +28,17 @@ function isValidTimeFormat(timeStr) {
 }
 
 export async function workerVideoRenderer(jobData, onProgress) {
-
     const { project, template, rows, options } = jobData;
 
-    const dataRowsInstance = datarows.getDataProvider();
+    const dataRowsInstance = await datarows.getDataProvider();
 
-    const metadataFilePath = `${DATA_DIR}/datarows/${id}/fam.json`;
+    const metadataFilePath = `${DATA_DIR}/datarows/${project.id}/fam.json`;
     const metadata = new MetadataProvider({
         filePath: metadataFilePath,
         revalidators,
-        dataRowsInstance
+        provider: dataRowsInstance
     });
-    await metadata.load({ projectId: id });
-
-    const total = rows.length;
-    let completed = 0;
+    await metadata.load({ projectId: project.id });
 
     const tmpAudioDir = path.join(DATA_DIR, "projects", "outputs", project.id, "temp_audio");
     const thumbnailDir = path.join(DATA_DIR, "projects", "outputs", project.id, "thumbnails");
@@ -52,20 +46,18 @@ export async function workerVideoRenderer(jobData, onProgress) {
     await fs.mkdir(tmpAudioDir, { recursive: true });
     await fs.mkdir(thumbnailDir, { recursive: true });
 
-    const downloadedAudioFiles = [];
-    const rowsWithAudio = [];
+    let completed = 0;
+    let processedCount = 0;
 
-    // Filter rows & prepare audio paths
     for (const row of rows) {
         const audioVal = row.data?.audio;
         if (!audioVal) continue;
 
         let audioPath = null;
-
         try {
+            // Download or resolve audio path
             if (audioVal.startsWith("http://") || audioVal.startsWith("https://")) {
                 audioPath = await downloadAudio(audioVal, tmpAudioDir);
-                if (audioPath) downloadedAudioFiles.push(audioPath);
             } else {
                 const resolvedPath = path.isAbsolute(audioVal)
                     ? audioVal
@@ -80,26 +72,17 @@ export async function workerVideoRenderer(jobData, onProgress) {
             continue;
         }
 
-        if (audioPath) {
-            rowsWithAudio.push({ row, audioPath });
-        }
-    }
+        if (!audioPath) continue;
 
-    // Bulk render thumbnails for all rows with audio
-    if (rowsWithAudio.length > 0) {
-        // Extract rows array from objects for bulk thumbnail render
-        const rowsOnly = rowsWithAudio.map(({ row }) => row);
-
-        await renderImage(project, template, rowsOnly, { outputDir: thumbnailDir, format: 'jpg' }, () => { });
-    }
-
-    // Now iterate rowsWithAudio to render videos individually
-    for (const { row, audioPath } of rowsWithAudio) {
         try {
+            // Render thumbnail (per row now instead of bulk)
+            const thumbnailPath = path.join(thumbnailDir, `${row.id}.jpg`);
+            await renderImage(project, template, [row], { outputDir: thumbnailDir, format: 'jpg' }, () => { });
+
             let finalAudioPath = audioPath;
             let tempTrimmedAudio = null;
 
-            // Audio trimming logic
+            // Audio trimming
             if (options.useTrimming && row.data?.from && row.data?.to) {
                 const { from, to } = row.data;
 
@@ -110,64 +93,60 @@ export async function workerVideoRenderer(jobData, onProgress) {
                             `trimmed_${row.id}_${path.basename(audioPath)}`
                         );
 
-                        await extractAudioSegment(
-                            audioPath,
-                            from,
-                            to,
-                            trimmedOutputPath
-                        );
+                        await extractAudioSegment(audioPath, from, to, trimmedOutputPath);
 
                         finalAudioPath = trimmedOutputPath;
                         tempTrimmedAudio = trimmedOutputPath;
-                        downloadedAudioFiles.push(trimmedOutputPath);
                     } catch (trimErr) {
                         console.error(`Audio trimming failed for row ${row.id}: ${trimErr.message}`);
-                        // Fall back to original audio
+                        // fallback to original
                     }
                 } else {
                     console.warn(`Invalid time format for row ${row.id}: from=${from}, to=${to}`);
                 }
             }
 
-            const thumbnailPath = path.join(thumbnailDir, `${row.id}.jpg`);
-            const outputPath = path.join(DATA_DIR, "projects", "outputs", project.id, `${row.id}.${options.format}`);
-
-            await renderVideo(
-                thumbnailPath,
-                finalAudioPath,
-                outputPath,
-                options
+            // Render video
+            const outputPath = path.join(
+                DATA_DIR,
+                "projects",
+                "outputs",
+                project.id,
+                `${row.id}.${options.format}`
             );
 
+            await renderVideo(thumbnailPath, finalAudioPath, outputPath, options);
 
-            await dataRowsInstance.update(row.id, { status: true });
+            console.log("Setting row as done: ", row.id);
+            await dataRowsInstance.update(project.id, row.id, { status: true });
 
             let doneCount = metadata.get("doneCount") || 0;
             doneCount = doneCount + 1;
             metadata.set("doneCount", doneCount);
-
             await metadata.save();
 
             completed++;
+            processedCount++;
+
             if (onProgress) {
-                const progress = Math.round((completed / rowsWithAudio.length) * 100);
+                const progress = Math.round((processedCount / rows.length) * 100);
                 onProgress(progress);
             }
         } catch (err) {
             console.error(`Error rendering video for row ${row.id}: ${err.message}`);
+        } finally {
+            // cleanup downloaded audio (even if error)
+            if (audioVal.startsWith("http://") || audioVal.startsWith("https://")) {
+                try {
+                    await fs.unlink(audioPath);
+                } catch (err) {
+                    console.warn(`Failed to delete temp audio file ${audioPath}: ${err.message}`);
+                }
+            }
         }
     }
 
-    // Cleanup downloaded audio files
-    for (const filePath of downloadedAudioFiles) {
-        try {
-            await fs.unlink(filePath);
-        } catch (err) {
-            console.warn(`Failed to delete temp audio file ${filePath}: ${err.message}`);
-        }
-    }
-
-    // Clean all thumbnail files if !options.keepThumbnails
+    // Clean thumbnails if not needed
     if (!options.keepThumbnails) {
         await fs.rm(thumbnailDir, { recursive: true, force: true });
     }
@@ -175,8 +154,10 @@ export async function workerVideoRenderer(jobData, onProgress) {
     stats.add({
         projectId: project.id,
         action: "generation",
-        data: { timeTaken: Date.now() - jobData.startTime, count: rowsWithAudio.length },
+        data: { timeTaken: Date.now() - jobData.startTime, count: completed },
     });
 
-    return rowsWithAudio.length;
+    console.log("Done rendering all videos");
+
+    return completed;
 }
