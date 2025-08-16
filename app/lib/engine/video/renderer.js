@@ -82,7 +82,6 @@ async function render(imagePath, audioPath, outputPath, options = {}) {
     ];
 
     try {
-        console.log(`Creating video for: ${imagePath} with codec ${videoCodec}...`);
         const startTime = Date.now();
 
         await runFFmpeg(args);
