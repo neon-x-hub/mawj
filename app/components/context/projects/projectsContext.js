@@ -217,8 +217,16 @@ export function ProjectsProvider({ children }) {
                 body: formData
             });
 
-            if (!res.ok) throw new Error('Failed to upload project data file');
-            return await res.json();
+            const payload = await res.json();
+            if (!res.ok) {
+                addToast({
+                    title: payload.error,
+                    description: payload.details,
+                    color: 'danger',
+                })
+                throw new Error(payload.error);
+            };
+            return payload;
         } catch (err) {
             console.error('Upload project data file error:', err);
             throw err;
