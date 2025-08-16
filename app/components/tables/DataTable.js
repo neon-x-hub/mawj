@@ -11,6 +11,7 @@ import {
     Chip,
     Pagination,
     Input,
+    addToast,
 } from "@heroui/react";
 import ActionButtonWithOptionalModal from "../core/buttons/ActionButtonWithModal";
 import { t } from "@/app/i18n";
@@ -55,9 +56,20 @@ export default function DataTable({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updates),
             });
-            if (!res.ok) throw new Error("Failed to update data");
-            const result = await res.json();
-            console.log("✅ Update result:", result);
+            const payload = await res.json();
+            if (!res.ok) {
+                addToast({
+                    title: payload.error,
+                    description: payload.details ?? '',
+                    color: "danger",
+                })
+                throw new Error(payload.error || "Failed to update data");
+            };
+            const result = payload;
+            addToast({
+                title: "تم التحديث بنجاح",
+                color: "success",
+            })
             return result;
         } catch (err) {
             console.error("❌ Bulk update failed:", err);
