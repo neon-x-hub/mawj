@@ -1,6 +1,7 @@
 import datarows from "@/app/lib/providers/datarows";
 import config from "@/app/lib/providers/config";
 import { MetadataProvider, revalidators } from "@/app/lib/fam";
+import { t } from "@/app/i18n";
 
 export async function GET(request, { params }) {
     const { id } = await params;
@@ -10,7 +11,7 @@ export async function GET(request, { params }) {
         const provider = await datarows.getDataProvider();
 
         // ✅ Setup metadata provider
-        const DATA_DIR = await config.get('baseFolder') || './data';
+        const DATA_DIR = await config.get("baseFolder") || "./data";
         const metadataFilePath = `${DATA_DIR}/datarows/${id}/fam.json`;
         const metadata = new MetadataProvider({
             filePath: metadataFilePath,
@@ -20,35 +21,31 @@ export async function GET(request, { params }) {
         await metadata.load({ projectId: id });
 
         // ✅ Pagination
-        const page = parseInt(searchParams.get('page')) || 1;
-        const limit = parseInt(searchParams.get('limit')) || 100;
+        const page = parseInt(searchParams.get("page")) || 1;
+        const limit = parseInt(searchParams.get("limit")) || 100;
         const offset = (page - 1) * limit;
 
         // ✅ Sorting
-        const sortAttribute = searchParams.get('sort');
-        const sortOrder = searchParams.get('sd') || '0'; // 0 = asc, 1 = desc
-        const isMetaSort = sortAttribute?.startsWith('m.');
+        const sortAttribute = searchParams.get("sort");
+        const sortOrder = searchParams.get("sd") || "0"; // 0 = asc, 1 = desc
+        const isMetaSort = sortAttribute?.startsWith("m.");
 
         // ✅ Filters
         const filters = {};
         for (const [key, value] of searchParams.entries()) {
-            if (!['page', 'limit', 'sort', 'sd'].includes(key)) {
+            if (!["page", "limit", "sort", "sd"].includes(key)) {
                 filters[key] = value;
-                if (key === 'm.status') filters['m.status'] = value === 'true';
+                if (key === "m.status") filters["m.status"] = value === "true";
             }
         }
 
         // ✅ Fetch page of rows
-        const rawRows = await provider.find(
-            id,
-            filters,
-            { limit, offset }
-        );
+        const rawRows = await provider.find(id, filters, { limit, offset });
 
         // ✅ Normalize rows
         const allRows = rawRows.map((row, index) => ({
             id: row.id || `${offset + index + 1}`,
-            status: typeof row.status === 'boolean' ? row.status : false,
+            status: typeof row.status === "boolean" ? row.status : false,
             createdAt: row.createdAt ? new Date(row.createdAt) : null,
             updatedAt: row.updatedAt ? new Date(row.updatedAt) : null,
             data: row.data || row
@@ -96,7 +93,10 @@ export async function GET(request, { params }) {
     } catch (error) {
         console.error("❌ Fetch project data error:", error);
         return Response.json(
-            { error: "Failed to fetch data", details: error.message },
+            {
+                error: t("messages.error.datarows.fetch_failed"),
+                details: process.env.NODE_ENV === "development" ? error.message : undefined
+            },
             { status: 500 }
         );
     }
@@ -108,7 +108,10 @@ export async function POST(request, { params }) {
     try {
         const body = await request.json();
         if (!Array.isArray(body)) {
-            return Response.json({ error: "Invalid input, expected an array" }, { status: 400 });
+            return Response.json(
+                { error: t("messages.error.datarows.invalid_input") },
+                { status: 400 }
+            );
         }
 
         const provider = await datarows.getDataProvider();
@@ -217,7 +220,10 @@ export async function POST(request, { params }) {
     } catch (error) {
         console.error("❌ Bulk update/delete error:", error);
         return Response.json(
-            { error: "Failed to process data", details: error.message },
+            {
+                error: t("messages.error.datarows.bulk_failed"),
+                details: process.env.NODE_ENV === "development" ? error.message : undefined
+            },
             { status: 500 }
         );
     }
