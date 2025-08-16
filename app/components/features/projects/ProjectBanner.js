@@ -24,7 +24,7 @@ export default function ProjectBanner({ project }) {
     };
 
     return (
-        <div className='w-full h-[280] flex items-center justify-center gap-3'>
+        <div className='w-full h-[280px] flex items-center justify-center gap-3'>
             <div className='w-1/3 h-full r30'>
                 <HoverCard
                     imageSrc={project.template ? `/api/v1/templates/${project.template}/preview` : null}
