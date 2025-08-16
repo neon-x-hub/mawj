@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 // I18N
 import { t } from '@/app/i18n';
@@ -35,7 +35,10 @@ export default function TemplatesPage() {
     return (
         <>
             <TemplateSectionHead />
-            <DynamicBreadcrumbs basePath="/templates" baseLabel={t('common.templates')} />
+
+            <Suspense fallback={null}>
+                <DynamicBreadcrumbs basePath="/templates" baseLabel={t('common.templates')} />
+            </Suspense>
 
             {/* ✅ Error Handling */}
             {error && <p style={{ color: 'red' }}>{t('error')}: {error}</p>}
