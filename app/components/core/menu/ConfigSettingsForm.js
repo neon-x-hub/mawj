@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { t } from '@/app/i18n'
 import { Alert, Button, Input, Select, SelectItem } from '@heroui/react';
 import MaskedIcon from '../icons/Icon';
-
+import { addToast } from '@heroui/react';
 
 export default function ConfigSettingsForm() {
     const [initialConfig, setInitialConfig] = useState(null);
@@ -20,7 +20,10 @@ export default function ConfigSettingsForm() {
         async function fetchConfig() {
             try {
                 const res = await fetch('/api/v1/config');
-                if (!res.ok) throw new Error('Failed to load config');
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.error || 'Failed to fetch config');
+                }
                 const data = await res.json();
 
                 // Store initial config for comparison
@@ -29,6 +32,11 @@ export default function ConfigSettingsForm() {
                 setLanguage(data.data.language || 'ar');
             } catch (err) {
                 console.error(err);
+                addToast({
+                    title: 'حدث خطأ في التحميل',
+                    description: err.message,
+                    color: 'danger',
+                })
                 setMessage(`❌ ${err.message}`);
             } finally {
                 setLoading(false);
@@ -62,13 +70,24 @@ export default function ConfigSettingsForm() {
             });
 
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Failed to save config');
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to save config');
+            }
 
             // Update initial config to new saved values
             setInitialConfig({ baseFolder, language });
-            setMessage('✅ Config saved successfully');
+            setMessage(data.message || '✅ Config saved successfully');
+            addToast({
+                title: data.message,
+                color: 'success'
+            })
         } catch (err) {
             setMessage(`❌ ${err.message}`);
+            addToast({
+                title: 'حدث خطأ في الحفظ',
+                description: err.message,
+                color: 'danger',
+            })
         } finally {
             setSaving(false);
         }
