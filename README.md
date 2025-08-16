@@ -6,19 +6,22 @@
 
 ## Table of Contents
 
-- [🌊 Mawj (موج) — Bulk Content Creation Tool](#-mawj-موج--bulk-content-creation-tool)
+- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.1.0***](#-mawj-موج--bulk-content-creation-tool--v010)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Features](#features)
   - [Installation](#installation)
-    - [Prerequisites](#prerequisites)
-    - [Steps to Install and Run](#steps-to-install-and-run)
+    - [**Option 1: Install via Pre-Packaged Installer**](#option-1-install-via-pre-packaged-installer)
+    - [**Option 2: Build from Source (Requires Node.js)**](#option-2-build-from-source-requires-nodejs)
+      - [**Prerequisites**](#prerequisites)
+      - [**Steps to Install and Run**](#steps-to-install-and-run)
     - [Future Plans](#future-plans)
   - [Usage](#usage)
   - [Configuration](#configuration)
   - [Import \& Export](#import--export)
   - [Security and Vulnerability Checks](#security-and-vulnerability-checks)
   - [Performance](#performance)
+  - [Installers](#installers)
   - [Contributing](#contributing)
   - [License](#license)
   - [Contact](#contact)
@@ -77,49 +80,88 @@ Whether you are designing educational series, social campaigns, or inspirational
 
 Mawj combines simplicity, power, and speed to serve the needs of Dawah content creators and Arabic-speaking communities seeking to create impactful, high-quality media at scale.
 
+Here’s an updated version of your installation documentation, structured to **guide users depending on whether they want to install using a pre-packaged installer or build from source with Node.js**:
+
 ---
 
 ## Installation
 
-Mawj is a local-host web application built with Next.js, designed to run on your own machine. To get started, you’ll need the following prerequisites:
+Mawj is a local-host web application built with Next.js, designed to run on your own machine. There are two ways to get started:
 
-### Prerequisites
+1. **Use the pre-packaged installer** (recommended for most users).
+2. **Build the project from source** if you already have Node.js installed.
 
-- **Node.js** (version 16 or higher recommended)
-  Mawj requires Node.js to run the development server and build the project. You can download it from [nodejs.org](https://nodejs.org/).
+---
 
-- **FFmpeg** (for video creation)
-  To enable video rendering capabilities, you need FFmpeg installed on your system. You can download FFmpeg for Windows from the official site: [ffmpeg.org](https://ffmpeg.org/download.html).
+### **Option 1: Install via Pre-Packaged Installer**
+
+If you just want to get Mawj running quickly:
+
+1. Go to the [Installers By Version](#installers)
+2. Select the installer corresponding to your operating system and version.
+3. After extaction, you will find two files: `setup.bat` and `runner.bat`.
+4. First, you would run `setup.bat` to check and install requirements.
+5. After, setup is complete, you can run Mawj by double-clicking on `runner.bat`.
+6. Lastely, you just open your browser on `http://localhost:300` and start working.
+
+> ⚠️ The installer includes a compatible Node.js version, so you don’t need to install Node.js manually.
+>     However, for video creation, you still need to install Ffmpeg separately.
+
+---
+
+### **Option 2: Build from Source (Requires Node.js)**
+
+If you already have **Node.js installed** and want to build Mawj from source:
+
+#### **Prerequisites**
+
+* **Node.js** (version 16 or higher recommended)
+  Mawj requires Node.js to run the development server and build the project. Download it from [nodejs.org](https://nodejs.org/).
+
+* **FFmpeg** (for video creation)
+  To enable video rendering capabilities, install FFmpeg from [ffmpeg.org](https://ffmpeg.org/download.html).
   *Currently, Mawj officially supports Windows only.*
 
-### Steps to Install and Run
+---
+
+#### **Steps to Install and Run**
 
 1. **Clone the repository**
+
 ```bash
-   git clone https://github.com/neon-x-hub/mawj.git
-   cd mawj
+git clone https://github.com/neon-x-hub/mawj.git
+cd mawj
 ```
 
 2. **Install dependencies**
 
 ```bash
-   npm install
+npm install
 ```
 
 3. **Run the development server**
 
 ```bash
-   npm run dev
+npm run dev
 ```
 
-   Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to start using Mawj.
+Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to start using Mawj.
 
 4. **Build for production** (optional)
 
 ```bash
-   npm run build
-   npm start
+npm run build
+npm run start
 ```
+
+---
+
+**Notes:**
+
+* For **quick setup**, the pre-packaged installer is the easiest way.
+* If you already have Node.js and want **full control**, building from source is recommended.
+
+---
 
 ### Future Plans
 
@@ -196,6 +238,16 @@ Mawj is designed for speed, making large-scale content creation fast and efficie
   Mawj includes helpful tips throughout the interface to guide you in choosing the optimal file formats, codecs, and bitrates for your use case. This ensures the best balance between speed, quality, and file size.
 
 By combining efficient algorithms with GPU acceleration, Mawj delivers unmatched performance for bulk content creation workflows.
+
+---
+
+## Installers
+
+Choose an installer based on the version you want and on you OS:
+
+Version 0.2.0:
+- Windows x64 | [Installer]()
+
 
 ---
 
