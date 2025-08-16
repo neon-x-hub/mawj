@@ -1,4 +1,4 @@
-# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.1.0***
+# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.2.0***
 
 **Create stunning cards, videos and booklets at scale with blazing speed and ease.**
 
@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.1.0***](#-mawj-موج--bulk-content-creation-tool--v010)
+- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.2.0***](#-mawj-موج--bulk-content-creation-tool--v020)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Features](#features)
@@ -246,7 +246,7 @@ By combining efficient algorithms with GPU acceleration, Mawj delivers unmatched
 Choose an installer based on the version you want and on you OS:
 
 Version 0.2.0:
-- Windows x64 | [Installer]()
+- Windows 10/11 x64 | [Installer]()
 
 
 ---
