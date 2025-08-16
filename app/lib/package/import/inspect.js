@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import yauzl from 'yauzl';
+import { t } from '@/app/i18n';
 
 function inspectZip(zipPath, allowedExtensions = []) {
     return new Promise((resolve, reject) => {
@@ -21,14 +22,14 @@ function inspectZip(zipPath, allowedExtensions = []) {
 
                 // Path traversal check
                 if (fileName.includes('..') || path.isAbsolute(fileName)) {
-                    suspicious.push({ file: fileName, reason: 'Path traversal' });
+                    suspicious.push({ file: fileName, reason: t('messages.suspicious.import.path_traversal') });
                     zipfile.readEntry();
                     return;
                 }
 
                 // Extension check (only files)
                 if (!isAllowed && !(entry.fileName.endsWith('/'))) {
-                    suspicious.push({ file: fileName, reason: `Extension not allowed: ${ext}` });
+                    suspicious.push({ file: fileName, reason: `${t('messages.suspicious.import.invalid_extension')}: ${ext}` });
                 }
 
                 // Track total uncompressed size
@@ -46,7 +47,7 @@ function inspectZip(zipPath, allowedExtensions = []) {
 
                 // Warn if single file > 500MB
                 if (entry.uncompressedSize > 500 * 1024 * 1024) {
-                    suspicious.push({ file: fileName, reason: 'File too large' });
+                    suspicious.push({ file: fileName, reason: t('messages.suspicious.import.large_file') });
                 }
 
                 zipfile.readEntry();
