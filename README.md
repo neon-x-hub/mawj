@@ -102,7 +102,7 @@ If you just want to get Mawj running quickly:
 3. After extaction, you will find two files: `setup.bat` and `runner.bat`.
 4. First, you would run `setup.bat` to check and install requirements.
 5. After, setup is complete, you can run Mawj by double-clicking on `runner.bat`.
-6. Lastely, you just open your browser on `http://localhost:300` and start working.
+6. Lastely, you just open your browser on `http://localhost:3000` and start working.
 
 > ⚠️ The installer includes a compatible Node.js version, so you don’t need to install Node.js manually.
 >     However, for video creation, you still need to install Ffmpeg separately.
