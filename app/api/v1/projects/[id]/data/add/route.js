@@ -2,6 +2,7 @@ import datarows from "@/app/lib/providers/datarows";
 import config from "@/app/lib/providers/config";
 import stats from "@/app/lib/helpers/stats";
 import { MetadataProvider, revalidators } from "@/app/lib/fam";
+import { t } from "@/app/i18n";
 
 export async function POST(request, { params }) {
     const { id } = await params;
@@ -13,7 +14,7 @@ export async function POST(request, { params }) {
         const body = await request.json();
         if (!Array.isArray(body)) {
             return Response.json(
-                { error: "Invalid input, expected an array of objects" },
+                { error: t("messages.error.datarows.invalid_input") },
                 { status: 400 }
             );
         }
@@ -84,7 +85,7 @@ export async function POST(request, { params }) {
     } catch (error) {
         console.error("❌ POST data error:", error);
         return Response.json(
-            { error: "Failed to save data", details: error.message },
+            { error: t("messages.error.datarows.save_failed"), details: error.message },
             { status: 500 }
         );
     }
