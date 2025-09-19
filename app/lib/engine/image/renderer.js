@@ -8,6 +8,8 @@ import { buildLayer } from '../../layers/types/index.js';
 import { loadFontInPuppeteer } from './injectFont.js';
 import { getFontByName } from '../../fonts/manager.js';
 import config from '@/app/lib/providers/config';
+import fetchImageAsDataURL from '../../helpers/images/downloadToBase64.js';
+import localFileToDataURL from '../../helpers/images/readFromFsToBase64.js';
 
 const BASE_URL = process.env.ASSET_HOST || 'http://localhost:3000';
 
@@ -47,7 +49,9 @@ export async function render(
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--allow-file-access-from-files',
+            '--enable-local-file-accesses'
         ]
     });
     const page = await browser.newPage();
@@ -140,12 +144,30 @@ export async function render(
             if (clonedConfig.options.props.templateText) {
                 const mustacheTemplate = clonedConfig.options.props.templateText;
                 const mustacheRender = Mustache.render(mustacheTemplate, preprocessedRow);
-                clonedConfig.options.props.content = he.decode(mustacheRender);
+                let finalContent = he.decode(mustacheRender);
+
+                if (clonedConfig.type === "image" && typeof finalContent === "string") {
+                    try {
+                        if (finalContent.startsWith("http://") || finalContent.startsWith("https://")) {
+                            // 🌍 Remote image → fetch and embed as base64
+                            finalContent = await fetchImageAsDataURL(finalContent);
+                        } else if (fs.existsSync(finalContent)) {
+                            // 📂 Local file → make it a file:// URL
+                            const absPath = path.resolve(finalContent);
+                            finalContent = localFileToDataURL(absPath);
+                        }
+                        // else → leave `finalContent` as-is
+                    } catch (err) {
+                        console.warn(`⚠️ Failed to resolve image source "${finalContent}":`, err.message);
+                    }
+                }
+
+                clonedConfig.options.props.content = finalContent;
             }
+
 
             const layer = buildLayer(clonedConfig.id, clonedConfig);
             const htmlString = renderToString(layer.renderContent({ node_key: clonedConfig.id }));
-
 
             await page.evaluate((html) => {
                 const container = document.getElementById('dynamic-container');
@@ -166,8 +188,8 @@ export async function render(
             return Promise.all(
                 images.map(img =>
                     new Promise((resolve) => {
-                        if (img.complete && img.naturalHeight !== 0) {
-                            resolve(true);
+                        if (img.complete) {
+                            resolve(img.naturalHeight !== 0);
                         } else {
                             img.onload = () => resolve(true);
                             img.onerror = () => resolve(false);
