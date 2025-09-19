@@ -17,6 +17,7 @@
         "csv-parse": "^6.1.0",
         "csv-stringify": "^6.6.0",
         "direction": "^2.0.1",
+        "dompurify": "^3.2.7",
         "fontkit": "^2.0.4",
         "framer-motion": "^12.23.0",
         "he": "^1.2.0",
