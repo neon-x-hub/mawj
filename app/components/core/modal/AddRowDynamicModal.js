@@ -1,6 +1,6 @@
 'use client';
 import { t } from "@/app/i18n";
-import { Input } from "@heroui/react";
+import { Textarea } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 
 function AddRowDynamicModal({ projectId, formData, handleInputChange }) {
@@ -30,7 +30,7 @@ function AddRowDynamicModal({ projectId, formData, handleInputChange }) {
                 .map((column) => (
                     <div key={column}>
                         <label htmlFor={column}>{column}</label>
-                        <Input
+                        <Textarea
                             type="text"
                             id={column}
                             name={column}
