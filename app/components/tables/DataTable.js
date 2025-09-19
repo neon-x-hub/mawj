@@ -12,10 +12,12 @@ import {
     Pagination,
     Input,
     addToast,
+    Textarea,
 } from "@heroui/react";
 import ActionButtonWithOptionalModal from "../core/buttons/ActionButtonWithModal";
 import { t } from "@/app/i18n";
 import GenerateImageModal from "../core/modal/GenerateImageModal";
+import GenerateVideoModal from "../core/modal/GenerateVideoModal";
 
 function StatusCell({ value }) {
     const isDone = value === true || value === "Done";
@@ -232,7 +234,7 @@ export default function DataTable({
                             column.key !== "status" &&
                             <div key={column.key}>
                                 <label htmlFor={column.key}>{column.label}</label>
-                                <Input
+                                <Textarea
                                     type="text"
                                     id={column.key}
                                     name={column.key}
@@ -254,14 +256,21 @@ export default function DataTable({
             isPrimary: true,
             modal: {
                 title: t("actions.start_generation_process"),
-                content: (props) => (
-                    project.type === 'card' && <GenerateImageModal
-                        project={project}
-                        {...props}
-                        isProcessing={isProcessing}
-                        progress={progress}
-                    />
-                ), actionLabel: t("actions.generate"),
+                content: (props) => {
+                    if (project.type === 'card') {
+                        return (
+                            <GenerateImageModal {...props} />
+                        )
+                    }
+                    else if (project.type === 'video') {
+                        return (
+                            <GenerateVideoModal {...props} />
+                        )
+                    }
+                    else {
+                        return null;
+                    }
+                    }, actionLabel: t("actions.generate"),
                 hasCancelButton: false,
                 action: async (formData, onClose) => {
                     await handleGenerate(formData, onClose)
