@@ -90,6 +90,22 @@ const EditorSidebarPanel = ({ template }) => (
                     >
                         <LayersTab />
                     </Tab>
+                    <Tab
+                        key="modifiers"
+                        title={
+                            <div className="flex items-center px-0 justify-between gap-1">
+                                <MaskedIcon
+                                    src={'/icons/coco/line/Modifiers.svg'}
+                                    color="currentColor"
+                                    height="18px"
+                                    width="18px"
+                                />
+                                {t('common.modifiers')}
+                            </div>
+                        }
+                    >
+                        The modifiers tab is under construction...
+                    </Tab>
                 </Tabs>
             </div>
         </div>
