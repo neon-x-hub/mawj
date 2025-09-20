@@ -27,7 +27,7 @@ class RichLayer extends Layer {
 
             // allow style="" on any element, and allow <style type="...">
             allowedAttributes: {
-                '*': ['style'],   // style="" allowed on all tags
+                '*': ['style', 'class', 'id'],   // style="" allowed on all tags
                 'style': ['type'] // allow <style type="text/css"> (optional)
             },
             // required to keep <style> (sanitize-html treats these as "vulnerable" by default)
