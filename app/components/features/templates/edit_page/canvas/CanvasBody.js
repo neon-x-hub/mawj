@@ -33,6 +33,7 @@ export default function CanvasBody({ template }) {
                     transform: `scale(${scale}) translate(-50%, -50%)`,
                     transformOrigin: 'top left'
                 }}
+                id='canvas'
             >
                 {/* ✅ Correct API path matches your GET route */}
                 <Image
@@ -41,6 +42,7 @@ export default function CanvasBody({ template }) {
                     height={baseLayer.height}
                     alt={baseLayer.name || 'Base Layer'}
                     className="absolute top-0 left-0 w-full h-full object-cover"
+
                 />{/* Not fetching the image, maybe we need to  */}
 
                 {/* ✅ Render other layers */}
