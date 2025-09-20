@@ -3,6 +3,8 @@ import path from 'path';
 import puppeteer from 'puppeteer';
 import Mustache from 'mustache';
 import he from 'he';
+import DOMPurify from 'dompurify';
+
 
 import { buildLayer } from '../../layers/types/index.js';
 import { loadFontInPuppeteer } from './injectFont.js';
@@ -144,8 +146,7 @@ export async function render(
             if (clonedConfig.options.props.templateText) {
                 const mustacheTemplate = clonedConfig.options.props.templateText;
                 const mustacheRender = Mustache.render(mustacheTemplate, preprocessedRow);
-                let finalContent = he.decode(mustacheRender);
-
+                let finalContent = (layerConfig.type !== "rich") ? he.decode(mustacheRender) : mustacheRender;
                 if (clonedConfig.type === "image" && typeof finalContent === "string") {
                     try {
                         if (finalContent.startsWith("http://") || finalContent.startsWith("https://")) {
