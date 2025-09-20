@@ -4,7 +4,7 @@ import { t } from "@/app/i18n";
 
 import { Listbox, ListboxItem, Divider } from "@heroui/react";
 import { useLayers } from "@/app/lib/layers/context/LayerContext";
-import { TextLayer, ImageLayer } from "@/app/lib/layers/types";
+import { TextLayer, ImageLayer, RichLayer } from "@/app/lib/layers/types";
 
 // useLedgex
 import { useLedgex } from "@/app/lib/state-ledger/useLedgex";
@@ -57,8 +57,15 @@ export default function AddLayerOptions() {
                 break;
 
             case "custom":
-                console.log("Adding a Custom layer");
-                return; // custom not implemented yet
+                console.log("Adding a Custom (Rich) layer");
+                newLayer = new RichLayer({
+                    id: `layer-${layers.regular.length + 1}`,
+                    canvas: {
+                        width: layers?.base[0]?.width,
+                        height: layers?.base[0]?.height
+                    },
+                });
+                break;
 
             default:
                 console.warn("Unknown layer type:", key);
@@ -80,11 +87,9 @@ export default function AddLayerOptions() {
             <LayerTypesInfo />
             <Divider />
             <ListboxWrapper>
-                <Listbox aria-label="Layer Types" onAction={handleAddLayer}
-                    disabledKeys={new Set(["custom"])}
-                >
+                <Listbox aria-label="Layer Types" onAction={handleAddLayer}>
                     <ListboxItem key="text">نص (Text)</ListboxItem>
-                    <ListboxItem key="image">صورة (Image) - تجريبي</ListboxItem>
+                    <ListboxItem key="image">صورة (Image)</ListboxItem>
                     <ListboxItem key="custom">مخصص (Custom)</ListboxItem>
                 </Listbox>
             </ListboxWrapper>
