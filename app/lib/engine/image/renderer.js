@@ -3,7 +3,6 @@ import path from 'path';
 import puppeteer from 'puppeteer';
 import Mustache from 'mustache';
 import he from 'he';
-import DOMPurify from 'dompurify';
 
 
 import { buildLayer } from '../../layers/types/index.js';
