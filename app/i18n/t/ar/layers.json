@@ -19,6 +19,22 @@
             "line-through": "يتوسطه خط",
             "overline": "فوقه خط"
         },
+        "transform": "تحويل النص",
+        "transforms": {
+            "none": "بدون",
+            "uppercase": "أحرف كبيرة",
+            "lowercase": "أحرف صغيرة",
+            "capitalize": "كابتل"
+        },
+        "font_style": "نمط الخط",
+        "font_styles": {
+            "normal": "عادي",
+            "italic": "مائل",
+            "oblique": "مائل خفيف"
+        },
+        "opacity": "التعتيم",
+        "line_height": "ارتفاع السطر",
+        "letter_spacing": "تباعد الحروف",
         "transformations": "التحويلات",
         "position": "الموقع",
         "rotation": "الدوران",
