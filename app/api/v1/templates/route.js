@@ -38,6 +38,7 @@ export async function POST(request) {
             type: data.type || 'card',
             baseLayers: [],
             layers: [],
+            modifiers: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
