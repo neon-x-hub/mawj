@@ -43,6 +43,13 @@ export default function AddModifierOptions() {
                 return;
         }
 
+        // check if layers.modifiers encludes a layer of the requested type, as we can have one type per modifer
+
+        if (layers.modifiers?.some(layer => layer.type === newLayer.type)) {
+            alert(`A modifier of type "${newLayer.type}" already exists. Only one modifier of each type is allowed.`);
+            return;
+        };
+
         // ✅ Update regular layers array
         const updatedModifiers = layers.modifiers ? [...layers.modifiers, newLayer] : [newLayer];
         setLayers({ ...layers, modifiers: updatedModifiers });
