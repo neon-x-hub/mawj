@@ -1,9 +1,14 @@
+'use client';
+
+import { useState } from "react";
 import { t } from "@/app/i18n";
 import { Tabs, Tab } from "@heroui/react";
 import ButtonWithPopover from "@/app/components/core/buttons/AddButtonWithPopover";
 import LayersTab from "@/app/components/features/templates/edit_page/LayersTab";
 import MaskedIcon from "@/app/components/core/icons/Icon";
 import AddLayerOptions from "./panel/layer_control/AddLayerOptions";
+import ModifiersTab from "./ModifiersTab";
+import AddModifierOptions from "./panel/layer_control/AddModifierOptions";
 
 const TemplateMetadata = ({ template }) => {
     if (!template) {
@@ -16,7 +21,7 @@ const TemplateMetadata = ({ template }) => {
                 <span className="font-semibold">{t('common.name')}:</span> {template.name || t('common.untitled')}
             </div>
             <div>
-            <span className="font-semibold">{t('common.type')}:</span> {t(`common.template_types.${template.type}`) || 'N/A'}
+                <span className="font-semibold">{t('common.type')}:</span> {t(`common.template_types.${template.type}`) || 'N/A'}
             </div>
             <div>
                 <span className="font-semibold">{t('common.base_layers')}:</span> {template.baseLayers?.length || 0}
@@ -44,77 +49,95 @@ const TemplateMetadata = ({ template }) => {
     );
 };
 
-const EditorSidebarPanel = ({ template }) => (
-    <div className="absolute top-1/2 right-[30px] transform -translate-y-1/2 w-[400px] h-[calc(100%-60px)] rounded-xl bg-white/40 shadow-xl backdrop-blur-md">
-        <div className='relative w-full h-full overflow-x-hidden scrollbar-hide'>
-            <div className="flex w-full flex-col h-full p-3">
-                <Tabs
-                    aria-label="Options"
-                    color='primary'
-                    classNames={{
-                        tabList: 'bg-gray-300',
-                        tabContent: 'text-black group-data-[selected=true]:text-white font-medium',
-                    }}
-                >
-                    <Tab
-                        key="metadata"
-                        title={
-                            <div className="flex items-center gap-1">
-                                <MaskedIcon
-                                    src={'/icons/coco/line/Info.svg'}
-                                    color="currentColor"
-                                    height="18px"
-                                    width="18px"
-                                />
-                                {t('common.metadata')}
-                            </div>
-                        }
-                    >
-                        {/* ✅ Render Metadata */}
-                        <TemplateMetadata template={template} />
-                    </Tab>
+const EditorSidebarPanel = ({ template }) => {
 
-                    <Tab
-                        key="layers"
-                        title={
-                            <div className="flex items-center px-0 justify-between gap-1">
-                                <MaskedIcon
-                                    src={'/icons/coco/line/Note.svg'}
-                                    color="currentColor"
-                                    height="18px"
-                                    width="18px"
-                                />
-                                {t('common.layers')}
-                            </div>
-                        }
+    const [selectedTab, setSelectedTab] = useState('metadata');
+
+    return (
+        <div className="absolute top-1/2 right-[30px] transform -translate-y-1/2 w-[400px] h-[calc(100%-60px)] rounded-xl bg-white/40 shadow-xl backdrop-blur-md">
+            <div className='relative w-full h-full overflow-x-hidden scrollbar-hide'>
+                <div className="flex w-full flex-col h-full p-3">
+                    <Tabs
+                        aria-label="Options"
+                        color='primary'
+                        classNames={{
+                            tabList: 'bg-gray-300',
+                            tabContent: 'text-black group-data-[selected=true]:text-white font-medium',
+                        }}
+                        onSelectionChange={setSelectedTab}
+                        selectedKey={selectedTab}
                     >
-                        <LayersTab />
-                    </Tab>
-                    <Tab
-                        key="modifiers"
-                        title={
-                            <div className="flex items-center px-0 justify-between gap-1">
-                                <MaskedIcon
-                                    src={'/icons/coco/line/Modifiers.svg'}
-                                    color="currentColor"
-                                    height="18px"
-                                    width="18px"
-                                />
-                                {t('common.modifiers')}
-                            </div>
-                        }
-                    >
-                        The modifiers tab is under construction...
-                    </Tab>
-                </Tabs>
+                        <Tab
+                            key="metadata"
+                            title={
+                                <div className="flex items-center gap-1">
+                                    <MaskedIcon
+                                        src={'/icons/coco/line/Info.svg'}
+                                        color="currentColor"
+                                        height="18px"
+                                        width="18px"
+                                    />
+                                    {t('common.metadata')}
+                                </div>
+                            }
+                        >
+                            {/* ✅ Render Metadata */}
+                            <TemplateMetadata template={template} />
+                        </Tab>
+
+                        <Tab
+                            key="layers"
+                            title={
+                                <div className="flex items-center px-0 justify-between gap-1">
+                                    <MaskedIcon
+                                        src={'/icons/coco/line/Note.svg'}
+                                        color="currentColor"
+                                        height="18px"
+                                        width="18px"
+                                    />
+                                    {t('common.layers')}
+                                </div>
+                            }
+                        >
+                            <LayersTab />
+                        </Tab>
+                        <Tab
+                            key="modifiers"
+                            title={
+                                <div className="flex items-center px-0 justify-between gap-1">
+                                    <MaskedIcon
+                                        src={'/icons/coco/line/Modifiers.svg'}
+                                        color="currentColor"
+                                        height="18px"
+                                        width="18px"
+                                    />
+                                    {t('common.modifiers')}
+                                </div>
+                            }
+                        >
+                            <ModifiersTab />
+                        </Tab>
+                    </Tabs>
+                </div>
             </div>
-        </div>
 
-        <ButtonWithPopover
-            onAction={() => { console.log('Add Clicked!') }}
-            PopoverOptions={<AddLayerOptions />}
-        />
-    </div>
-);
+            {selectedTab !== 'metadata' && (
+                <ButtonWithPopover
+                    PopoverOptions={() => {
+                        switch (selectedTab) {
+                            case 'layers':
+                                return <AddLayerOptions />;
+                            case 'modifiers':
+                                return <AddModifierOptions />;
+                            default:
+                                return "No options available";
+                        }
+                    }}
+                />
+            )}
+
+        </div>
+    )
+};
 
 export default EditorSidebarPanel;
