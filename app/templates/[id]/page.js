@@ -6,6 +6,7 @@ import EditorSidebarPanel from '@/app/components/features/templates/edit_page/Ed
 import Canvas from '@/app/components/features/templates/edit_page/canvas/Canvas';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { buildLayer } from '@/app/lib/layers/types';
+import { buildModifier } from '@/app/lib/modifiers/types';
 import { LayersProvider, useLayers } from '@/app/lib/layers/context/LayerContext';
 import { useLedgex } from '@/app/lib/state-ledger/useLedgex';
 import SaveButton from '@/app/components/core/buttons/SaveButton';
@@ -56,10 +57,12 @@ function EditTemplateInner() {
         if (!template) return;
 
         const regularLayers = (template.layers || []).map(layer => buildLayer(layer.id, layer));
+        const modifierLayers = (template.modifiers || []).map(mod => buildModifier(mod.id, mod));
 
         setLayers({
             base: template.baseLayers || [],
-            regular: regularLayers
+            regular: regularLayers,
+            modifiers: modifierLayers
         });
 
         // Prepare Ledgex state (only for regular layers)
