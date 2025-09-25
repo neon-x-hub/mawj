@@ -22,24 +22,22 @@ class RichLayer extends Layer {
 
     renderContent({ node_key, ssrh = false }) {
         const { content } = this.props;
-        let safeHTML = sanitizeHtml(content || '', {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['style']),
-
-            // allow style="" on any element, and allow <style type="...">
+        let safeHTML = sanitizeHtml(content, {
+            allowedTags: [
+                'style', 'img', 'h1', 'h2', 'span', 'div',
+                'br', 'p', 'a', 'ul', 'ol', 'li', 'table',
+                'thead', 'tbody', 'tr', 'th', 'td'
+            ],
             allowedAttributes: {
-                '*': ['style', 'class', 'id'],   // style="" allowed on all tags
-                'style': ['type'] // allow <style type="text/css"> (optional)
+                '*': ['style', 'class', 'id'],
+                'style': ['type']
             },
-            // required to keep <style> (sanitize-html treats these as "vulnerable" by default)
             allowVulnerableTags: true,
-
-
             allowedSchemes: ['http', 'https', 'data'],
-            // optional: strip comments from HTML/CSS (helps avoid obfuscation)
-            textFilter: (text) => text.replace(/<!--[\s\S]*?-->/g, '')
+            nonTextTags: []
         });
 
-        safeHTML = s4(safeHTML);
+        safeHTML = s4(safeHTML, `rich-layer-${this.id}`);
 
         if (ssrh) {
             return safeHTML;
