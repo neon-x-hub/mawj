@@ -145,7 +145,7 @@ export async function render(
             if (clonedConfig.options.props.templateText) {
                 const mustacheTemplate = clonedConfig.options.props.templateText;
                 const mustacheRender = Mustache.render(mustacheTemplate, preprocessedRow);
-                let finalContent = (layerConfig.type !== "rich") ? he.decode(mustacheRender) : mustacheRender;
+                let finalContent = he.decode(mustacheRender);
                 if (clonedConfig.type === "image" && typeof finalContent === "string") {
                     try {
                         if (finalContent.startsWith("http://") || finalContent.startsWith("https://")) {
@@ -171,12 +171,9 @@ export async function render(
 
             await page.evaluate((html) => {
                 const container = document.getElementById('dynamic-container');
-                const wrapper = document.createElement('div');
-                wrapper.classList.add('dynamic-layer');
-                wrapper.innerHTML = html;
-                while (wrapper.firstChild) {
-                    container.appendChild(wrapper.firstChild);
-                }
+                const range = document.createRange();
+                const fragment = range.createContextualFragment(html);
+                container.appendChild(fragment);
             }, htmlString);
         }
 
