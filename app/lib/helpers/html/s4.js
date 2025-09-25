@@ -3,7 +3,7 @@
  * @param {string} html - HTML string with <style> tags.
  * @returns {string} - HTML with safe, scoped styles.
  */
-function s4(html) {
+function s4(html, parentId) {
     return html.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (match, css) => {
         // 🚫 remove @import and external urls
         let safeCSS = css
@@ -18,7 +18,7 @@ function s4(html) {
             // prefix each selector
             const scoped = selectors
                 .split(',')
-                .map(s => `#canvas ${s.trim()}`)
+                .map(s => `#${parentId} ${s.trim()}`)
                 .join(', ');
             return `${scoped} {${rules}}`;
         }).join(' ');
