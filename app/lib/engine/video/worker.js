@@ -76,8 +76,8 @@ export async function workerVideoRenderer(jobData, onProgress) {
 
         try {
             // Render thumbnail (per row now instead of bulk)
-            const thumbnailPath = path.join(thumbnailDir, `${row.id}.jpg`);
-            await renderImage(project, template, [row], { outputDir: thumbnailDir, format: 'jpg' }, () => { });
+            const thumbnailPath = path.join(thumbnailDir, `${row.id}.png`);
+            await renderImage(project, template, [row], { outputDir: thumbnailDir, format: 'png' }, () => { });
 
             let finalAudioPath = audioPath;
             let tempTrimmedAudio = null;
