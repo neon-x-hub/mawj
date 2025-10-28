@@ -284,5 +284,5 @@ By using this software, you acknowledge your responsibility to ensure that your 
 If you have questions, suggestions, or want to collaborate, you can reach me at:
 
 - **GitHub Issues:** [Submit an issue](https://github.com/neon-x-hub/mawj/issues)
-- **GitHub Profile:** [@yourusername](https://github.com/neon-x-hub)
-- **Telegram:** @abderrahmane_m
+- **GitHub Profile:** [@neon-x-hub](https://github.com/neon-x-hub)
+- **Telegram:** [@abderrahmane_m](https://t.me/abderrahmane_m)
