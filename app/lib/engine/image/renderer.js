@@ -65,13 +65,53 @@ export async function render(
     const baseHTML = fs.readFileSync(path.resolve('./app/lib/engine/image/base.html'), 'utf8');
     await page.setContent(baseHTML);
 
-    // ✅ 3. Set Canvas background
-    await page.evaluate(({ width, height, name, templateId, BASE_URL }) => {
-        const canvas = document.getElementById('canvas');
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
-        canvas.style.background = `url('${BASE_URL}/api/v1/templates/${templateId}/base/${name}') center/cover no-repeat`;
-    }, { ...baseLayer, templateId: template.id, BASE_URL });
+    // ✅ 3. Handle custom base layer
+    const customBaseLayerPath = options.baseLayer;
+    let backgroundDataURL = null;
+
+    if (
+        customBaseLayerPath &&
+        fs.existsSync(customBaseLayerPath) &&
+        fs.statSync(customBaseLayerPath).isFile()
+    ) {
+        try {
+            backgroundDataURL = await localFileToDataURL(customBaseLayerPath);
+        } catch (err) {
+            console.warn(`⚠️ Failed to load custom base layer: ${err.message}`);
+        }
+    }
+
+    if (backgroundDataURL) {
+        // Use the local image (base64)
+        await page.evaluate(
+            ({ width, height, backgroundDataURL }) => {
+                const canvas = document.getElementById("canvas");
+                canvas.style.width = `${width}px`;
+                canvas.style.height = `${height}px`;
+                canvas.style.background = `url('${backgroundDataURL}') center/cover no-repeat`;
+            },
+            {
+                width: baseLayer.width,
+                height: baseLayer.height,
+                backgroundDataURL,
+            }
+        );
+    } else {
+        // Default: use the hosted base layer
+        await page.evaluate(
+            ({ width, height, name, templateId, BASE_URL }) => {
+                const canvas = document.getElementById("canvas");
+                canvas.style.width = `${width}px`;
+                canvas.style.height = `${height}px`;
+                canvas.style.background = `url('${BASE_URL}/api/v1/templates/${templateId}/base/${name}') center/cover no-repeat`;
+            },
+            {
+                ...baseLayer,
+                templateId: template.id,
+                BASE_URL: options.BASE_URL || "",
+            }
+        );
+    }
 
     // ✅ Wait for background to load
     await page.evaluate(() => new Promise((resolve) => {
@@ -86,6 +126,13 @@ export async function render(
 
     // ✅ 4. Load all fonts once
     await loadProjectFonts(page, template.layers);
+
+    await page.evaluate(() => {
+        document.documentElement.style.background = 'transparent';
+        document.body.style.background = 'transparent';
+        const canvas = document.getElementById('canvas');
+        if (canvas) canvas.style.backgroundColor = 'transparent';
+    });
 
     // ✅ 5. Prepare output directory
     const outputDir = options.outputDir || path.resolve(`${await config.get('baseFolder') || './data'}/projects/outputs/${project.id}`);
@@ -210,6 +257,10 @@ export async function render(
         if (screenshotOptions.type === 'jpeg') {
             screenshotOptions.quality = options.quality || 80; // required to avoid Chromium stall
             screenshotOptions.omitBackground = true; // flatten transparency
+        }
+
+        if (screenshotOptions.type === 'png') {
+            screenshotOptions.omitBackground = true;
         }
 
         screenshotOptions.path = outputPath;
