@@ -1,4 +1,4 @@
 import probe from "./probe";
+import compositeOverlayOntoVideo from "./compositeOverlay";
 
-
-export { probe };
+export { probe, compositeOverlayOntoVideo };
