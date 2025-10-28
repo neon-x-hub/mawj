@@ -1,4 +1,4 @@
-# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.3.1***
+# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.4.0***
 
 **Create stunning cards, videos and booklets at scale with blazing speed and ease.**
 
@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.3.1***](#-mawj-موج--bulk-content-creation-tool--v031)
+- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.4.0***](#-mawj-موج--bulk-content-creation-tool--v040)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Features](#features)
