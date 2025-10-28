@@ -8,6 +8,7 @@ import stats from "../../helpers/stats";
 import config from "../../providers/config/index.js";
 import { MetadataProvider, revalidators } from "@/app/lib/fam";
 import { extractAudioSegment, downloadAudio } from "@/app/lib/audio"
+import modifierHandlers from "../../modifiers/handlers/";
 
 
 const DATA_DIR = await config.get('baseFolder') || './data';
@@ -32,6 +33,7 @@ export async function workerVideoRenderer(jobData, onProgress) {
 
     const dataRowsInstance = await datarows.getDataProvider();
 
+    // --- Metadata setup ---
     const metadataFilePath = `${DATA_DIR}/datarows/${project.id}/fam.json`;
     const metadata = new MetadataProvider({
         filePath: metadataFilePath,
@@ -39,6 +41,7 @@ export async function workerVideoRenderer(jobData, onProgress) {
         provider: dataRowsInstance
     });
     await metadata.load({ projectId: project.id });
+    // ----------------------
 
     const tmpAudioDir = path.join(DATA_DIR, "projects", "outputs", project.id, "temp_audio");
     const thumbnailDir = path.join(DATA_DIR, "projects", "outputs", project.id, "thumbnails");
@@ -61,7 +64,7 @@ export async function workerVideoRenderer(jobData, onProgress) {
             } else {
                 const resolvedPath = path.isAbsolute(audioVal)
                     ? audioVal
-                    : path.join(project.rootPath || __dirname, audioVal);
+                    : path.join(DATA_DIR, audioVal);
 
                 if (await fileExists(resolvedPath)) {
                     audioPath = resolvedPath;
@@ -76,13 +79,40 @@ export async function workerVideoRenderer(jobData, onProgress) {
 
         try {
             // Render thumbnail (per row now instead of bulk)
-            const thumbnailPath = path.join(thumbnailDir, `${row.id}.png`);
-            await renderImage(project, template, [row], { outputDir: thumbnailDir, format: 'png' }, () => { });
+            let thumbnailPath = null;
+
+            const bgModifier = (template.modifiers || []).find(m => m.type === "bgctrl");
+
+            if (bgModifier) {
+                try {
+                    thumbnailPath = await modifierHandlers["bgctrl"]({
+                        row,
+                        project,
+                        template,
+                        modifier: bgModifier,
+                        tmpDir: path.join(DATA_DIR, "projects", "outputs", project.id, "temp_bg")
+                    });
+                } catch (err) {
+                    console.warn(`bgctrl failed for row ${row.id}:`, err.message);
+                }
+            }
+
+            // fallback if no valid bgctrl path
+            if (!thumbnailPath) {
+                const out = await renderImage(
+                    project,
+                    template,
+                    [row],
+                    { outputDir: path.join(DATA_DIR, "projects", "outputs", project.id, "thumbnails"), format: "png" },
+                    () => { }
+                );
+                thumbnailPath = out.output;
+            }
 
             let finalAudioPath = audioPath;
             let tempTrimmedAudio = null;
 
-            // Audio trimming
+            // --- Audio trimming ---
             if (options.useTrimming && row.data?.from && row.data?.to) {
                 const { from, to } = row.data;
 
@@ -105,6 +135,7 @@ export async function workerVideoRenderer(jobData, onProgress) {
                     console.warn(`Invalid time format for row ${row.id}: from=${from}, to=${to}`);
                 }
             }
+            // ----------------------
 
             // Render video
             const outputPath = path.join(
@@ -114,6 +145,9 @@ export async function workerVideoRenderer(jobData, onProgress) {
                 project.id,
                 `${row.id}.${options.format}`
             );
+
+            console.log("Rendeing video with thumbnail path: ", thumbnailPath);
+
 
             await renderVideo(thumbnailPath, finalAudioPath, outputPath, options);
 
