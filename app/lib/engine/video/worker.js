@@ -44,9 +44,11 @@ export async function workerVideoRenderer(jobData, onProgress) {
     // ----------------------
 
     const tmpAudioDir = path.join(DATA_DIR, "projects", "outputs", project.id, "temp_audio");
+    const tempBgDir = path.join(DATA_DIR, "projects", "outputs", project.id, "temp_bg");
     const thumbnailDir = path.join(DATA_DIR, "projects", "outputs", project.id, "thumbnails");
 
     await fs.mkdir(tmpAudioDir, { recursive: true });
+    await fs.mkdir(tempBgDir, { recursive: true });
     await fs.mkdir(thumbnailDir, { recursive: true });
 
     let completed = 0;
@@ -90,7 +92,8 @@ export async function workerVideoRenderer(jobData, onProgress) {
                         project,
                         template,
                         modifier: bgModifier,
-                        tmpDir: path.join(DATA_DIR, "projects", "outputs", project.id, "temp_bg")
+                        tmpDir: tempBgDir,
+                        options
                     });
                 } catch (err) {
                     console.warn(`bgctrl failed for row ${row.id}:`, err.message);
@@ -183,6 +186,12 @@ export async function workerVideoRenderer(jobData, onProgress) {
     // Clean thumbnails if not needed
     if (!options.keepThumbnails) {
         await fs.rm(thumbnailDir, { recursive: true, force: true });
+    }
+
+    try {
+        await fs.rm(tempBgDir, { recursive: true, force: true });
+    } catch (err) {
+        console.warn(`⚠️ Failed to clear tempBgDir (${tempBgDir}): ${err.message}`);
     }
 
     stats.add({
