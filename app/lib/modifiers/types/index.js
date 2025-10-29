@@ -1,7 +1,9 @@
 import FadeModifier from "./FadeModifier";
+import BgControlModifier from "./BGControlModifier";
 
 const modifiers = {
-    fade: FadeModifier
+    fade: FadeModifier,
+    bgctrl: BgControlModifier
 };
 
 function buildModifier(id, data) {
@@ -12,4 +14,4 @@ function buildModifier(id, data) {
     return new ModifierClass({ id, ...data });
 }
 
-export { FadeModifier, buildModifier };
+export { FadeModifier, BgControlModifier, buildModifier };
