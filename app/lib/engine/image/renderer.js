@@ -108,7 +108,7 @@ export async function render(
             {
                 ...baseLayer,
                 templateId: template.id,
-                BASE_URL: options.BASE_URL || "",
+                BASE_URL
             }
         );
     }
@@ -127,12 +127,14 @@ export async function render(
     // ✅ 4. Load all fonts once
     await loadProjectFonts(page, template.layers);
 
-    await page.evaluate(() => {
+    backgroundDataURL && await page.evaluate((backgroundDataURL) => {
         document.documentElement.style.background = 'transparent';
         document.body.style.background = 'transparent';
         const canvas = document.getElementById('canvas');
-        if (canvas) canvas.style.backgroundColor = 'transparent';
-    });
+        if (canvas && backgroundDataURL) {
+            canvas.style.backgroundColor = 'transparent';
+        }
+    }, backgroundDataURL);
 
     // ✅ 5. Prepare output directory
     const outputDir = options.outputDir || path.resolve(`${await config.get('baseFolder') || './data'}/projects/outputs/${project.id}`);
