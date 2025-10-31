@@ -109,7 +109,7 @@ export async function workerVideoRenderer(jobData, onProgress) {
                     { outputDir: path.join(DATA_DIR, "projects", "outputs", project.id, "thumbnails"), format: "png" },
                     () => { }
                 );
-                thumbnailPath = out.output;
+                thumbnailPath = out[0].output;
             }
 
             let finalAudioPath = audioPath;
