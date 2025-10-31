@@ -7,7 +7,7 @@ import { preprocessVideoForBackground } from "../../helpers/media/preprocessVide
 import { render as renderImage } from "../../engine/image/renderer.js";
 
 export async function processBgCtrl({ row, project, template, modifier, tmpDir, options }) {
-    const hydratedPath = hydrateString(row, modifier.template);
+    const hydratedPath = hydrateString(row, modifier.options.props.template);
     if (!(await fileExists(hydratedPath))) return null;
 
     const baseLayer = template.baseLayers?.[0] || {};
