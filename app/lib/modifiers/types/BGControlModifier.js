@@ -1,15 +1,23 @@
 import Modifier from "./AbstractModifier";
+import BGCTRLPropertiesPanel from "@/app/components/core/menu/modifiers_menus/BGCTRLPropertiesPanel";
 
 class BgControlModifier extends Modifier {
     constructor({ id, title, subtitle, options = {}, canvas }) {
         super(id, 'fade', title, subtitle, options);
-        this.icon = options.icon || '/icons/coco/line/Fade.svg';
+        this.icon = options.icon || '/icons/coco/line/Scan-2.svg';
         this.props = options.props || {};
         this.canvas = canvas;
     }
 
     renderPropertiesPanel(onChange) {
-        return "BGCTRL Modifier Properties Panel - To be implemented";
+        return (
+            <div className="max-w-full overflow-auto">
+                <BGCTRLPropertiesPanel
+                    value={this.props}
+                    onChange={onChange}
+                />
+            </div>
+        );
     }
 
     updateProps(newProps) {
