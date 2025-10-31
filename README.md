@@ -80,8 +80,6 @@ Whether you are designing educational series, social campaigns, or inspirational
 
 Mawj combines simplicity, power, and speed to serve the needs of Dawah content creators and Arabic-speaking communities seeking to create impactful, high-quality media at scale.
 
-Here’s an updated version of your installation documentation, structured to **guide users depending on whether they want to install using a pre-packaged installer or build from source with Node.js**:
-
 ---
 
 ## Installation
