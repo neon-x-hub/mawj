@@ -151,10 +151,12 @@ function EditTemplateInner() {
                     try {
                         // ✅ Convert current layers to serializable objects
                         const LayersExport = layers.regular.map(layer => layer.toObject());
+                        const ModifiersExport = layers.modifiers.map(mod => mod.toObject());
                         console.log('Layers Export:', LayersExport);
+                        console.log('Modifiers Export:', ModifiersExport);
 
                         // ✅ Call updateTemplate to persist layer changes
-                        await updateTemplate(template.id, { layers: LayersExport });
+                        await updateTemplate(template.id, { layers: LayersExport, modifiers: ModifiersExport });
 
                         console.log('✅ Template layers updated successfully');
                     } catch (err) {
