@@ -76,7 +76,7 @@ class InterpolationRecipeParser {
             type: "interpolation",
             variable: this.variable,
             points: this.points,
-            unit: this.unit || null,
+            unit: this.unit || "",
             consider_diacritics: this.consider_diacritics
         };
     }
