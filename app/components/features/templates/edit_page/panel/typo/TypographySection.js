@@ -113,22 +113,23 @@ export default function TypographySection({ value, update }) {
             </Select>
 
             {/* Line height */}
-            <NumberInput
+            <InterpolatableInput
                 label={t("layers.text.line_height")}
-                type="number"
-                step="0.1"
                 value={value.lineHeight}
-                onValueChange={num => update({ lineHeight: num })}
+                onChange={(v) => update({ lineHeight: v })}
+                unit="px"
+                step="0.1"
             />
 
             {/* Letter spacing */}
-            <NumberInput
+            <InterpolatableInput
                 label={t("layers.text.letter_spacing")}
-                type="number"
                 step="0.1"
-                value={Number(value.letterSpacing?.slice(0, -2))} // remove 'px'
-                onValueChange={num => update({ letterSpacing: `${num}px` })}
+                value={value.letterSpacing}
+                onChange={(v) => update({ letterSpacing: v })}
+                unit="px"
             />
+
         </section>
     );
 }
