@@ -7,9 +7,6 @@ import { direction } from "direction";
 
 export const BGCTRLPropertiesPanel = ({ value, onChange }) => {
 
-    console.log("Value recieved: ", value);
-
-
     const update = (patch) => onChange({ ...value, ...patch });
 
     return (
