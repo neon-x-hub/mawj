@@ -2,6 +2,7 @@
 import { TextPropertiesPanel } from '../../../components/core/menu/TextEditPanel';
 import Layer from './AbstractLayer';
 import { direction } from 'direction';
+import InterpolationEngine from '../../interpolation/engine';
 
 // Defaults
 import { TEXT_DEFAULTS } from '../../defaults';
@@ -29,200 +30,215 @@ class TextLayer extends Layer {
     }
 
     normalizeFontFamily(name) {
-    // Always wrap in double quotes and escape any existing quotes
-    const safeName = name.replace(/"/g, '\\"');
-    return `"${safeName}"`;
-}
-
-
-/* ------------------------- 1. 改进 buildStyle ------------------------- */
-buildStyle() {
-
-    const {
-        content,
-        rotation,
-        skewX,
-        skewY,
-        left,
-        top,
-        direction: userDirection,
-        textAlign: userTextAlign,
-        fontSize,
-        responsiveFont,
-        minFontSize,
-        maxFontSize,
-        ...styleProps
-    } = this.props;
-
-
-    const inferredDirection = direction(content || '') === 'rtl' ? 'rtl' : 'ltr';
-    const inferredTextAlign = inferredDirection === 'rtl' ? 'right' : 'left';
-
-    const transformParts = [this.buildTransform({ rotation, skewX, skewY })];
-    if (left && /%$/.test(left)) transformParts.push('translateX(-50%)');
-    if (top && /%$/.test(top)) transformParts.push('translateY(-50%)');
-
-    const baseStyle = {
-        ...styleProps,
-        left,
-        top,
-        display: 'flex',
-        transform: transformParts.filter(Boolean).join(' '),
-        transformOrigin: 'center center',
-        direction: userDirection || inferredDirection,
-        textAlign: userTextAlign || inferredTextAlign,
-        wordWrap: 'break-word',
-        overflowWrap: 'break-word',
-    };
-
-    if (responsiveFont && this.canvas) {
-        const computedFontSize = this._computeFontSize({
-            width: styleProps.width || '100%',
-            height: styleProps.height || '100%',
-            min: minFontSize,
-            max: maxFontSize,
-            canvasWidth: this.canvas.width,
-            canvasHeight: this.canvas.height,
-            content
-        });
-
-        baseStyle.fontSize = `${computedFontSize}px`;
-
-    } else if (fontSize) {
-        baseStyle.fontSize = fontSize;
+        // Always wrap in double quotes and escape any existing quotes
+        const safeName = name.replace(/"/g, '\\"');
+        return `"${safeName}"`;
     }
 
-    // Normalize font family
-    if (styleProps.fontFamily) {
-        baseStyle.fontFamily = this.normalizeFontFamily(styleProps.fontFamily);
-    }
 
-    return { style: baseStyle };
-}
+    /* ------------------------- 1. 改进 buildStyle ------------------------- */
+    buildStyle() {
+        const {
+            content,
+            rotation,
+            skewX,
+            skewY,
+            left,
+            top,
+            direction: userDirection,
+            textAlign: userTextAlign,
+            ...styleProps
+        } = this.props;
 
+        // 1. Infer text direction and alignment
+        const inferredDirection = direction(content || "") === "rtl" ? "rtl" : "ltr";
+        const inferredTextAlign = inferredDirection === "rtl" ? "right" : "left";
 
-renderPreview(onChange) {
-    const { content } = this.props;
-    const { style } = this.buildStyle();
+        // 2. Build transform string
+        const transformParts = [this.buildTransform({ rotation, skewX, skewY })];
+        if (left && /%$/.test(left)) transformParts.push("translateX(-50%)");
+        if (top && /%$/.test(top)) transformParts.push("translateY(-50%)");
 
+        // 3. Base style skeleton
+        const baseStyle = {
+            ...styleProps,
+            left,
+            top,
+            display: "flex",
+            transform: transformParts.filter(Boolean).join(" "),
+            transformOrigin: "center center",
+            direction: userDirection || inferredDirection,
+            textAlign: userTextAlign || inferredTextAlign,
+            wordWrap: "break-word",
+            overflowWrap: "break-word",
+        };
 
-    const textareaStyle = {
-        ...style,
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        overflow: 'auto',
-        top: 'auto',
-        left: 'auto',
-        transform: 'none',
-    }
-    const handleChange = (e) => {
-        const newContent = e.target.value;
-        this.props.content = newContent; // still update internal state
-        if (typeof onChange === 'function') {
-            onChange({ content: newContent }); // notify parent
+        // 4. Interpolation support for *all* style props (including fontSize)
+        for (const [key, val] of Object.entries(styleProps)) {
+            if (val && typeof val === "object" && val.type === "interpolation") {
+                try {
+                    baseStyle[key] = InterpolationEngine.compute(val, { content });
+                } catch (err) {
+                    console.warn(`Interpolation failed for style property "${key}"`, err);
+                }
+            }
         }
-    };
 
-    return (
-        <textarea
-            style={textareaStyle}
-            value={content}
-            onChange={handleChange}
-        />
-    );
-}
+        // 5. Normalize font family name
+        if (styleProps.fontFamily) {
+            baseStyle.fontFamily = this.normalizeFontFamily(styleProps.fontFamily);
+        }
 
-renderContent({ node_key }) {
-
-    const { content } = this.props;
-    const elementId = `text-layer-${this.id}`;
-    const { style } = this.buildStyle();
-
-    return (
-        <div
-            key={node_key}
-            id={elementId}
-            style={style} // For some reason, the fontFamily is not applied when using className
-        >
-            {content}
-        </div>
-    );
-}
-
-
-_computeFontSize({
-    width,
-    height,
-    canvasWidth,
-    canvasHeight,
-    min = 12,
-    max = 96,
-    content = ''
-}) {
-    const parsePx = (val) =>
-        typeof val === 'string' ? parseFloat(val.replace('px', '')) : val;
-
-    const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
-
-    const minSize = parsePx(min);
-    const maxSize = parsePx(max);
-
-    const containerWidth = parsePx(width);
-    const containerHeight = parsePx(height);
-    const cWidth = parsePx(canvasWidth);
-    const cHeight = parsePx(canvasHeight);
-
-    if (!containerWidth || !containerHeight || !cWidth || !cHeight) {
-        return minSize;
+        return { style: baseStyle };
     }
 
-    // Step 1: Scaling based on container vs canvas
-    const widthScale = containerWidth / cWidth;
-    const heightScale = containerHeight / cHeight;
-    const baseScale = Math.min(widthScale, heightScale); // maintain aspect ratio
+    renderPreview(onChange) {
+        const { content } = this.props;
+        const { style } = this.buildStyle();
 
-    // Step 2: Adjust based on content length
-    const contentLength = content.length || 1;
-    const idealLength = 20; // tweak this value based on your design
-    const contentScale = clamp(idealLength / contentLength, 0.5, 1); // never shrink more than 50%
+        const textareaStyle = {
+            ...style,
+            position: "relative",
+            width: "100%",
+            height: "100%",
+            overflow: "auto",
+            top: "auto",
+            left: "auto",
+            transform: "none",
+            resize: "none",
+        };
 
-    // Step 3: Combine both
-    const combinedScale = baseScale * contentScale;
+        const handleChange = (e) => {
+            const newContent = e.target.value;
+            this.props.content = newContent; // still update internal state
+            if (typeof onChange === "function") {
+                onChange({ content: newContent });
+            }
+        };
 
-    const interpolatedSize = minSize + (maxSize - minSize) * combinedScale;
-    const clampedFontSize = clamp(interpolatedSize, minSize, maxSize);
+        // Utility: remove Arabic diacritics (Tashkeel)
+        const stripDiacritics = (text) =>
+            text.replace(/[\u064B-\u0652\u0670\u06D6-\u06ED]/g, "");
 
-    return clampedFontSize;
-}
+        const totalLength = content?.length || 0;
+        const plainLength = content ? stripDiacritics(content).length : 0;
 
-renderPropertiesPanel(onChange) {
-    return (
-        <div className="max-w-full overflow-auto">
-            <TextPropertiesPanel
-                value={this.props}
-                onChange={onChange}
-            />
-        </div>
-    );
-}
+        return (
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                <textarea
+                    style={textareaStyle}
+                    value={content}
+                    onChange={handleChange}
+                />
+                <div
+                    style={{
+                        position: "absolute",
+                        bottom: "4px",
+                        right: "6px",
+                        fontSize: "10px",
+                        fontFamily: "monospace",
+                        opacity: 0.6,
+                        lineHeight: "1.2",
+                        textAlign: "right",
+                    }}
+                >
+                    <div>{totalLength}</div>
+                    <div>{plainLength}</div>
+                </div>
+            </div>
+        );
+    }
 
-updateProps(newProps) {
-    this.props = { ...this.props, ...newProps };
-    return this;
-}
-clone() {
-    return new TextLayer({
-        id: this.id,
-        title: this.title,
-        subtitle: this.subtitle,
-        options: {
-            icon: this.icon,
-            props: { ...this.props }
-        },
-        canvas: this.canvas
-    });
-}
+    renderContent({ node_key }) {
+
+        const { content } = this.props;
+        const elementId = `text-layer-${this.id}`;
+        const { style } = this.buildStyle();
+
+        return (
+            <div
+                key={node_key}
+                id={elementId}
+                style={style} // For some reason, the fontFamily is not applied when using className
+            >
+                {content}
+            </div>
+        );
+    }
+
+
+    _computeFontSize({
+        width,
+        height,
+        canvasWidth,
+        canvasHeight,
+        min = 12,
+        max = 96,
+        content = ''
+    }) {
+        const parsePx = (val) =>
+            typeof val === 'string' ? parseFloat(val.replace('px', '')) : val;
+
+        const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+
+        const minSize = parsePx(min);
+        const maxSize = parsePx(max);
+
+        const containerWidth = parsePx(width);
+        const containerHeight = parsePx(height);
+        const cWidth = parsePx(canvasWidth);
+        const cHeight = parsePx(canvasHeight);
+
+        if (!containerWidth || !containerHeight || !cWidth || !cHeight) {
+            return minSize;
+        }
+
+        // Step 1: Scaling based on container vs canvas
+        const widthScale = containerWidth / cWidth;
+        const heightScale = containerHeight / cHeight;
+        const baseScale = Math.min(widthScale, heightScale); // maintain aspect ratio
+
+        // Step 2: Adjust based on content length
+        const contentLength = content.length || 1;
+        const idealLength = 20; // tweak this value based on your design
+        const contentScale = clamp(idealLength / contentLength, 0.5, 1); // never shrink more than 50%
+
+        // Step 3: Combine both
+        const combinedScale = baseScale * contentScale;
+
+        const interpolatedSize = minSize + (maxSize - minSize) * combinedScale;
+        const clampedFontSize = clamp(interpolatedSize, minSize, maxSize);
+
+        return clampedFontSize;
+    }
+
+    renderPropertiesPanel(onChange) {
+        return (
+            <div className="max-w-full overflow-auto">
+                <TextPropertiesPanel
+                    value={this.props}
+                    onChange={onChange}
+                />
+            </div>
+        );
+    }
+
+    updateProps(newProps) {
+        this.props = { ...this.props, ...newProps };
+        return this;
+    }
+    clone() {
+        return new TextLayer({
+            id: this.id,
+            title: this.title,
+            subtitle: this.subtitle,
+            options: {
+                icon: this.icon,
+                props: { ...this.props }
+            },
+            canvas: this.canvas
+        });
+    }
 
 }
 
