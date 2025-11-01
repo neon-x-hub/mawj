@@ -4,6 +4,7 @@ import { t } from '@/app/i18n'
 import ColorPickerSection from './ColorPickerSec'
 import PanelSectionTitle from '../SectionTitle'
 import { NumberInput } from '@heroui/react'
+import { InterpolatableInput } from '@/app/components/core/inputs/InterpolatableInput'
 
 export default function ColorSection({ value, update }) {
     return (
@@ -18,13 +19,16 @@ export default function ColorSection({ value, update }) {
                 }}
             />
 
-            <NumberInput
+            <InterpolatableInput
                 label={t("layers.text.opacity")}
                 value={value.opacity}
                 step={0.01}
+                maxValue={1}
+                minValue={0}
                 max={1}
                 min={0}
-                onValueChange={(newOpacity) => update({ opacity: newOpacity })}
+                onChange={(v) => update({ opacity: v })}
+                unit=""
             />
 
             <ColorPickerSection
