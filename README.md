@@ -1,4 +1,4 @@
-# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.4.0***
+# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.4.2***
 
 **Create stunning cards, videos and booklets at scale with blazing speed and ease.**
 
@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.4.0***](#-mawj-موج--bulk-content-creation-tool--v040)
+- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.4.2***](#-mawj-موج--bulk-content-creation-tool--v042)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Features](#features)
@@ -75,6 +75,15 @@ Whether you are designing educational series, social campaigns, or inspirational
 
 - **Network Audio Retrieval and Trimming**
   For video creation, Mawj can fetch audio directly from the network and trim it into specific segments. This allows you to create multiple videos from a single audio source, each using a different portion of the track.
+
+- **Flexible Interpolation Engine for Numeric Properties**
+  Mawj now supports a powerful interpolation system that dynamically adjusts any numeric property — from font size to spacing or even color values — based on content metrics like text length. This feature is fully aware of Arabic diacritics, allowing you to decide whether to include them in length calculations, ensuring more accurate and visually balanced typography for Arabic text.
+
+- **Dynamic Modifiers System**
+  Modifiers extend Mawj’s template logic beyond static layers, allowing you to dynamically alter how your output behaves or looks during rendering. Unlike regular layers that only define *what* to render, modifiers define *how* to render — letting you tweak playback speed, adjust backgrounds, or programmatically transform visual properties without changing the core design.
+
+  * **Background Control Modifier:** Manages image and video backgrounds dynamically, controlling playback speed, scaling, and positioning to create adaptive, animated backdrops for your templates.
+
 
 ---
 
