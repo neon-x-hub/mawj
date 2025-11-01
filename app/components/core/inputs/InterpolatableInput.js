@@ -29,6 +29,7 @@ export function InterpolatableInput({
     unit = "px",
     minValue = 0,
     maxValue = 300,
+    ...props
 }) {
     const isInterpolationObject =
         value && typeof value === "object" && value.type === "interpolation";
@@ -99,6 +100,7 @@ export function InterpolatableInput({
                     endContent={<span className="text-gray-400">{unit}</span>}
                     className="flex-1"
                     label={label}
+                    {...props}
                 />
             ) : (
                 <Textarea
@@ -117,6 +119,7 @@ export function InterpolatableInput({
                     style={{
                         direction: direction(textValue) === "rtl" ? "rtl" : "ltr",
                     }}
+                    {...props}
                 />
             )}
         </div>
