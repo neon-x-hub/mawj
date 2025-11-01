@@ -4,6 +4,7 @@ import { Autocomplete, AutocompleteItem, Select, SelectItem, Input, NumberInput 
 import PanelSectionTitle from '../SectionTitle';
 import FontSizeInputWithMode from './FontSizeWithMode';
 import { loadCustomFont } from '@/app/lib/fonts/fontLoader';
+import { InterpolatableInput } from '@/app/components/core/inputs/InterpolatableInput';
 
 const FALLBACK_FONTS = [
     "Arial", "Helvetica", "Georgia", "Times New Roman",
@@ -34,7 +35,7 @@ export default function TypographySection({ value, update }) {
 
     const handleFontChange = (fontName) => {
         const fontObj = fonts.find(f => f.name === fontName);
-        if (fontObj?.url){
+        if (fontObj?.url) {
             loadCustomFont(fontName, fontObj.url);
         }
         update({ fontFamily: fontName });
@@ -67,15 +68,13 @@ export default function TypographySection({ value, update }) {
             </Autocomplete>
 
             {/* Font size with responsive option */}
-            <FontSizeInputWithMode
-                fontSize={value.fontSize}
-                responsiveFont={value.responsiveFont}
-                minFontSize={value.minFontSize}
-                maxFontSize={value.maxFontSize}
-                onChange={val => update({ fontSize: val })}
-                onToggle={() => update({ responsiveFont: !value.responsiveFont })}
-                onMinMaxChange={patch => update(patch)}
+            <InterpolatableInput
+                label={t("layers.text.fontSize")}
+                value={value.fontSize}
+                onChange={(v) => update({ fontSize: v })}
+                unit="px"
             />
+
 
             {/* Font weight */}
             <Select
