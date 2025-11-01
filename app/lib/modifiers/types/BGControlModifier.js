@@ -3,7 +3,7 @@ import BGCTRLPropertiesPanel from "@/app/components/core/menu/modifiers_menus/BG
 
 class BgControlModifier extends Modifier {
     constructor({ id, title, subtitle, options = {}, canvas }) {
-        super(id, 'fade', title, subtitle, options);
+        super(id, 'bgctrl', title, subtitle, options);
         this.icon = options.icon || '/icons/coco/line/Scan-2.svg';
         this.props = options.props || {};
         this.canvas = canvas;
