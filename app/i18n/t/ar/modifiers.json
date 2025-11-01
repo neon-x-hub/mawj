@@ -3,6 +3,7 @@
         "template": "قالب التحكم في الخلفية",
         "enterTemplate": "أدخل قالب التحكم في الخلفية هنا...",
         "playbackSettings": "إعدادات الفيديو",
-        "enterPlaybackSettings": "أدخل إعدادات تشغيل الفيديو هنا..."
+        "enterPlaybackSettings": "أدخل إعدادات تشغيل الفيديو هنا...",
+        "enableMirroring": "تمكين الانعكاس"
     }
 }
