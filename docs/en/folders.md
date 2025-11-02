@@ -56,7 +56,7 @@ To change a folder’s **title** or **description**:
 * After editing, press **Enter** — your changes will take effect **immediately**.
 
 ## Next
-- [Projects](./configuration.md)
+- [Projects](./projects.md)
 
 ## Previous
 - [Configuration](./getting-started.md)
