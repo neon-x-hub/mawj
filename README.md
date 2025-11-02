@@ -2,6 +2,8 @@
 
 **Create stunning cards, videos and booklets at scale with blazing speed and ease.**
 
+![Mawj Banner](/docs/assets/banner.png)
+
 ---
 
 ## Table of Contents
@@ -16,8 +18,7 @@
       - [**Prerequisites**](#prerequisites)
       - [**Steps to Install and Run**](#steps-to-install-and-run)
     - [Future Plans](#future-plans)
-  - [Usage](#usage)
-  - [Configuration](#configuration)
+  - [Usage \& Configuration Documentation](#usage--configuration-documentation)
   - [Import \& Export](#import--export)
   - [Security and Vulnerability Checks](#security-and-vulnerability-checks)
   - [Performance](#performance)
@@ -182,11 +183,13 @@ If you encounter any issues with installation or setup, please check the [Issues
 
 ---
 
-## Usage
+## Usage & Configuration Documentation
 
-## Configuration
+You can find detailed usage docs here:
 
-[~ Video Tutorial Coming Soon ~]
+- [English Docs Here](/docs/en/index.md)
+
+- ***Arabic Docs*** (Soon)
 
 ---
 
