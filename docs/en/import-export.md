@@ -34,7 +34,7 @@ To import a project shared with you, simply upload the exported file. Mawj will:
 
 After extraction, you can configure what to keep from the imported project. For example, you might want to skip the datarows if they are irrelevant to your work.
 
-When importong projects, Mawj saves fonts in a folder you specify. If you don’t choose a folder, fonts are imported to a default folder on your desktop. This ensures you can install them later, while avoiding the risks of automatic font installation.
+When importung projects, Mawj saves fonts in a folder you specify. If you don’t choose a folder, fonts are imported to a default folder on your desktop. This ensures you can install them later, while avoiding the risks of automatic font installation.
 
 ---
 
