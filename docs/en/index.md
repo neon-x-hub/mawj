@@ -79,7 +79,7 @@ Because dawah deserves **professional tools** —
 not recycled social media editors or templates.
 
 I wanted to create something that **balances artistic control and automation**,
-allowing anyone to generate consistent, high-quality دعوى materials without needing to be a designer or video editor.
+allowing anyone to generate consistent, high-quality Dawah materials without needing to be a designer or video editor.
 
 Mawj is not a commercial product —
 it’s a **tool made out of love for knowledge sharing** and for the people doing it with sincerity.
