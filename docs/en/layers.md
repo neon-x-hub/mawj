@@ -48,7 +48,7 @@ The most fundamental and versatile type.
 
 You can define your text content and customize its properties — such as **font**, **color**, **position**, **alignment**, **size**, and more — using the provided controls.
 
-Some options have a small **cell-like icon** next to them — this indicates that the property can be **interpolated**, meaning it can change smoothly between values during animation or across frames.
+Some options have a small **cell-like icon** next to them — this indicates that the property can be **interpolated**, meaning it can change smoothly between values based on the text content length.
 (See the **Interpolation** chapter for details.)
 
 ---
