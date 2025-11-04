@@ -45,6 +45,10 @@
         "autoSize": "الحجم التلقائي",
         "fixedSize": "حجم ثابت",
         "template": "القالب النصي",
-        "template_placeholder": "اكتب قالب النص الخاص بك هنا..."
+        "template_placeholder": "اكتب قالب النص الخاص بك هنا...",
+        "custom_css": "CSS مخصص",
+        "custom_css_placeholder": "e.g.: filter: brightness(0.8);",
+        "custom_css_invalid": "صيغة CSS غير صحيحة.",
+        "custom_css_overwrite": "كتابة فوق الأنماط الحالية"
     }
 }
