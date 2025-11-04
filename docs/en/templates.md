@@ -45,4 +45,4 @@ These shortcuts work seamlessly within the canvas environment, giving you a smoo
 - [Layers](./layers.md)
 
 ## Previous
-- [Datarows](./folders.md)
+- [Datarows](./datarows.md)
