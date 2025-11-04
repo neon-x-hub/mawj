@@ -10,6 +10,7 @@ import { t, getLang } from "@/app/i18n";
 // Sections
 import TransformSection from "@/app/components/features/templates/edit_page/panel/transformations/TransformSection";
 import TextTemplateSection from "../../features/templates/edit_page/panel/text_template/TextTemplateSection";
+import CustomCSSSection from "../../features/templates/edit_page/panel/custom_css/CustomCSSSection";
 
 export const ImagePropertiesPanel = ({ value, onChange }) => {
 
@@ -23,6 +24,8 @@ export const ImagePropertiesPanel = ({ value, onChange }) => {
                 {/* Section: Transformations */}
                 <TransformSection value={value} update={update} />
                 <Divider />
+
+                <CustomCSSSection value={value} update={update} />
 
             </CardBody>
         </Card>

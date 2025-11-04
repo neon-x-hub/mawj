@@ -24,39 +24,64 @@ class ImageLayer extends Layer {
         return transforms.join(' ');
     }
 
-    buildStyle() {
+buildStyle() {
+    const {
+        rotation,
+        skewX,
+        skewY,
+        left,
+        top,
+        content,
+        templateText,
+        customCSS,
+        customCSSOverwrite = false,
+        ...styleProps
+    } = this.props;
 
-        const {
-            rotation,
-            skewX,
-            skewY,
-            left,
-            top,
-            content,
-            templateText,
-            ...styleProps
-        } = this.props;
+    const transformParts = [this.buildTransform({ rotation, skewX, skewY })];
+    if (left && /%$/.test(left)) transformParts.push('translateX(-50%)');
+    if (top && /%$/.test(top)) transformParts.push('translateY(-50%)');
 
-        const transformParts = [this.buildTransform({ rotation, skewX, skewY })];
-        if (left && /%$/.test(left)) transformParts.push('translateX(-50%)');
-        if (top && /%$/.test(top)) transformParts.push('translateY(-50%)');
+    let baseStyle = {
+        ...styleProps,
+        left,
+        top,
+        display: 'flex',
+        transform: transformParts.filter(Boolean).join(' '),
+        transformOrigin: 'center center',
+    };
 
-        const baseStyle = {
-            ...styleProps,
-            left,
-            top,
-            display: 'flex',
-            transform: transformParts.filter(Boolean).join(' '),
-            transformOrigin: 'center center',
-        };
+    if (customCSS) {
+        let cssObject = {};
 
-        return { style: baseStyle };
+        if (typeof customCSS === 'string') {
+            customCSS.split(';').forEach(rule => {
+                const [prop, val] = rule.split(':').map(s => s && s.trim());
+                if (prop && val) {
+                    const camelProp = prop.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+                    cssObject[camelProp] = val;
+                }
+            });
+        } else if (typeof customCSS === 'object') {
+            cssObject = customCSS;
+        }
 
+        if (customCSSOverwrite) {
+            baseStyle = { ...baseStyle, ...cssObject };
+        } else {
+            for (const [key, val] of Object.entries(cssObject)) {
+                if (!(key in baseStyle)) {
+                    baseStyle[key] = val;
+                }
+            }
+        }
     }
+
+    return { style: baseStyle };
+}
 
 
     renderContent({ node_key }) {
-        // Actual rendering would go here
         const { style } = this.buildStyle();
         const { content } = this.props;
 
