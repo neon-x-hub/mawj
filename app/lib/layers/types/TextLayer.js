@@ -47,6 +47,8 @@ class TextLayer extends Layer {
             top,
             direction: userDirection,
             textAlign: userTextAlign,
+            customCSS,
+            customCSSOverwrite = false,
             ...styleProps
         } = this.props;
 
@@ -60,7 +62,7 @@ class TextLayer extends Layer {
         if (top && /%$/.test(top)) transformParts.push("translateY(-50%)");
 
         // 3. Base style skeleton
-        const baseStyle = {
+        let baseStyle = {
             ...styleProps,
             left,
             top,
@@ -87,6 +89,36 @@ class TextLayer extends Layer {
         // 5. Normalize font family name
         if (styleProps.fontFamily) {
             baseStyle.fontFamily = this.normalizeFontFamily(styleProps.fontFamily);
+        }
+
+        // 6. Apply customCSS
+        if (customCSS) {
+            try {
+                let cssObject = {};
+                if (typeof customCSS === "string") {
+                    customCSS.split(";").forEach(rule => {
+                        const [prop, val] = rule.split(":").map(s => s && s.trim());
+                        if (prop && val) {
+                            const camelProp = prop.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+                            cssObject[camelProp] = val;
+                        }
+                    });
+                } else if (typeof customCSS === "object") {
+                    cssObject = customCSS;
+                }
+
+                if (customCSSOverwrite) {
+                    baseStyle = { ...baseStyle, ...cssObject };
+                } else {
+                    for (const [key, val] of Object.entries(cssObject)) {
+                        if (!(key in baseStyle)) {
+                            baseStyle[key] = val;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Failed to apply customCSS:", err);
+            }
         }
 
         return { style: baseStyle };

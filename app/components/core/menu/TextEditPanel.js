@@ -13,6 +13,7 @@ import TextAlignSection from "../../features/templates/edit_page/panel/text_alig
 import TypographySection from "../../features/templates/edit_page/panel/typo/TypographySection";
 import ColorSection from "../../features/templates/edit_page/panel/colors/ColorSection";
 import TextTemplateSection from "../../features/templates/edit_page/panel/text_template/TextTemplateSection";
+import CustomCSSSection from "../../features/templates/edit_page/panel/custom_css/CustomCSSSection";
 
 export const TextPropertiesPanel = ({ value, onChange }) => {
 
@@ -39,6 +40,9 @@ export const TextPropertiesPanel = ({ value, onChange }) => {
 
                 {/* Section: Colors */}
                 <ColorSection value={value} update={update} />
+                <Divider />
+
+                <CustomCSSSection value={value} update={update} />
 
             </CardBody>
         </Card>
