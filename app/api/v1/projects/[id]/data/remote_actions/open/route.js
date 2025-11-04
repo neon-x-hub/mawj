@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import config from '@/app/lib/providers/config';
 import db from '@/app/lib/providers/db';
+import { getDefaultApp } from '@/app/lib/plateform/common';
 
 const BASE_DATA_DIR = (await config.get('baseFolder')) || './data';
 
@@ -25,8 +26,9 @@ function openWithDefaultApp(filePath) {
             console.error(`File not found: ${absolutePath}`);
             return false;
         }
+        const { command, args } = getDefaultApp();
 
-        spawn('cmd', ['/c', 'start', '""', absolutePath], {
+        spawn(command, [...args, absolutePath], {
             detached: true,
             stdio: 'ignore',
             shell: true,

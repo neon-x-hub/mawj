@@ -238,7 +238,7 @@ export default function DataTable({
                                     type="text"
                                     id={column.key}
                                     name={column.key}
-                                    value={formData[column.key] || data.filter((row) => selectedKeys.has(row.key))[0][column.key] } // Default to the value of the selected row
+                                    value={formData[column.key] || data.filter((row) => selectedKeys.has(row.key))[0][column.key]} // Default to the value of the selected row
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -259,18 +259,18 @@ export default function DataTable({
                 content: (props) => {
                     if (project.type === 'card') {
                         return (
-                            <GenerateImageModal {...props} />
+                            <GenerateImageModal {...{ ...props, project }} />
                         )
                     }
                     else if (project.type === 'video') {
                         return (
-                            <GenerateVideoModal {...props} />
+                            <GenerateVideoModal {...{ ...props, project }} />
                         )
                     }
                     else {
                         return null;
                     }
-                    }, actionLabel: t("actions.generate"),
+                }, actionLabel: t("actions.generate"),
                 hasCancelButton: false,
                 action: async (formData, onClose) => {
                     await handleGenerate(formData, onClose)
