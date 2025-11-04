@@ -1,8 +1,10 @@
+export const runtime = 'nodejs';
+
 import fs from 'fs';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
 
-const USER_FONT_DIR = path.join(process.env.USERPROFILE, 'AppData/Local/Microsoft/Windows/Fonts');
+
 const MIME_TYPES = {
     '.ttf': 'font/ttf',
     '.otf': 'font/otf',
@@ -43,6 +45,9 @@ async function streamFile(filePath) {
 }
 
 export async function GET(request) {
+    const USER_FONT_DIR = process.platform === 'win32'
+        ? path.join(process.env.USERPROFILE, 'AppData/Local/Microsoft/Windows/Fonts')
+        : path.join(process.env.HOME || '', '.local/share/fonts');
     const url = new URL(request.url);
     const fileParam = url.searchParams.get('file');
     if (!fileParam) return new Response('Missing file', { status: 400 });
@@ -54,6 +59,7 @@ export async function GET(request) {
 
     const fontPath = path.join(USER_FONT_DIR, file);
     try {
+        console.log('GET /api/v1/fonts/file called during', process.env.NODE_ENV);
         await fsPromises.access(fontPath);
     } catch {
         return new Response('Not found', { status: 404 });
