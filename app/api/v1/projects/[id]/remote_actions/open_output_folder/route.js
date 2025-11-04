@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import db from '@/app/lib/providers/db';
 import config from '@/app/lib/providers/config';
-import os from 'os';
+import { getExplorer } from '@/app/lib/plateform/common';
 
 export async function GET(_, { params }) {
     const { id } = await params;
@@ -24,7 +24,7 @@ export async function GET(_, { params }) {
 
 
     try {
-        const explorer_program = os.platform() == "linux" ? "xdg-open" : "explorer.exe";
+        const explorer_program = getExplorer(0);
         // Use explorer directly
         spawn(explorer_program, [folderPath], {
             detached: true,
