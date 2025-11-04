@@ -68,6 +68,26 @@ In your dataset, you can have an `img_name` column whose value is either an abso
 
 ---
 
+#### 🎨 NOTE: Custom CSS Layer Settings
+
+![Custom CSS](../assets/layers/custom_css.png)
+
+You can now apply **custom CSS styles** directly to your text or image layers for extra visual control.
+This allows you to tweak properties like filters, blend modes, shadows, opacity, and more — without creating additional layers.
+
+- Enter your CSS rules in the **Custom CSS** textarea.
+- Each rule must end with a **semicolon (`;`)**.
+- You can choose whether the custom CSS **overwrites existing layer styles** or only adds new ones using the **Overwrite Styles** checkbox.
+
+Example CSS:
+
+```css
+filter: blur(5px) brightness(0.8);
+mix-blend-mode: screen;
+```
+
+---
+
 #### ⚙️ Custom Layer
 
 The most **powerful** and flexible type — but also the one that requires a bit of experience.
