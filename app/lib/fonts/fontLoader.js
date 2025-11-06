@@ -1,4 +1,4 @@
-function getFontFormat(file) {
+export function getFontFormat(file) {
     const ext = file.split('.').pop().toLowerCase();
     switch (ext) {
         case 'ttf': return 'truetype';
