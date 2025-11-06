@@ -35,10 +35,16 @@ You can configure playback options using a small snippet like this:
 ```
 playback_speed: {{pbkspd}}
 mirroring: true
+crossfade: 1s
 ```
 
 Here, `pbkspd` is a column in your dataset.
 When rendering each row, Mawj replaces `{{pbkspd}}` with the corresponding value.
+
+#### The oprions available:
+- `playback_speed`: the playback speed of the video.
+- `mirroring`: (true/false) should the renderer mirror the background video after it ends to the next iteration (i've used it to introduce some smoothing).
+- `crossfade`: ('duration's) crossfade effect for smooth transitions between iterations (if it present, the mirroring is canceled).
 
 ---
 
