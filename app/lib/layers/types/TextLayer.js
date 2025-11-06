@@ -3,7 +3,6 @@ import { TextPropertiesPanel } from '../../../components/core/menu/TextEditPanel
 import Layer from './AbstractLayer';
 import { direction } from 'direction';
 import InterpolationEngine from '../../interpolation/engine';
-
 // Defaults
 import { TEXT_DEFAULTS } from '../../defaults';
 
@@ -191,7 +190,7 @@ class TextLayer extends Layer {
             <div
                 key={node_key}
                 id={elementId}
-                style={style} // For some reason, the fontFamily is not applied when using className
+                style={style}
             >
                 {content}
             </div>
