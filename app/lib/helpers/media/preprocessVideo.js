@@ -51,41 +51,21 @@ export async function preprocessVideoForBackground(hydratedPath, tmpDir, modifie
         const info = await probeMedia(speedPath);
         const duration = parseFloat(info.format.duration);
 
-        const crossfadedPath = path.join(tmpDir, `${baseName}_crossfaded.mp4`);
-
-        // feed same input 3 times
+        // Create seamless loop with precise timing
         await runFFmpeg([
             "-y",
             "-i", speedPath,
             "-i", speedPath,
-            "-i", speedPath,
             "-filter_complex",
-            `[0:v][1:v]xfade=transition=fade:duration=${crossfade}:offset=${duration - crossfade},format=yuv420p[v1];` +
-            `[v1][2:v]xfade=transition=fade:duration=${crossfade}:offset=${(duration * 2) - (2 * crossfade)},format=yuv420p[v2]`,
-            "-map", "[v2]",
+            `[0:v]trim=0:${duration}[first];` +
+            `[1:v]trim=0:${duration}[second];` +
+            `[first][second]xfade=transition=fade:duration=${crossfade}:offset=${duration - crossfade}`,
             "-an",
             "-c:v", "libx264",
             "-preset", "veryfast",
             "-crf", "18",
             "-fflags", "+genpts",
             "-avoid_negative_ts", "make_zero",
-            crossfadedPath
-        ]);
-
-        const crossfadeInfo = await probeMedia(crossfadedPath);
-        const newDuration = parseFloat(crossfadeInfo.format.duration); // precise duration
-        const segmentLen = newDuration / 3;
-
-        // extract clean middle third
-        await runFFmpeg([
-            "-y",
-            "-i", crossfadedPath,
-            "-ss", segmentLen.toFixed(7),
-            "-to", (segmentLen * 2).toFixed(7),
-            "-an",
-            "-c:v", "libx264",
-            "-preset", "veryfast",
-            "-crf", "18",
             finalPath
         ]);
 
