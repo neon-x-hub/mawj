@@ -2,7 +2,7 @@
 
 [![Docs](https://img.shields.io/badge/docs-English-blue?style=flat-square)](./docs/en/index.md)
 [![Arabic Docs](https://img.shields.io/badge/docs-Arabic%20|%20coming_soon-lightgrey?style=flat-square)](#)
-[![Version](https://img.shields.io/badge/version-0.4.2-orange?style=flat-square)](https://github.com/neon-x-hub/mawj/releases)
+[![Version](https://img.shields.io/badge/version-0.4.2-orange?style=flat-square)](#)
 
 **Create stunning cards, videos and booklets at scale with blazing speed and ease.**
 
