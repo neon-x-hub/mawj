@@ -1,18 +1,7 @@
 import { spawn } from "child_process";
 import path from "path";
 import { isImage } from "../../helpers/media/check";
-
-function runFFmpeg(args) {
-    return new Promise((resolve, reject) => {
-        const ffmpeg = spawn("ffmpeg", args, { stdio: "inherit" });
-
-        ffmpeg.on("error", (err) => reject(err));
-        ffmpeg.on("close", (code) => {
-            if (code === 0) resolve();
-            else reject(new Error(`FFmpeg exited with code ${code}`));
-        });
-    });
-}
+import { runFFmpeg } from "../../ffmpeg/run.js";
 
 /**
  * Creates a video by combining a background (image or video) with audio.
@@ -76,7 +65,7 @@ async function render(bgPath, audioPath, outputPath, options = {}) {
     try {
         const startTime = Date.now();
 
-        await runFFmpeg(args);
+        await runFFmpeg(args, { inherit: true });
 
         const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(2);
         console.log(`Created video: ${outputPath} (Elapsed time: ${elapsedSeconds} seconds)`);
