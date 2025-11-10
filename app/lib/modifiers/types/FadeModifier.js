@@ -1,4 +1,5 @@
 import Modifier from "./AbstractModifier";
+import FadePropertiesPanel from "@/app/components/core/menu/modifiers_menus/FadePropertiesPanel";
 
 class FadeModifier extends Modifier {
     constructor({ id, title, subtitle, options = {}, canvas }) {
@@ -9,7 +10,14 @@ class FadeModifier extends Modifier {
     }
 
     renderPropertiesPanel(onChange) {
-        return "Fade Modifier Properties Panel - To be implemented";
+        return (
+            <div className="max-w-full overflow-auto">
+                <FadePropertiesPanel
+                    value={this.props}
+                    onChange={onChange}
+                />
+            </div>
+        );
     }
 
     updateProps(newProps) {
