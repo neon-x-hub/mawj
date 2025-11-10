@@ -41,18 +41,20 @@ crossfade: 1s
 Here, `pbkspd` is a column in your dataset.
 When rendering each row, Mawj replaces `{{pbkspd}}` with the corresponding value.
 
-#### The oprions available:
+#### The options available:
 - `playback_speed`: the playback speed of the video.
 - `mirroring`: (true/false) should the renderer mirror the background video after it ends to the next iteration (i've used it to introduce some smoothing).
 - `crossfade`: ('duration's) crossfade effect for smooth transitions between iterations (if it present, the mirroring is canceled).
 
 ---
 
-### 🌫️ Fade In/Out Modifier *(under development)*
+### 🌫️ Fade In/Out Modifier
 
 This modifier adds **fade-in and fade-out effects** to your video clips — useful for smooth transitions or cinematic intros/outros.
 
-Once implemented, it will support custom durations and easing settings.
+#### The options available:
+- `fade-in duration`: Duration the fade-in takes at the begnning of the video.
+- `fade-out duration`: Duration the fade-out takes at the end of the video.
 
 ---
 
