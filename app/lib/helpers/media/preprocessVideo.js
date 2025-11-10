@@ -16,7 +16,7 @@ export async function preprocessVideoForBackground(hydratedPath, tmpDir, modifie
 
     const hydratedSettings = hydrateString(row, modifier.options.props.playbackSettings);
 
-    const { speed, mirroring, crossfade } = parsePlaybackSettings(hydratedSettings);
+    let { speed, mirroring, crossfade } = parsePlaybackSettings(hydratedSettings);
 
     // Crossfade overrides mirroring
     if (crossfade) mirroring = false;
