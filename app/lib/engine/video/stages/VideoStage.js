@@ -9,9 +9,20 @@ export class VideoStage extends Stage {
 
     async run(ctx) {
         const { project, currentRow: row, options, dataDir, audioPath, thumbnailPath } = ctx;
+
         if (!audioPath || !thumbnailPath) {
             this.log(`Skipping row ${row.id} due to missing assets.`);
             return;
+        }
+
+        // --- Extract fade durations from modifier ---
+        let fadeInDuration = 0;
+        let fadeOutDuration = 0;
+
+        const fadeModifier = (ctx.template.modifiers || []).find(m => m.type === "fade");
+        if (fadeModifier?.options?.props) {
+            fadeInDuration = fadeModifier.options.props.fadeInDuration ?? 0;
+            fadeOutDuration = fadeModifier.options.props.fadeOutDuration ?? 0;
         }
 
         const outputPath = path.join(
@@ -25,6 +36,12 @@ export class VideoStage extends Stage {
         ctx.outputPath = outputPath;
 
         this.log(`Rendering video: ${outputPath}`);
-        await renderVideo(thumbnailPath, audioPath, outputPath, options);
+
+        // --- Call render with fade options ---
+        await renderVideo(thumbnailPath, audioPath, outputPath, {
+            ...options,
+            fadeInDuration,
+            fadeOutDuration
+        });
     }
 }
