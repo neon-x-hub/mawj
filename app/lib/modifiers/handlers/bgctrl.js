@@ -2,7 +2,7 @@ import path from "path";
 import { isImage, isVideo, fileExists } from "../../helpers/media/check.js";
 import { hydrateString } from "../../helpers/data/hydrate.js";
 import { createTransparentImage } from "../../helpers/images/createTransparentImage.js";
-import compositeOverlayOntoVideo from "../../ffmpeg/compositeOverlay.js";
+import compositeOverlayOntoVideo from "../../ffmpeg/commands/compositeOverlay.js";
 import { preprocessVideoForBackground } from "../../helpers/media/preprocessVideo.js";
 import { render as renderImage } from "../../engine/image/renderer.js";
 
