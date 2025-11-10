@@ -5,5 +5,11 @@
         "playbackSettings": "إعدادات الفيديو",
         "enterPlaybackSettings": "أدخل إعدادات تشغيل الفيديو هنا...",
         "enableMirroring": "تمكين الانعكاس"
+    },
+    "fade": {
+        "fadeInDuration": "مدة تلاشي الدخول",
+        "enterFadeIn": "أدخل مدة تلاشي الدخول بالثواني...",
+        "fadeOutDuration": "مدة تلاشي الخروج",
+        "enterFadeOut": "أدخل مدة تلاشي الخروج بالثواني..."
     }
 }
