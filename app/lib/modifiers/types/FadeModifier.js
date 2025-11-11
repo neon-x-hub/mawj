@@ -4,7 +4,7 @@ import FadePropertiesPanel from "@/app/components/core/menu/modifiers_menus/Fade
 class FadeModifier extends Modifier {
     constructor({ id, title, subtitle, options = {}, canvas }) {
         super(id, 'fade', title, subtitle, options);
-        this.icon = options.icon || '/icons/coco/line/Fade.svg';
+        this.icon = options.icon || '/icons/coco/line/Sunrise.svg';
         this.props = options.props || {};
         this.canvas = canvas;
     }
