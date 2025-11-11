@@ -5,7 +5,7 @@ import { t } from "@/app/i18n";
 import { Listbox, ListboxItem, Divider } from "@heroui/react";
 import { useLayers } from "@/app/lib/layers/context/LayerContext";
 import { FadeModifier } from "@/app/lib/modifiers/types";
-
+import { BgControlModifier } from "@/app/lib/modifiers/types";
 
 export const ListboxWrapper = ({ children }) => (
     <div className="flex flex-col gap-2 w-full">
@@ -37,13 +37,17 @@ export default function AddModifierOptions() {
                     id: `modifier-${(layers.modifiers?.length ?? 0) + 1}`,
                 });
                 break;
+            case "bgctrl":
+                console.log("Adding a BG Control modifier");
+                newLayer = new BgControlModifier({
+                    id: `modifier-${(layers.modifiers?.length ?? 0) + 1}`,
+                });
+                break;
 
             default:
                 console.warn("Unknown modifier type:", key);
                 return;
         }
-
-        // check if layers.modifiers encludes a layer of the requested type, as we can have one type per modifer
 
         if (layers.modifiers?.some(layer => layer.type === newLayer.type)) {
             alert(`A modifier of type "${newLayer.type}" already exists. Only one modifier of each type is allowed.`);
@@ -62,7 +66,7 @@ export default function AddModifierOptions() {
             <ListboxWrapper>
                 <Listbox aria-label="Layer Types" onAction={handleAddLayer}>
                     <ListboxItem key="fade">تلاشي/ظهور (Fade)</ListboxItem>
-                    <ListboxItem key="base_layer">معدل الاساس (Base Layer)</ListboxItem>
+                    <ListboxItem key="bgctrl">معدل الاساس (Base Layer)</ListboxItem>
                     <ListboxItem key="intro_outro">مقدمة/خاتمة (Intro/Outro)</ListboxItem>
                 </Listbox>
             </ListboxWrapper>
