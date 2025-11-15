@@ -65,7 +65,7 @@ export async function workerVideoRenderer(jobData, onProgress) {
     const cleanup = new CleanupStage();
     await cleanup.run(ctx);
 
-    stats.add({
+    !options.liveGen && stats.add({
         projectId: project.id,
         action: "generation",
         data: { timeTaken: Date.now() - jobData.startTime, count: ctx.completed },
