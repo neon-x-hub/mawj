@@ -153,7 +153,7 @@ export default function ActionsDropdown({
 
             {/* ✅ Modal (supports both custom and confirmation modals) */}
             {activeModal && (
-                <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside'>
                     <ModalContent>
                         {(onClose) => (
                             <>
