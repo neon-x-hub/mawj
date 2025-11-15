@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import db from "@/app/lib/providers/db";
-import { generatePreview } from '@/app/lib/helpers/preview/GeneratePreview';
+import { generateCardPreview } from '@/app/lib/helpers/preview/GeneratePreview';
 import config from '@/app/lib/providers/config';
 const PREVIEW_NAME = 'preview.jpg';
 
@@ -21,7 +21,7 @@ export async function GET(request, { params }) {
             fs.mkdirSync(previewDir, { recursive: true });
         }
 
-        await generatePreview(template);
+        await generateCardPreview(template);
     }
 
     // Serve the preview image
