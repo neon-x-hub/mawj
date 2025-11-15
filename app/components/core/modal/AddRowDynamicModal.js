@@ -1,7 +1,7 @@
 'use client';
-import { t } from "@/app/i18n";
 import { Textarea } from "@heroui/react";
 import React, { useEffect, useState } from "react";
+import LivePreviewGenerator from "../../features/projects/live_preview/generateLivePreview";
 
 function AddRowDynamicModal({ projectId, formData, handleInputChange }) {
     const [columns, setColumns] = useState([]);
@@ -24,23 +24,31 @@ function AddRowDynamicModal({ projectId, formData, handleInputChange }) {
     if (columns.length === 0) return <div>Loading...</div>;
 
     return (
-        <form className="space-y-2">
-            {columns
-                .filter((col) => col.key !== "status")
-                .map((column) => (
-                    <div key={column}>
-                        <label htmlFor={column}>{column}</label>
-                        <Textarea
-                            type="text"
-                            id={column}
-                            name={column}
-                            value={formData[column] || ""}
-                            onChange={handleInputChange}
-                            placeholder='...'
-                        />
-                    </div>
-                ))}
-        </form>
+        <div className="space-y-4">
+
+            <LivePreviewGenerator
+                projectId={projectId}
+                formData={formData}
+            />
+
+            <form className="space-y-2">
+                {columns
+                    .filter(col => col.key !== "status")
+                    .map(column => (
+                        <div key={column}>
+                            <label htmlFor={column}>{column}</label>
+                            <Textarea
+                                id={column}
+                                name={column}
+                                value={formData[column] || ""}
+                                onChange={handleInputChange}
+                                placeholder="..."
+                            />
+                        </div>
+                    ))}
+            </form>
+
+        </div>
     );
 }
 
