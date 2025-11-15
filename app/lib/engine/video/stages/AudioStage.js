@@ -42,24 +42,42 @@ export class AudioStage extends Stage {
 
         if (!audioPath) return;
 
-        // trimming
+        let workingAudio = audioPath;
+
         if (options.useTrimming && row.data?.from && row.data?.to) {
             const { from, to } = row.data;
+
             if (isValidTimeFormat(from) && isValidTimeFormat(to)) {
                 try {
-                    const trimmedOutputPath = path.join(
+                    const trimmedPath = path.join(
                         tmpAudioDir,
                         `trimmed_${row.id}_${path.basename(audioPath)}`
                     );
-                    await extractAudioSegment(audioPath, from, to, trimmedOutputPath);
-                    ctx.audioPath = trimmedOutputPath;
-                    return;
-                } catch (trimErr) {
-                    this.log(`Trim failed for ${row.id}: ${trimErr.message}`);
+
+                    await extractAudioSegment(workingAudio, from, to, trimmedPath);
+                    workingAudio = trimmedPath;
+                } catch (err) {
+                    this.log(`Trim failed for ${row.id}: ${err.message}`);
                 }
             }
         }
 
-        ctx.audioPath = audioPath;
+        if (options.liveGen === true) {
+            try {
+                const first10Path = path.join(
+                    tmpAudioDir,
+                    `livegen_${row.id}_${path.basename(workingAudio)}`
+                );
+
+                await extractAudioSegment(workingAudio, "00:00:00.000", "00:00:10.000", first10Path);
+
+                ctx.audioPath = first10Path;
+                return;
+            } catch (err) {
+                this.log(`LiveGen crop failed for ${row.id}: ${err.message}`);
+            }
+        }
+
+        ctx.audioPath = workingAudio;
     }
 }
