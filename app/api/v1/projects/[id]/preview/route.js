@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import db from "@/app/lib/providers/db";
-import { generatePreview } from '@/app/lib/helpers/preview/GeneratePreview';
+import { generateCardPreview as generatePreview } from '@/app/lib/helpers/preview/GeneratePreview';
 import config from '@/app/lib/providers/config';
 const PREVIEW_NAME = 'preview.jpg';
 
