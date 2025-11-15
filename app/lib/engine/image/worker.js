@@ -18,7 +18,7 @@ export async function workerRenderer(jobData, onProgress) {
     const flushBuffer = async () => {
         if (buffer.length === 0) return;
         const updates = buffer.splice(0, buffer.length); // take all pending updates
-        await dataRowsInstance.bulkUpdate(project.id, updates);
+        !options.liveGen && await dataRowsInstance.bulkUpdate(project.id, updates);
     };
 
     const scheduleFlush = () => {
@@ -53,7 +53,7 @@ export async function workerRenderer(jobData, onProgress) {
     const endTime = Date.now();
     const duration = endTime - startTime;
 
-    stats.add({
+    !options.liveGen && stats.add({
         projectId: project.id,
         action: 'generation',
         data: { timeTaken: duration, count: rows.length },
