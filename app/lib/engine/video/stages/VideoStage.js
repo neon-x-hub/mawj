@@ -25,13 +25,15 @@ export class VideoStage extends Stage {
             fadeOutDuration = fadeModifier.options.props.fadeOutDuration ?? 0;
         }
 
-        const outputPath = path.join(
-            dataDir,
-            "projects",
-            "outputs",
-            project.id,
-            `${row.id}.${options.format}`
-        );
+        const outputPath = options.outputDir ?
+            path.join(options.outputDir, `${row.id}.${options.format}`)
+            : path.join(
+                dataDir,
+                "projects",
+                "outputs",
+                project.id,
+                `${row.id}.${options.format}`
+            );
 
         ctx.outputPath = outputPath;
 
