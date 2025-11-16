@@ -62,7 +62,7 @@ export default function DataSectionHead({ project, data, setData }) {
                             title: t('actions.generic.add.label', { object: t('common.data') }),
                             actionLabel: t('actions.generic.add.label', { object: t('common.data') }),
                             content: ({ formData, handleInputChange }) => (
-                                <AddRowDynamicModal projectId={project.id} formData={formData} handleInputChange={handleInputChange} />
+                                <AddRowDynamicModal project={project} formData={formData} handleInputChange={handleInputChange} />
                             ),
                             action: async (data) => {
                                 try {
