@@ -1,17 +1,41 @@
 'use client';
-import React, { useState } from "react";
-import { Button } from "@heroui/react";
+import React, { useEffect, useState } from "react";
+import { Button, Skeleton } from "@heroui/react";
+import { useTemplates } from "@/app/components/context/templates/templatesContext";
+import MaskedIcon from "@/app/components/core/icons/Icon";
+import Image from "next/image";
 
-export default function LivePreviewGenerator({ projectId, formData }) {
+export default function LivePreviewGenerator({ project, formData }) {
+    const { getTemplateById } = useTemplates();
     const [loadingPreview, setLoadingPreview] = useState(false);
-    const [previewReady, setPreviewReady] = useState(false);
+    const [previewData, setPreviewData] = useState(null); // { url }
+    const [template, setTemplate] = useState(null); // resolved template
+
+    // Fetch template when project changes
+    useEffect(() => {
+        async function fetchTemplate() {
+            try {
+                const tpl = await getTemplateById(project.template);
+                setTemplate(tpl);
+            } catch (err) {
+                console.error("Error fetching template:", err);
+            }
+        }
+
+        if (project?.template) fetchTemplate();
+    }, [project]);
+
+    const baseLayer = template?.baseLayers?.[0];
+    const aspectRatio = baseLayer?.width && baseLayer?.height
+        ? baseLayer.width / baseLayer.height
+        : 16 / 9;
 
     async function handleGeneratePreview() {
         try {
             setLoadingPreview(true);
-            setPreviewReady(false);
+            setPreviewData(null);
 
-            const response = await fetch(`/api/v1/projects/${projectId}/live_preview`, {
+            const response = await fetch(`/api/v1/projects/${project.id}/live_preview`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ params: formData })
@@ -22,7 +46,8 @@ export default function LivePreviewGenerator({ projectId, formData }) {
                 return;
             }
 
-            setPreviewReady(true);
+            await response.json();
+            setPreviewData({ url: `/api/v1/projects/${project.id}/live_preview` });
 
         } catch (err) {
             console.error("Error generating live preview:", err);
@@ -31,26 +56,64 @@ export default function LivePreviewGenerator({ projectId, formData }) {
         }
     }
 
-    const previewUrl = `/api/v1/projects/${projectId}/live_preview`;
+    if (!template) return <Skeleton className="w-full h-64 rounded-xl" />;
 
     return (
-        <div className="w-full flex items-center flex-col space-y-3 mb-5">
-            {previewReady && (
-                <video
-                    src={previewUrl}
-                    controls
-                    autoPlay
-                    className="h-[300px] rounded-xl border"
-                />
-            )}
+        <div className="w-full flex flex-col items-center space-y-3 mb-5 p-4 rounded-xl bg-[url('/bg/grid/square-2.jpg')] bg-repeat bg-center bg-[length:450px_450px]">
 
-            <Button
-                color="primary"
-                onPress={handleGeneratePreview}
-                isLoading={loadingPreview}
+            {/* Media Container */}
+            <div
+                className="w-full rounded-xl border relative flex justify-center items-center"
+                style={{
+                    aspectRatio: aspectRatio,
+                    maxHeight: '300px',
+                    width: '100%',
+                }}
             >
-                Generate Live Preview
-            </Button>
+                {/* Generate Button at top-left corner */}
+                <div className="absolute top-1 left-1 z-10">
+                    <Button
+                        color="primary"
+                        onPress={handleGeneratePreview}
+                        isLoading={loadingPreview}
+                        size="sm"
+                        radius="full"
+                        endContent={<MaskedIcon src="/icons/coco/line/rotate.svg" color="#ffffff" height="15px" width="15px" />}
+                        className="text-white scale-85"
+                    >
+                        Refresh
+                    </Button>
+                </div>
+
+                {/* Show Skeleton initially or when loading */}
+                {(loadingPreview || !previewData) && (
+                    <Skeleton
+                        className="w-full h-full rounded-xl border"
+                        style={{
+                            aspectRatio: aspectRatio,
+                            maxHeight: '300px',
+                        }}
+                    />
+                )}
+
+                {/* Show media once available */}
+                {previewData && !loadingPreview && (
+                    project.type === "video" ? (
+                        <video
+                            src={previewData.url}
+                            controls
+                            autoPlay
+                            className="max-w-full max-h-full object-contain rounded-xl"
+                        />
+                    ) : (
+                        <Image
+                            src={previewData.url}
+                            alt="Live Preview"
+                            className="max-w-full max-h-full object-contain rounded-xl"
+                        />
+                    )
+                )}
+            </div>
         </div>
     );
 }
