@@ -2,7 +2,7 @@ import db from "@/app/lib/providers/db";
 import fs from 'fs';
 import path from "path";
 import config from "@/app/lib/providers/config";
-import { generatePreview } from '@/app/lib/helpers/preview/GeneratePreview';
+import { generateCardPreview } from '@/app/lib/helpers/preview/GeneratePreview';
 import { t } from "@/app/i18n";
 
 const DATA_DIR = await config.get('baseFolder') || './data';
