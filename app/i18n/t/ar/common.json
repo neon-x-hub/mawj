@@ -101,5 +101,6 @@
     "language": "اللغة",
     "license": "الرخصة",
     "suspicious_items": "عناصر مشبوهة",
-    "modifiers": "المعدلات"
+    "modifiers": "المعدلات",
+    "live_preview": "المعاينة الحية"
 }
