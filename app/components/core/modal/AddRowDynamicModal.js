@@ -8,7 +8,7 @@ import { t } from "@/app/i18n";
 function AddRowDynamicModal({ project, formData, handleInputChange }) {
     const projectId = project.id;
     const [columns, setColumns] = useState([]);
-    const [selectedTab, setSelectedTab] = useState("form"); // default selected tab
+    const [selectedTab, setSelectedTab] = useState("form");
 
     useEffect(() => {
         async function fetchColumns() {
