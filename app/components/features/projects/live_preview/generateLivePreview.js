@@ -8,10 +8,9 @@ import Image from "next/image";
 export default function LivePreviewGenerator({ project, formData }) {
     const { getTemplateById } = useTemplates();
     const [loadingPreview, setLoadingPreview] = useState(false);
-    const [previewData, setPreviewData] = useState(null); // { url }
-    const [template, setTemplate] = useState(null); // resolved template
+    const [previewData, setPreviewData] = useState(null);
+    const [template, setTemplate] = useState(null);
 
-    // Fetch template when project changes
     useEffect(() => {
         async function fetchTemplate() {
             try {
@@ -21,7 +20,6 @@ export default function LivePreviewGenerator({ project, formData }) {
                 console.error("Error fetching template:", err);
             }
         }
-
         if (project?.template) fetchTemplate();
     }, [project]);
 
@@ -29,6 +27,8 @@ export default function LivePreviewGenerator({ project, formData }) {
     const aspectRatio = baseLayer?.width && baseLayer?.height
         ? baseLayer.width / baseLayer.height
         : 16 / 9;
+
+    const isVertical = aspectRatio < 1;
 
     async function handleGeneratePreview() {
         try {
@@ -63,14 +63,15 @@ export default function LivePreviewGenerator({ project, formData }) {
 
             {/* Media Container */}
             <div
-                className="w-full rounded-xl border relative flex justify-center items-center"
+                className="rounded-xl border relative flex justify-center items-center"
                 style={{
                     aspectRatio: aspectRatio,
-                    maxHeight: '300px',
-                    width: '100%',
+                    width: isVertical ? "50%" : "100%",
+                    maxWidth: isVertical ? "260px" : "100%",
+                    maxHeight: isVertical ? "100%" : "300px",
                 }}
             >
-                {/* Generate Button at top-left corner */}
+                {/* Refresh Button */}
                 <div className="absolute top-1 left-1 z-10">
                     <Button
                         color="primary"
@@ -85,31 +86,31 @@ export default function LivePreviewGenerator({ project, formData }) {
                     </Button>
                 </div>
 
-                {/* Show Skeleton initially or when loading */}
+                {/* Loading skeleton */}
                 {(loadingPreview || !previewData) && (
                     <Skeleton
                         className="w-full h-full rounded-xl border"
                         style={{
-                            aspectRatio: aspectRatio,
-                            maxHeight: '300px',
+                            aspectRatio: aspectRatio
                         }}
                     />
                 )}
 
-                {/* Show media once available */}
+                {/* Final Media */}
                 {previewData && !loadingPreview && (
                     project.type === "video" ? (
                         <video
                             src={previewData.url}
                             controls
                             autoPlay
-                            className="max-w-full max-h-full object-contain rounded-xl"
+                            className="w-full h-full object-contain rounded-xl"
                         />
                     ) : (
                         <Image
                             src={previewData.url}
                             alt="Live Preview"
-                            className="max-w-full max-h-full object-contain rounded-xl"
+                            fill
+                            className="object-contain rounded-xl"
                         />
                     )
                 )}
