@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useState } from "react";
+import { t } from "@/app/i18n";
 import { Button, Skeleton } from "@heroui/react";
 import { useTemplates } from "@/app/components/context/templates/templatesContext";
 import MaskedIcon from "@/app/components/core/icons/Icon";
@@ -82,7 +83,7 @@ export default function LivePreviewGenerator({ project, formData }) {
                         endContent={<MaskedIcon src="/icons/coco/line/rotate.svg" color="#ffffff" height="15px" width="15px" />}
                         className="text-white scale-85"
                     >
-                        Refresh
+                        {t('actions.refresh')}
                     </Button>
                 </div>
 
