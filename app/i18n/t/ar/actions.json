@@ -55,5 +55,6 @@
     "open_output_folder_desc": "حيث توجد مخرجات مشروعك",
     "export_project": "تصدير المشروع",
     "inspection": "تفحص",
-    "extraction": "استخراج"
+    "extraction": "استخراج",
+    "refresh": "تحديث"
 }
