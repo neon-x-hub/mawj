@@ -18,6 +18,7 @@ import ActionButtonWithOptionalModal from "../core/buttons/ActionButtonWithModal
 import { t } from "@/app/i18n";
 import GenerateImageModal from "../core/modal/GenerateImageModal";
 import GenerateVideoModal from "../core/modal/GenerateVideoModal";
+import EditRowDynamicModal from "../core/modal/EditRowDynamicModal";
 
 function StatusCell({ value }) {
     const isDone = value === true || value === "Done";
@@ -228,22 +229,13 @@ export default function DataTable({
             modal: {
                 title: t("actions.edit_item"),
                 content: ({ formData, handleInputChange }) => (
-                    <form className="space-y-2">
-                        {/* For each column, render an input and a label, except for STATUS */}
-                        {columns.map((column) => (
-                            column.key !== "status" &&
-                            <div key={column.key}>
-                                <label htmlFor={column.key}>{column.label}</label>
-                                <Textarea
-                                    type="text"
-                                    id={column.key}
-                                    name={column.key}
-                                    value={formData[column.key] || data.filter((row) => selectedKeys.has(row.key))[0][column.key]} // Default to the value of the selected row
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                        ))}
-                    </form>
+                    <EditRowDynamicModal
+                        project={project}
+                        columns={columns}
+                        formData={formData}
+                        selectedRow={data.find(row => selectedKeys.has(row.key))}
+                        handleInputChange={handleInputChange}
+                    />
                 ),
                 actionLabel: t("actions.save"),
                 closeLabel: t("actions.cancel"),
