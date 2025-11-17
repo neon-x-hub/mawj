@@ -137,6 +137,33 @@ These actions include:
 * **🎬 Generate Output** — trigger generation for the selected row only (image or video).
 * **📂 Open Output File** — open the generated output directly from your output folder if it already exists.
 
+---
+
+### 👁️ Live Preview While Editing Data
+
+When adding or editing a row, Mawj provides a built-in **Live Preview** panel that lets you instantly visualize how your data will appear inside the final template.
+
+This means you can adjust text, media paths, or modifier values and see the result **in real time** — without running a full render.
+
+![Live Preview](../assets/datarows/live_preview.png)
+
+#### 🔄 How It Works
+
+* As you type in the form fields, Mawj sends your updated values to the preview engine.
+* The preview loads the template and injects your current data.
+* For **image templates**, you’ll see an updated frame.
+* For **video templates**, a short preview video is generated and displayed.
+
+#### 💡 Why It’s Useful
+
+* Catch formatting issues early
+* Ensure text fits the layout correctly
+* Verify colors, media, and modifiers
+* Eliminate guesswork before rendering the final output
+
+Live Preview makes editing faster, safer, and far more intuitive — especially when working with templates with many configurable fields.
+
+
 ## Next
 - [Templates](./templates.md)
 
