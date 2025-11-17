@@ -1,8 +1,8 @@
-# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.4.2***
+# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.5.3***
 
 [![Docs](https://img.shields.io/badge/docs-English-blue?style=flat-square)](./docs/en/index.md)
 [![Arabic Docs](https://img.shields.io/badge/docs-Arabic%20|%20coming_soon-lightgrey?style=flat-square)](#)
-[![Version](https://img.shields.io/badge/version-0.4.2-orange?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/version-0.5.3-orange?style=flat-square)](#)
 
 **Create stunning cards, videos and booklets at scale with blazing speed and ease.**
 
@@ -12,7 +12,7 @@
 
 ## Table of Contents
 
-- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.4.2***](#-mawj-موج--bulk-content-creation-tool--v042)
+- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.5.3***](#-mawj-موج--bulk-content-creation-tool--v053)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Features](#features)
@@ -85,10 +85,7 @@ Whether you are designing educational series, social campaigns, or inspirational
   Mawj now supports a powerful interpolation system that dynamically adjusts any numeric property — from font size to spacing or even color values — based on content metrics like text length. This feature is fully aware of Arabic diacritics, allowing you to decide whether to include them in length calculations, ensuring more accurate and visually balanced typography for Arabic text.
 
 - **Dynamic Modifiers System**
-  Modifiers extend Mawj’s template logic beyond static layers, allowing you to dynamically alter how your output behaves or looks during rendering. Unlike regular layers that only define *what* to render, modifiers define *how* to render — letting you tweak playback speed, adjust backgrounds, or programmatically transform visual properties without changing the core design.
-
-  * **Background Control Modifier:** Manages image and video backgrounds dynamically, controlling playback speed, scaling, and positioning to create adaptive, animated backdrops for your templates.
-
+  Modifiers extend Mawj’s template logic beyond static layers, allowing you to dynamically alter how your output behaves or looks during rendering. Unlike regular layers that only define *what* to render, modifiers define *how* to render — letting you tweak playback speed, adjust backgrounds, or programmatically transform visual properties without changing the core design, or even introduce effects like fade in/out, and more...
 
 ---
 

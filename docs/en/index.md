@@ -92,7 +92,7 @@ it’s a **tool made out of love for knowledge sharing** and for the people doin
 
 ---
 
-> *Mawj v0.4.2 – Built for those who believe that every pixel can carry a message.*
+> *Mawj v0.5.3 – Built for those who believe that every pixel can carry a message.*
 
 ## Index
 
