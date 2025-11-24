@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { t } from '@/app/i18n'
 import { Select, SelectItem, Progress, Checkbox } from '@heroui/react'
+import GenerateVideoFAMPanel from './GenerateVideoFAMPanel'
 
 export default function GenerateVideoModal({
     project,
@@ -12,9 +13,6 @@ export default function GenerateVideoModal({
     isProcessing,
     progress
 }) {
-    const [metadata, setMetadata] = useState(null)
-    const [loadingMetadata, setLoadingMetadata] = useState(true)
-
     // Estimated render times (per video, in seconds) by format
     const renderTimeMap = {
         mp4: 3.0,
@@ -27,22 +25,6 @@ export default function GenerateVideoModal({
         mkv with h264 1M bitrate a video of length 12 mins took  94 s
         mkv with h265 1M bitrate a video of length 12 mins took 146 s
     */
-
-    useEffect(() => {
-        const fetchMetadata = async () => {
-            try {
-                const res = await fetch(`/api/v1/projects/${project.id}/data/metadata`)
-                if (!res.ok) throw new Error('Failed to fetch metadata')
-                const data = await res.json()
-                setMetadata(data)
-            } catch (err) {
-                console.error('Metadata fetch error:', err)
-            } finally {
-                setLoadingMetadata(false)
-            }
-        }
-        fetchMetadata()
-    }, [project.id])
 
     // Seconds needed to process 1 minute of video (depends on codec/bitrate/GPU)
     const baseSpeedPerMin = {
@@ -85,25 +67,10 @@ export default function GenerateVideoModal({
             )}
 
             {/* Metadata & Estimated Time */}
-            <div className="p-2 bg-gray-50 rounded border text-sm min-h-[80px]">
-                {loadingMetadata ? (
-                    <div className="animate-pulse space-y-1">
-                        <p><strong>{t('common.total_videos')}:</strong> ...</p>
-                        <p><strong>{t('common.completed_f')}:</strong> ...</p>
-                        <p><strong>{t('common.remaining_f')}:</strong> ...</p>
-                        <p className="mt-1 text-primary-600 font-medium">
-                            ⏱ <strong>{t('common.estimated_time')}:</strong> ...
-                        </p>
-                    </div>
-                ) : (
-                    <>
-                        <p><strong>{t('common.total_videos')}:</strong> {metadata.total}</p>
-                        <p><strong>{t('common.completed_f')}:</strong> {metadata.done}</p>
-                        <p><strong>{t('common.remaining_f')}:</strong> {metadata.total - metadata.done}</p>
-                        ⚡ <strong>{t('common.estimated_speed')}:</strong> {secondsPerMinute} ثانية لكل دقيقة فيديو
-                    </>
-                )}
-            </div>
+            <GenerateVideoFAMPanel
+                projectId={project.id}
+                secondsPerMinute={secondsPerMinute}
+            />
 
             {/* Output Format */}
             <Select
