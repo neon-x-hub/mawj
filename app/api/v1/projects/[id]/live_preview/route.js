@@ -76,6 +76,7 @@ export async function POST(request, { params }) {
 
         const renderParams = input.params || {};
         const opts = input.options || {};
+        const liveGenOpts = opts.liveGenOpts || {};
 
         const dbInstance = await db.getDB();
 
@@ -121,6 +122,7 @@ export async function POST(request, { params }) {
             outputDir: previewDir,
             outputName: previewName,
             liveGen: true,
+            ...liveGenOpts
         });
 
         return Response.json({
