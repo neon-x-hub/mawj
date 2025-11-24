@@ -21,7 +21,7 @@ export async function GET(request, { params }) {
             fs.mkdirSync(previewDir, { recursive: true });
         }
 
-        await generateCardPreview(template);
+        await generateCardPreview(null, template, null, { liveGen: true });
     }
 
     // Serve the preview image
