@@ -22,7 +22,7 @@ export async function generateCardPreview(project, template, row, options = {}) 
     await workerRenderer({
         project,
         template: previewTemplate,
-        rows: [row],
+        rows: row ? [row] : [{"a": "b"}],
         options: {
             ...options,
             format: options.format || 'jpg',
