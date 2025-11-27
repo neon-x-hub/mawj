@@ -60,62 +60,65 @@ export default function LivePreviewGenerator({ project, formData }) {
     if (!template) return <Skeleton className="w-full h-64 rounded-xl" />;
 
     return (
-        <div className="w-full flex flex-col items-center space-y-3 mb-5 p-4 rounded-xl bg-[url('/bg/grid/square-2.jpg')] bg-repeat bg-center bg-[length:450px_450px]">
+        <>
+            <div className="w-full flex flex-col items-center space-y-3 mb-5 p-4 rounded-xl bg-[url('/bg/grid/square-2.jpg')] bg-repeat bg-center bg-[length:450px_450px]">
 
-            {/* Media Container */}
-            <div
-                className="rounded-xl border relative flex justify-center items-center"
-                style={{
-                    aspectRatio: aspectRatio,
-                    width: isVertical ? "50%" : "100%",
-                    maxWidth: isVertical ? "260px" : "100%",
-                    maxHeight: isVertical ? "100%" : "300px",
-                }}
-            >
-                {/* Refresh Button */}
-                <div className="absolute top-1 left-1 z-10">
-                    <Button
-                        color="primary"
-                        onPress={handleGeneratePreview}
-                        isLoading={loadingPreview}
-                        size="sm"
-                        radius="full"
-                        endContent={<MaskedIcon src="/icons/coco/line/rotate.svg" color="#ffffff" height="15px" width="15px" />}
-                        className="text-white scale-85"
-                    >
-                        {t('actions.refresh')}
-                    </Button>
+                {/* Media Container */}
+                <div
+                    className="rounded-xl border relative flex justify-center items-center"
+                    style={{
+                        aspectRatio: aspectRatio,
+                        width: isVertical ? "50%" : "100%",
+                        maxWidth: isVertical ? "260px" : "100%",
+                        maxHeight: isVertical ? "100%" : "300px",
+                    }}
+                >
+                    {/* Refresh Button */}
+                    <div className="absolute top-1 left-1 z-10">
+                        <Button
+                            color="primary"
+                            onPress={handleGeneratePreview}
+                            isLoading={loadingPreview}
+                            size="sm"
+                            radius="full"
+                            endContent={<MaskedIcon src="/icons/coco/line/rotate.svg" color="#ffffff" height="15px" width="15px" />}
+                            className="text-white scale-85"
+                        >
+                            {t('actions.refresh')}
+                        </Button>
+                    </div>
+
+                    {/* Loading skeleton */}
+                    {(loadingPreview || !previewData) && (
+                        <Skeleton
+                            className="w-full h-full rounded-xl border"
+                            style={{
+                                aspectRatio: aspectRatio
+                            }}
+                        />
+                    )}
+
+                    {/* Final Media */}
+                    {previewData && !loadingPreview && (
+                        project.type === "video" ? (
+                            <video
+                                src={previewData.url}
+                                controls
+                                autoPlay
+                                className="w-full h-full object-contain rounded-xl"
+                            />
+                        ) : (
+                            <Image
+                                src={previewData.url}
+                                alt="Live Preview"
+                                fill
+                                className="object-contain rounded-xl"
+                            />
+                        )
+                    )}
                 </div>
-
-                {/* Loading skeleton */}
-                {(loadingPreview || !previewData) && (
-                    <Skeleton
-                        className="w-full h-full rounded-xl border"
-                        style={{
-                            aspectRatio: aspectRatio
-                        }}
-                    />
-                )}
-
-                {/* Final Media */}
-                {previewData && !loadingPreview && (
-                    project.type === "video" ? (
-                        <video
-                            src={previewData.url}
-                            controls
-                            autoPlay
-                            className="w-full h-full object-contain rounded-xl"
-                        />
-                    ) : (
-                        <Image
-                            src={previewData.url}
-                            alt="Live Preview"
-                            fill
-                            className="object-contain rounded-xl"
-                        />
-                    )
-                )}
             </div>
-        </div>
+
+        </>
     );
 }
