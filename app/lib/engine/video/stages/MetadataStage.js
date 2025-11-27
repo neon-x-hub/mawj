@@ -15,7 +15,7 @@ export class MetadataStage extends Stage {
             // update metadata
             let doneCount = metadata.get("doneCount") || 0;
             doneCount++;
-            metadata.set("doneCount", doneCount);
+            !ctx.options.liveGen && metadata.set("doneCount", doneCount);
             await metadata.save();
 
             this.log(`Updated metadata for row ${row.id}`);
