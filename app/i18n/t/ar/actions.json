@@ -22,6 +22,10 @@
         "upload": {
             "label": "تحميل {{object}}",
             "desc": "تحميل {{object}} جديدة"
+        },
+        "export": {
+            "label": "تصدير {{object}}",
+            "desc": "تصدير {{object}}  على شكل ملف "
         }
     },
     "search": "بحث",
