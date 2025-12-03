@@ -17,7 +17,7 @@ function ExportDataRowsModal({ project, formData, handleInputChange }) {
                     name="exportFolder"
                     value={formData.exportFolder || ""}
                     onChange={(e) => handleInputChange(e)}
-                    placeholder="Select folder path..."
+                    placeholder={t('common.output_directory_placeholder')}
                     style={{ direction: 'ltr' }}
                 />
             </div>
