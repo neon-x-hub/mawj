@@ -233,6 +233,22 @@ export function ProjectsProvider({ children }) {
         }
     };
 
+    const exportProjectData = async (id, options) => {
+        try {
+            const body = JSON.stringify(options);
+            // sends a post request to /projects/:id/data/export
+            const res = await fetch(`/api/v1/projects/${id}/data/export`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body,
+            });
+            if (!res.ok) throw new Error('Failed to export project data');
+            return await res.json();
+        } catch (err) {
+            console.error('Export project data error:', err);
+            throw err;
+        }
+    };
 
     useEffect(() => {
         fetchProjects();
@@ -254,7 +270,8 @@ export function ProjectsProvider({ children }) {
                 getProjectData,
                 addProjectData,
                 deleteProjectData,
-                uploadProjectDataFile
+                uploadProjectDataFile,
+                exportProjectData
             }}
         >
             {children}
