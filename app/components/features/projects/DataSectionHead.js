@@ -6,8 +6,9 @@ import { SectionHead } from '../../shared/SectionHead'
 import { addToast, Input } from '@heroui/react'
 import { useProjects } from '../../context/projects/projectsContext'
 import AddRowDynamicModal from '../../core/modal/AddRowDynamicModal'
+import ExportDataRowsModal from '../../core/modal/ExportDataRowsModal'
 export default function DataSectionHead({ project, data, setData }) {
-    const { uploadProjectDataFile, addProjectData } = useProjects();
+    const { uploadProjectDataFile, addProjectData, exportProjectData } = useProjects();
     return (
         <SectionHead
             title={t('common.data')}
@@ -69,6 +70,29 @@ export default function DataSectionHead({ project, data, setData }) {
                                     const res = await addProjectData(project.id, [data]);
                                     console.log('Data added successfully:', res);
                                     window.location.reload();
+                                } catch (err) {
+                                    console.error('❌ Failed to add data:', err);
+                                }
+                            }
+                        }
+                    },
+                    {
+                        label: t('actions.generic.export.label', { object: t('common.data') }),
+                        description: t('actions.generic.export.desc', { object: t('common.data') }),
+                        icon: '/icons/coco/bold/Add.svg',
+                        modal: {
+                            title: t('actions.generic.add.label', { object: t('common.data') }),
+                            actionLabel: t('actions.generic.add.label', { object: t('common.data') }),
+                            content: ({ formData, handleInputChange }) => (
+                                <ExportDataRowsModal project={project} formData={formData} handleInputChange={handleInputChange} />
+                            ),
+                            action: async (data) => {
+                                try {
+                                    console.log("Exporting with data payload: ", data);
+
+                                    const res = await exportProjectData(project.id, data);
+
+                                    console.log('Data export initiated successfully:', res);
                                 } catch (err) {
                                     console.error('❌ Failed to add data:', err);
                                 }
