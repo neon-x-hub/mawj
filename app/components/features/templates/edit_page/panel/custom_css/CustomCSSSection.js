@@ -51,7 +51,7 @@ export default function CustomCSSSection({ value, update }) {
                 isInvalid={isInvalid}
                 errorMessage={isInvalid ? t('layers.text.custom_css_invalid') || 'Invalid CSS syntax.' : ''}
                 rows={5}
-                style={{direction: 'ltr'}}
+                style={{ direction: 'ltr' }}
             />
 
             <div className="mt-2">
@@ -63,6 +63,18 @@ export default function CustomCSSSection({ value, update }) {
                     }}
                 >
                     {t('layers.text.custom_css_overwrite')}
+                </Checkbox>
+            </div>
+
+            <div className="mt-2">
+                <Checkbox
+                    isSelected={value.useTw || false}
+                    onValueChange={(val) => {update({ useTw: val });}}
+                    classNames={{
+                        icon: "after:bg-primary after:text-background text-background"
+                    }}
+                >
+                    {t('layers.text.use_tailwind_css') || 'Use Tailwind CSS'}
                 </Checkbox>
             </div>
         </section>
