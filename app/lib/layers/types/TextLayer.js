@@ -3,6 +3,7 @@ import { TextPropertiesPanel } from '../../../components/core/menu/TextEditPanel
 import Layer from './AbstractLayer';
 import { direction } from 'direction';
 import InterpolationEngine from '../../interpolation/engine';
+import tw from '../../tw';
 // Defaults
 import { TEXT_DEFAULTS } from '../../defaults';
 
@@ -185,6 +186,19 @@ class TextLayer extends Layer {
         const { content } = this.props;
         const elementId = `text-layer-${this.id}`;
         const { style } = this.buildStyle();
+
+        if (style.useTw) {
+            const parsedContent = tw(content || "");
+            return (
+                <p
+                    key={node_key}
+                    id={elementId}
+                    style={style}
+                    dangerouslySetInnerHTML={{ __html: parsedContent }}
+                >
+                </p>
+            );
+        }
 
         return (
             <div
