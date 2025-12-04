@@ -51,6 +51,25 @@ You can define your text content and customize its properties — such as **font
 Some options have a small **cell-like icon** next to them — this indicates that the property can be **interpolated**, meaning it can change smoothly between values based on the text content length.
 (See the **Interpolation** chapter for details.)
 
+### 🎨 New: Tailwind CSS Support
+
+For users who want **quick and flexible styling** without creating a full rich HTML/CSS layer, Mawj now supports **custom Tailwind CSS classes** directly on text layers.
+
+![Tailwind Checkbox](../assets/layers/tw.png)
+
+You can write Tailwind classes inside **bracketed blocks** like this:
+
+```re
+Hello [font-bold text-red-500]important[/] text with [italic text-blue-500]colors[/].
+```
+
+* The content inside `[ ]` will be rendered as a `<span>` with **inline CSS** automatically generated from the Tailwind classes.
+* Supports **multiple classes** in the same block.
+* Supports **nested blocks**, allowing complex combinations of styles without leaving the text layer interface.
+* Ideal for users who want **fast styling** without engaging the full rich layer system.
+
+This makes text layers **both beginner-friendly and extremely powerful**, giving you the flexibility of Tailwind CSS while keeping the simplicity of standard text layer editing.
+
 ---
 
 #### 🖼️ Image Layer
