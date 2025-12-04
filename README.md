@@ -1,8 +1,8 @@
-# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.5.3***
+# 🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.6.1***
 
 [![Docs](https://img.shields.io/badge/docs-English-blue?style=flat-square)](./docs/en/index.md)
 [![Arabic Docs](https://img.shields.io/badge/docs-Arabic%20|%20coming_soon-lightgrey?style=flat-square)](#)
-[![Version](https://img.shields.io/badge/version-0.5.3-orange?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/version-0.6.1-orange?style=flat-square)](#)
 
 **Create stunning cards, videos and booklets at scale with blazing speed and ease.**
 
@@ -12,10 +12,11 @@
 
 ## Table of Contents
 
-- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.5.3***](#-mawj-موج--bulk-content-creation-tool--v053)
+- [🌊 Mawj (موج) — Bulk Content Creation Tool – ***v0.6.1***](#-mawj-موج--bulk-content-creation-tool--v061)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Features](#features)
+  - [Each block is rendered with **inline CSS**, giving fast and flexible styling without needing full rich HTML/CSS layers.](#each-block-is-rendered-with-inline-css-giving-fast-and-flexible-styling-without-needing-full-rich-htmlcss-layers)
   - [Installation](#installation)
     - [**Option 1: Install via Pre-Packaged Installer**](#option-1-install-via-pre-packaged-installer)
     - [**Option 2: Build from Source (Requires Node.js)**](#option-2-build-from-source-requires-nodejs)
@@ -87,6 +88,12 @@ Whether you are designing educational series, social campaigns, or inspirational
 - **Dynamic Modifiers System**
   Modifiers extend Mawj’s template logic beyond static layers, allowing you to dynamically alter how your output behaves or looks during rendering. Unlike regular layers that only define *what* to render, modifiers define *how* to render — letting you tweak playback speed, adjust backgrounds, or programmatically transform visual properties without changing the core design, or even introduce effects like fade in/out, and more...
 
+- **Quick Text Styling with Tailwind CSS**
+  Apply Tailwind classes directly to text layers using bracketed blocks, e.g.:
+  ```re
+  Hello [font-bold text-red-500]important[/] text
+  ```
+  Each block is rendered with **inline CSS**, giving fast and flexible styling without needing full rich HTML/CSS layers.
 ---
 
 Mawj combines simplicity, power, and speed to serve the needs of Dawah content creators and Arabic-speaking communities seeking to create impactful, high-quality media at scale.
