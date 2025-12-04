@@ -82,7 +82,7 @@ export default function DataSectionHead({ project, data, setData }) {
                         icon: '/icons/coco/bold/Add.svg',
                         modal: {
                             title: t('actions.generic.add.label', { object: t('common.data') }),
-                            actionLabel: t('actions.generic.add.label', { object: t('common.data') }),
+                            actionLabel: t('actions.generic.export.label', { object: t('common.data') }),
                             content: ({ formData, handleInputChange }) => (
                                 <ExportDataRowsModal project={project} formData={formData} handleInputChange={handleInputChange} />
                             ),
