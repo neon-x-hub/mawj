@@ -49,6 +49,7 @@
         "custom_css": "CSS مخصص",
         "custom_css_placeholder": "e.g.: filter: brightness(0.8);",
         "custom_css_invalid": "صيغة CSS غير صحيحة.",
-        "custom_css_overwrite": "كتابة فوق الأنماط الحالية"
+        "custom_css_overwrite": "كتابة فوق الأنماط الحالية",
+        "use_tailwind_css": "استخدام Tailwind CSS"
     }
 }
