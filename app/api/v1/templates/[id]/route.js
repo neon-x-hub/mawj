@@ -60,7 +60,7 @@ export async function PUT(request, { params }) {
             );
         }
 
-        Promise.resolve().then(() => generatePreview(updatedTemplate));
+        Promise.resolve().then(() => generatePreview(null, updatedTemplate, null, { liveGen: false }));
 
         return Response.json(updatedTemplate);
     } catch (error) {
