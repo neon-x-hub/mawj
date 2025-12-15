@@ -66,13 +66,14 @@ class TextLayer extends Layer {
             ...styleProps,
             left,
             top,
-            display: "flex",
+            display: "inline-block",
             transform: transformParts.filter(Boolean).join(" "),
             transformOrigin: "center center",
             direction: userDirection || inferredDirection,
             textAlign: userTextAlign || inferredTextAlign,
             wordWrap: "break-word",
             overflowWrap: "break-word",
+            whiteSpace: "pre-wrap",
         };
 
         // 4. Interpolation support for *all* style props (including fontSize)
@@ -190,13 +191,13 @@ class TextLayer extends Layer {
         if (style.useTw) {
             const parsedContent = tw(content || "");
             return (
-                <p
+                <div
                     key={node_key}
                     id={elementId}
                     style={style}
                     dangerouslySetInnerHTML={{ __html: parsedContent }}
                 >
-                </p>
+                </div>
             );
         }
 
