@@ -7,32 +7,51 @@ import he from 'he';
 
 import { buildLayer } from '../../layers/types/index.js';
 import { loadFontInPuppeteer } from './injectFont.js';
-import { getFontByName } from '../../fonts/manager.js';
+import { getFontByFamilyAndStyle } from '../../fonts/manager.js';
 import config from '@/app/lib/providers/config';
 import fetchImageAsDataURL from '../../helpers/images/downloadToBase64.js';
 import localFileToDataURL from '../../helpers/images/readFromFsToBase64.js';
+import makeCssFontName from '../../fonts/cssName.js';
 
 const BASE_URL = process.env.ASSET_HOST || 'http://localhost:3000';
 
 export function collectFontsFromLayers(layers) {
-    const fonts = new Set();
+    const fonts = new Map();
+
     for (const layer of layers) {
-        if (layer.type === 'text' && layer.options?.props?.fontFamily) {
-            fonts.add(layer.options.props.fontFamily);
+        if (layer.type !== 'text') continue;
+
+        const props = layer.options?.props;
+        if (!props?.fontFamily) continue;
+
+        const family = props.fontFamily;
+        const style = props.fontFamilyStyle || 'Regular';
+        const cssName = makeCssFontName(family, style);
+
+        if (!fonts.has(cssName)) {
+            fonts.set(cssName, {
+                family,
+                style,
+                cssName
+            });
         }
     }
-    return Array.from(fonts);
+
+    return Array.from(fonts.values());
 }
 
 async function loadProjectFonts(page, layers) {
-    const fontFamilies = collectFontsFromLayers(layers);
-    for (const fontName of fontFamilies) {
-        const font = await getFontByName(fontName);
+    const neededFonts = collectFontsFromLayers(layers);
+
+    for (const { family, style, cssName } of neededFonts) {
+        const font = await getFontByFamilyAndStyle(family, style);
+
         if (!font) {
-            console.warn(`⚠️ Font not found: ${fontName}`);
+            console.warn(`⚠️ Font not found: ${family} (${style})`);
             continue;
         }
-        await loadFontInPuppeteer(page, font.name, BASE_URL + font.url);
+
+        await loadFontInPuppeteer(page, font, cssName);
     }
 }
 
