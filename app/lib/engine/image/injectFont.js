@@ -1,18 +1,19 @@
-export async function loadFontInPuppeteer(page, fontName, fontUrl) {
-    const format = getFontFormat(fontUrl);
-    const safeUrl = encodeURI(fontUrl);
+const BASE_URL = process.env.ASSET_HOST || 'http://localhost:3000';
+export async function loadFontInPuppeteer(page, font, cssName) {
+    const format = getFontFormat(font.file);
+    const safeUrl = encodeURI(BASE_URL + font.url);
 
-    await page.evaluate(({ fontName, safeUrl, format }) => {
+    await page.evaluate(({ cssName, safeUrl, format }) => {
         const style = document.createElement('style');
-        style.innerHTML = `
-      @font-face {
-        font-family: "${fontName.replace(/"/g, '\\"')}";
-        src: url("${safeUrl}") format("${format}");
-        font-display: swap;
-      }
-    `;
+        style.textContent = `
+@font-face {
+    font-family: "${cssName.replace(/"/g, '\\"')}";
+    src: url("${safeUrl}") format("${format}");
+    font-display: swap;
+}
+        `;
         document.head.appendChild(style);
-    }, { fontName, safeUrl, format });
+    }, { cssName, safeUrl, format });
 }
 
 function getFontFormat(file) {
