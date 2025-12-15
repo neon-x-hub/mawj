@@ -1,3 +1,5 @@
+import makeCssFontName from "./cssName";
+
 export function getFontFormat(file) {
     const ext = file.split('.').pop().toLowerCase();
     switch (ext) {
@@ -9,22 +11,25 @@ export function getFontFormat(file) {
     }
 }
 
-export function loadCustomFont(fontName, fontUrl) {
-    const safeId = `font-${CSS.escape(fontName)}`;
+export function loadCustomFont(fontName, fontStyle, fontUrl) {
+    const cssFontName = makeCssFontName(fontName, fontStyle);
+
+    const safeId = `font-${CSS.escape(cssFontName)}`;
     const safeUrl = encodeURI(fontUrl);
     const format = getFontFormat(fontUrl);
 
-    // Avoid duplicates
+    // Avoid duplicates (per family + style)
     if (document.getElementById(safeId)) return;
 
     const style = document.createElement('style');
     style.id = safeId;
-    style.innerHTML = `
-    @font-face {
-      font-family: "${fontName.replace(/"/g, '\\"')}";
-      src: url("${safeUrl}") format("${format}");
-      font-display: swap;
-    }
-  `;
+    style.textContent = `
+@font-face {
+    font-family: "${cssFontName.replace(/"/g, '\\"')}";
+    src: url("${safeUrl}") format("${format}");
+    font-display: swap;
+}
+    `;
+
     document.head.appendChild(style);
 }
