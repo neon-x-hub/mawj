@@ -33,12 +33,12 @@ export default function TypographySection({ value, update }) {
         fetchFonts();
     }, []);
 
-    const handleFontChange = (fontName) => {
-        const fontObj = fonts.find(f => f.name === fontName);
+    const handleFontChange = (fontKey) => {
+        const fontObj = fonts.find(f => (f.name + '-' + f.style) === fontKey);
         if (fontObj?.url) {
-            loadCustomFont(fontName, fontObj.url);
+            loadCustomFont(fontObj.name, fontObj.style, fontObj.url);
         }
-        update({ fontFamily: fontName });
+        update({ fontFamily: fontObj?.name, fontFamilyStyle: fontObj?.style });
     };
 
     return (
@@ -58,7 +58,7 @@ export default function TypographySection({ value, update }) {
                 {fonts.map(font => (
                     <AutocompleteItem
                         textValue={font.name}
-                        key={font.name}
+                        key={font.name + '-' + font.style}
                         value={font.name}
                         style={{ fontFamily: font.name }}
                     >
