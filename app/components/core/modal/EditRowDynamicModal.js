@@ -72,6 +72,10 @@ export default function EditRowDynamicModal({
                                     }
                                     onChange={handleInputChange}
                                     placeholder="Update value..."
+                                    endContent={
+                                        <code className="text-[10px] text-gray-500">{formData[column.key]?.length ??
+                                        selectedRow?.[column.key]?.length ?? 0}</code>
+                                    }
                                 />
                             </div>
                         ))}
