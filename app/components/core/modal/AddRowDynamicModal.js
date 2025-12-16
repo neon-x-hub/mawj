@@ -65,7 +65,11 @@ function AddRowDynamicModal({ project, formData, handleInputChange }) {
                                     value={formData[column] || ""}
                                     onChange={handleInputChange}
                                     placeholder="..."
+                                    endContent={
+                                        <code className="text-[10px] text-gray-500">{formData[column]?.length || 0}</code>
+                                    }
                                 />
+
                             </div>
                         ))}
                 </form>
