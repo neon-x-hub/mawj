@@ -6,18 +6,32 @@ export class StyledTextParser {
         const len = input.length;
 
         const stack = [
-            { style: "", content: "" }  // root context
+            { style: "", content: "" } // root
         ];
 
         while (i < len) {
-            // [ ... ]
-            if (input[i] === "[" && input[i+1] !== "/") {
-                let end = input.indexOf("]", i);
+            if (input[i] === "[") {
+                const end = input.indexOf("]", i);
                 if (end === -1) break;
 
-                const rawClasses = input.slice(i+1, end).trim();
+                const token = input.slice(i + 1, end).trim();
+
+                // closing tag: [/], [ / ], etc.
+                if (token === "/") {
+                    if (stack.length > 1) {
+                        const node = stack.pop();
+                        const parent = stack[stack.length - 1];
+
+                        parent.content += `<span style="${node.style}">${node.content}</span>`;
+                    }
+
+                    i = end + 1;
+                    continue;
+                }
+
+                // opening tag
                 stack.push({
-                    style: twToInline(rawClasses),
+                    style: twToInline(token),
                     content: ""
                 });
 
@@ -25,21 +39,7 @@ export class StyledTextParser {
                 continue;
             }
 
-            // [/]
-            if (input[i] === "[" && input[i+1] === "/") {
-                let end = input.indexOf("]", i);
-                if (end === -1) break;
-
-                const node = stack.pop();
-                const parent = stack[stack.length - 1];
-
-                parent.content += `<span style="${node.style}">${node.content}</span>`;
-
-                i = end + 1;
-                continue;
-            }
-
-            // normal chars
+            // normal characters
             stack[stack.length - 1].content += input[i];
             i++;
         }
