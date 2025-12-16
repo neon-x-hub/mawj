@@ -101,7 +101,7 @@ export async function POST(request, { params }) {
         switch (template.type) {
             case 'card':
                 renderer = generateCardPreview;
-                extension = 'png';
+                extension = 'jpg';
                 break;
             case 'video':
                 renderer = generateVideoPreview;
