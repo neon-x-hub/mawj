@@ -6,6 +6,7 @@ import InterpolationEngine from '../../interpolation/engine';
 import tw from '../../tw';
 // Defaults
 import { TEXT_DEFAULTS } from '../../defaults';
+import { color } from 'framer-motion';
 
 // Text Layer implementation
 class TextLayer extends Layer {
@@ -66,7 +67,7 @@ class TextLayer extends Layer {
             ...styleProps,
             left,
             top,
-            display: "inline-block",
+            display: this.props.useTw ? 'inline-block' : 'flex',
             transform: transformParts.filter(Boolean).join(" "),
             transformOrigin: "center center",
             direction: userDirection || inferredDirection,
@@ -139,6 +140,7 @@ class TextLayer extends Layer {
             left: "auto",
             transform: "none",
             resize: "none",
+            color: 'black',
         };
 
         const handleChange = (e) => {
