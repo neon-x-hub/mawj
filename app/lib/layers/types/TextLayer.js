@@ -4,6 +4,7 @@ import Layer from './AbstractLayer';
 import { direction } from 'direction';
 import InterpolationEngine from '../../interpolation/engine';
 import tw from '../../tw';
+import { stripTwTags } from '../../tw/clean';
 // Defaults
 import { TEXT_DEFAULTS } from '../../defaults';
 import { color } from 'framer-motion';
@@ -54,7 +55,7 @@ class TextLayer extends Layer {
         } = this.props;
 
         // 1. Infer text direction and alignment
-        const inferredDirection = direction(content || "") === "rtl" ? "rtl" : "ltr";
+        const inferredDirection = direction(this.props.useTw ? stripTwTags(content) : content || "") === "rtl" ? "rtl" : "ltr";
         const inferredTextAlign = inferredDirection === "rtl" ? "right" : "left";
 
         // 2. Build transform string
