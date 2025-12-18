@@ -76,7 +76,7 @@ export default function ConfigSettingsForm() {
 
             // Update initial config to new saved values
             setInitialConfig({ baseFolder, language });
-            setMessage(data.message || '✅ Config saved successfully');
+
             addToast({
                 title: data.message,
                 color: 'success'

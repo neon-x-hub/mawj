@@ -10,7 +10,6 @@ export async function GET(request, { params }) {
         const { searchParams } = new URL(request.url);
         const provider = await datarows.getDataProvider();
 
-        // ✅ Setup metadata provider
         const DATA_DIR = await config.get("baseFolder") || "./data";
         const metadataFilePath = `${DATA_DIR}/datarows/${id}/fam.json`;
         const metadata = new MetadataProvider({
@@ -20,17 +19,14 @@ export async function GET(request, { params }) {
         });
         await metadata.load({ projectId: id });
 
-        // ✅ Pagination
         const page = parseInt(searchParams.get("page")) || 1;
         const limit = parseInt(searchParams.get("limit")) || 100;
         const offset = (page - 1) * limit;
 
-        // ✅ Sorting
         const sortAttribute = searchParams.get("sort");
         const sortOrder = searchParams.get("sd") || "0"; // 0 = asc, 1 = desc
         const isMetaSort = sortAttribute?.startsWith("m.");
 
-        // ✅ Filters
         const filters = {};
         for (const [key, value] of searchParams.entries()) {
             if (!["page", "limit", "sort", "sd"].includes(key)) {
@@ -39,10 +35,8 @@ export async function GET(request, { params }) {
             }
         }
 
-        // ✅ Fetch page of rows
         const rawRows = await provider.find(id, filters, { limit, offset });
 
-        // ✅ Normalize rows
         const allRows = rawRows.map((row, index) => ({
             id: row.id || `${offset + index + 1}`,
             status: typeof row.status === "boolean" ? row.status : false,
@@ -51,7 +45,6 @@ export async function GET(request, { params }) {
             data: row.data || row
         }));
 
-        // ✅ Sort
         if (sortAttribute) {
             const attr = isMetaSort ? sortAttribute.slice(2) : sortAttribute;
 
@@ -69,13 +62,11 @@ export async function GET(request, { params }) {
             });
         }
 
-        // ✅ Extract columns for this page
         const columns = new Set();
         allRows.forEach(doc => {
             Object.keys(doc.data || {}).forEach(key => columns.add(key));
         });
 
-        // ✅ Get total row count from metadata (revalidate if missing)
         let totalRows = metadata.get("rowCount");
         if (typeof totalRows !== "number") {
             totalRows = await metadata.revalidate("rowCount", { projectId: id });
@@ -116,7 +107,6 @@ export async function POST(request, { params }) {
 
         const provider = await datarows.getDataProvider();
 
-        // ✅ Metadata provider
         const DATA_DIR = await config.get("baseFolder") || "./data";
         const metadataFilePath = `${DATA_DIR}/datarows/${id}/fam.json`;
         const metadata = new MetadataProvider({
@@ -126,7 +116,6 @@ export async function POST(request, { params }) {
         });
         await metadata.load({ projectId: id });
 
-        // ✅ Separate updates and deletes
         const updates = [];
         const deletes = [];
         for (const item of body) {
@@ -184,14 +173,12 @@ export async function POST(request, { params }) {
                 const currentRow = rowMap.get(update.id);
                 if (!currentRow) return;
 
-                // ✅ Done count adjustments
                 const wasDone = currentRow.status;
                 const willBeDone = update.data.status ?? currentRow.status;
                 if (wasDone !== willBeDone) {
                     doneCount += willBeDone ? 1 : -1;
                 }
 
-                // ✅ Column count adjustments
                 const oldCols = new Set(Object.keys(currentRow.data || {}));
                 const newCols = new Set(Object.keys(update.data.data || currentRow.data || {}));
 
@@ -209,7 +196,6 @@ export async function POST(request, { params }) {
             await provider.bulkUpdate(id, updates);
         }
 
-        // ✅ Save metadata after all changes
         await metadata.save();
 
         return Response.json({

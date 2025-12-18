@@ -57,7 +57,7 @@ export default function DataSection({ project }) {
         fetchData();
     }, [project?.id, page]); // Add page to dependencies
 
-    // ✅ Show loading skeleton if data is being fetched
+
     if (loading) {
         return (
             <>

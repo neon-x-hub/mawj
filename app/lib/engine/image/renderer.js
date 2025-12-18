@@ -76,15 +76,15 @@ export async function render(
     });
     const page = await browser.newPage();
 
-    // ✅ 1. Set viewport once (no clip needed later)
+
     const baseLayer = template.baseLayers[0];
     await page.setViewport({ width: baseLayer.width, height: baseLayer.height });
 
-    // ✅ 2. Load Base HTML once
+
     const baseHTML = fs.readFileSync(path.resolve('./app/lib/engine/image/base.html'), 'utf8');
     await page.setContent(baseHTML);
 
-    // ✅ 3. Handle custom base layer
+
     const customBaseLayerPath = options.baseLayer;
     let backgroundDataURL = null;
 
@@ -132,7 +132,7 @@ export async function render(
         );
     }
 
-    // ✅ Wait for background to load
+
     await page.evaluate(() => new Promise((resolve) => {
         const canvas = document.getElementById('canvas');
         const url = canvas.style.background.match(/url\(['"]?(.*?)['"]?\)/)?.[1];
@@ -143,7 +143,7 @@ export async function render(
         img.src = url;
     }));
 
-    // ✅ 4. Load all fonts once
+
     await loadProjectFonts(page, template.layers);
 
     backgroundDataURL && await page.evaluate((backgroundDataURL) => {
@@ -155,18 +155,18 @@ export async function render(
         }
     }, backgroundDataURL);
 
-    // ✅ 5. Prepare output directory
+
     const outputDir = options.outputDir || path.resolve(`${await config.get('baseFolder') || './data'}/projects/outputs/${project.id}`);
     fs.mkdirSync(outputDir, { recursive: true });
 
     const startTime = Date.now();
     const results = [];
 
-    // ✅ 6. Separate static and dynamic layers
+
     const staticLayers = template.layers.filter(l => !l.options?.props?.templateText);
     const dynamicLayers = template.layers.filter(l => l.options?.props?.templateText);
 
-    // ✅ 7. Render static layers once and keep them in DOM
+
     async function renderLayers(page, layers) {
         for (const layerConfig of layers) {
             const layer = buildLayer(layerConfig.id, layerConfig);
@@ -184,7 +184,7 @@ export async function render(
 
     await renderLayers(page, staticLayers);
 
-    // ✅ 8. Render each row (only dynamic layers change)
+
     for (const row of rows) {
         const preprocessedRow = {
             id: row.id,
@@ -265,7 +265,7 @@ export async function render(
         });
 
 
-        // ✅ 9. Screenshot without clip (viewport already matches canvas)
+
         const fileName = options.outputName || `${row.id}.${options.format}`;
         const outputPath = path.join(outputDir, fileName);
 
@@ -298,7 +298,7 @@ export async function render(
 
     }
 
-    // ✅ 10. Cleanup
+
     await browser.close();
     console.log(`==== Rendered ${results.length} rows in ${Date.now() - startTime}ms`);
     return results;

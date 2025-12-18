@@ -28,7 +28,6 @@ export async function POST(request) {
     try {
         await fs.mkdir(baseFolder, { recursive: true });
 
-        // ✅ Recursively copy data
         await fs.cp(DATA_DIR, baseFolder, { recursive: true, force: true });
 
         // Delete old data

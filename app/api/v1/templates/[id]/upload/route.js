@@ -12,20 +12,20 @@ export async function POST(request, { params }) {
     const { id } = await params;
 
     try {
-        // ✅ 1. Parse FormData & get uploaded files
+
         const formData = await request.formData();
         const files = formData.getAll('files');
         if (!files || files.length === 0) {
             return Response.json({ error: 'No files uploaded' }, { status: 400 });
         }
 
-        // ✅ 2. Validate template ID
+
         const template = await dbInstance.findById('templates', id);
         if (!template) {
             return Response.json({ error: 'Template not found' }, { status: 404 });
         }
 
-        // ✅ 3. Validate file types
+
         const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
         for (const file of files) {
             if (!allowedTypes.includes(file.type)) {
@@ -36,11 +36,11 @@ export async function POST(request, { params }) {
             }
         }
 
-        // ✅ 4. Ensure upload directory exists
+
         const uploadDir = path.join(DATA_DIR, 'templates', id, 'base_layers');
         await fs.mkdir(uploadDir, { recursive: true });
 
-        // ✅ 5. Save files & extract dimensions
+
         const savedLayers = [];
         for (const file of files) {
             const buffer = Buffer.from(await file.arrayBuffer());
@@ -52,7 +52,7 @@ export async function POST(request, { params }) {
             // Save file
             await fs.writeFile(filePath, buffer);
 
-            // ✅ Get image dimensions with sharp
+
             const { width, height } = await sharp(buffer).metadata();
 
             savedLayers.push({
@@ -62,14 +62,14 @@ export async function POST(request, { params }) {
             });
         }
 
-        // ✅ 6. Update template with new base layers
+
         let updatedBaseLayers;
         if (template.type === 'booklet') {
-            // ✅ Booklets: append new pages
+
             // Will be modified soon...
             updatedBaseLayers = [...(template.baseLayers || []), ...savedLayers];
         } else {
-            // ✅ Cards/Videos: replace with only the last uploaded file
+
             updatedBaseLayers = [savedLayers[savedLayers.length - 1]];
         }
 
@@ -88,7 +88,7 @@ export async function POST(request, { params }) {
 
 
 
-        // ✅ 7. Return success with updated base layers
+
         return Response.json({
             success: true,
             addedLayers: savedLayers.length,

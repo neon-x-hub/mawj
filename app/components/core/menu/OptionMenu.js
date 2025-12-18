@@ -71,11 +71,11 @@ export default function ActionsDropdown({
 
     const handleItemClick = (item, isDanger = false) => {
         if (item.modal) {
-            // ✅ Custom modal provided
+
             setActiveModal(item.modal);
             onOpen();
         } else if (isDanger && item.do) {
-            // ✅ Fallback to confirmation modal
+
             setActiveModal({
                 title: t('actions.confirm_delete'),
                 content: t('messages.confirm_delete', { object: item.label || t('common.item') }),
@@ -108,7 +108,7 @@ export default function ActionsDropdown({
                 </DropdownTrigger>
 
                 <DropdownMenu aria-label="Dynamic actions dropdown" variant="faded">
-                    {/* ✅ Actions Section */}
+
                     {actions.length > 0 && (
                         <DropdownSection showDivider={danger.length > 0} title={t('actions.types.actions')}>
                             {actions.map(({ key, label, description, shortcut, do: Do, icon: Icon, modal }) => (
@@ -128,7 +128,7 @@ export default function ActionsDropdown({
                         </DropdownSection>
                     )}
 
-                    {/* ✅ Danger Section */}
+
                     {danger.length > 0 && (
                         <DropdownSection title={t('actions.types.danger_zone')}>
                             {danger.map(({ key, label, description, shortcut, do: Do, icon: Icon, modal }) => (
@@ -151,7 +151,7 @@ export default function ActionsDropdown({
                 </DropdownMenu>
             </Dropdown>
 
-            {/* ✅ Modal (supports both custom and confirmation modals) */}
+
             {activeModal && (
                 <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside'>
                     <ModalContent>
@@ -170,14 +170,14 @@ export default function ActionsDropdown({
                                         {activeModal.closeLabel || t('actions.cancel')}
                                     </Button>
 
-                                    {/* ✅ Confirmation Button for Danger */}
+
                                     {activeModal.dangerAction && (
                                         <Button color="danger" className='font-semibold text-white' isLoading={isLoading} onPress={() => handleConfirmDanger(onClose)}>
                                             {activeModal.confirmLabel || t('actions.delete')}
                                         </Button>
                                     )}
 
-                                    {/* ✅ Regular Form Modal Save Button */}
+
                                     {activeModal.action && (
                                         <Button color="primary" isLoading={isLoading} className="text-white font-semibold" onPress={() => handleSave(onClose)}>
                                             {activeModal.actionLabel || t('actions.save')}

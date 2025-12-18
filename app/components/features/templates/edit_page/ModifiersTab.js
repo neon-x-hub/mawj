@@ -122,7 +122,7 @@ const ModifiersTab = () => {
                         />
                     }
                 >
-                    {/* ✅ Only properties panel (no preview) */}
+
                     {layer.renderPropertiesPanel((newProps) => {
                         setLayers(prev => ({
                             ...prev,

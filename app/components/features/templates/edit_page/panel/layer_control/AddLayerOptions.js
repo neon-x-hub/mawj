@@ -72,11 +72,11 @@ export default function AddLayerOptions() {
                 return;
         }
 
-        // ✅ Update regular layers array
+
         const updatedRegular = [...layers.regular, newLayer];
         setLayers({ ...layers, regular: updatedRegular });
 
-        // ✅ Push to Ledgex for undo/redo
+
         set({
             [newLayer.id]: newLayer.toObject(),
         });

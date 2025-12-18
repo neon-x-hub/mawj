@@ -84,7 +84,7 @@ const EditorSidebarPanel = ({ template }) => {
                                 </div>
                             }
                         >
-                            {/* ✅ Render Metadata */}
+
                             <TemplateMetadata template={template} />
                         </Tab>
 

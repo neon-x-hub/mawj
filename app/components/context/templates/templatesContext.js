@@ -9,7 +9,7 @@ export function TemplatesProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // ✅ Helper: Convert object → URLSearchParams
+
     const buildQuery = (params) => {
         const search = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
@@ -18,7 +18,7 @@ export function TemplatesProvider({ children }) {
         return search.toString();
     };
 
-    // ✅ Fetch all templates
+
     const fetchTemplates = async () => {
         try {
             const res = await fetch('/api/v1/templates');
@@ -32,7 +32,7 @@ export function TemplatesProvider({ children }) {
         }
     };
 
-    // ✅ Fetch templates with filter
+
     const getTemplates = async (filter = {}) => {
         try {
             setLoading(true);
@@ -50,7 +50,7 @@ export function TemplatesProvider({ children }) {
         }
     };
 
-    // ✅ Fetch single template by ID
+
     const getTemplateById = async (id) => {
         try {
             const res = await fetch(`/api/v1/templates/${id}`);
@@ -69,7 +69,7 @@ export function TemplatesProvider({ children }) {
         }
     };
 
-    // ✅ Add template
+
     const addTemplate = async (templateData) => {
         try {
             const res = await fetch('/api/v1/templates', {
@@ -99,7 +99,7 @@ export function TemplatesProvider({ children }) {
         }
     };
 
-    // ✅ Update template
+
     const updateTemplate = async (id, updates) => {
         try {
             const res = await fetch(`/api/v1/templates/${id}`, {
@@ -127,7 +127,7 @@ export function TemplatesProvider({ children }) {
         }
     };
 
-    // ✅ Delete template
+
     const deleteTemplate = async (id) => {
         try {
             const res = await fetch(`/api/v1/templates/${id}`, { method: 'DELETE' });
@@ -150,7 +150,7 @@ export function TemplatesProvider({ children }) {
         }
     };
 
-    // ✅ Upload base layer for template
+
     async function uploadBaseLayer(id, formData) {
         const res = await fetch(`/api/v1/templates/${id}/upload`, {
             method: 'POST',
@@ -193,5 +193,5 @@ export function TemplatesProvider({ children }) {
     );
 }
 
-// ✅ Custom hook for consuming the Templates context
+
 export const useTemplates = () => useContext(TemplatesContext);

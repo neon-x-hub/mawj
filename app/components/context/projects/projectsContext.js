@@ -9,7 +9,7 @@ export function ProjectsProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // ✅ Helper: build query params from object
+
     const buildQuery = (params) => {
         const search = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
@@ -18,7 +18,7 @@ export function ProjectsProvider({ children }) {
         return search.toString();
     };
 
-    // ✅ Fetch all projects
+
     const fetchProjects = async () => {
         try {
             setLoading(true);
@@ -33,7 +33,7 @@ export function ProjectsProvider({ children }) {
         }
     };
 
-    // ✅ Fetch with filters (search)
+
     const getProjects = async (filter = {}) => {
         try {
             setLoading(true);
@@ -83,7 +83,7 @@ export function ProjectsProvider({ children }) {
     };
 
 
-    // ✅ Create project
+
     const addProject = async (projectData) => {
         const requestBody = {
             name: projectData.name || 'مشروع جديد',
@@ -117,7 +117,7 @@ export function ProjectsProvider({ children }) {
         }
     };
 
-    // ✅ Update project
+
     const updateProject = async (id, updates) => {
         try {
             const res = await fetch(`/api/v1/projects/${id}`, {
@@ -144,7 +144,7 @@ export function ProjectsProvider({ children }) {
         }
     };
 
-    // ✅ Delete project
+
     const deleteProject = async (id) => {
         try {
             const res = await fetch(`/api/v1/projects/${id}`, { method: 'DELETE' });
@@ -168,7 +168,7 @@ export function ProjectsProvider({ children }) {
         }
     };
 
-    // ✅ Placeholder: Project Data Management
+
     const getProjectData = async (id) => {
         try {
             const res = await fetch(`/api/v1/projects/${id}/data`);
@@ -206,7 +206,7 @@ export function ProjectsProvider({ children }) {
         }
     };
 
-    // ✅ Upload data file for a project
+
     const uploadProjectDataFile = async (projectId, file) => {
         try {
             const formData = new FormData();
@@ -279,5 +279,5 @@ export function ProjectsProvider({ children }) {
     );
 }
 
-// ✅ Custom hook
+
 export const useProjects = () => useContext(ProjectsContext);

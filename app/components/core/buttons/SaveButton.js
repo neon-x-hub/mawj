@@ -22,9 +22,9 @@ export default function SaveButton({ onPress }) {
         <Button
             color="primary"
             onPress={() => handlePress()}
-            isLoading={isSaving}       // ✅ shows spinner while saving
+            isLoading={isSaving}
             startContent={
-                !isSaving && (        // hide icon while loading
+                !isSaving && (
                     <MaskedIcon
                         src="/icons/hugeicons/line/floppy-disk.svg"
                         color="#ffffff"

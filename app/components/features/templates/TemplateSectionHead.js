@@ -9,7 +9,7 @@ import { Input, Select, SelectItem } from '@heroui/react';
 export default function TemplateSectionHead() {
     const { addTemplate, setTemplates, templates, getTemplates } = useTemplates();
 
-    // ✅ Available template types
+
     const templateTypes = [
         { key: 'card', label: t('common.template_types.card') },
         { key: 'video', label: t('common.template_types.video') },
@@ -27,7 +27,7 @@ export default function TemplateSectionHead() {
                 actionLabel: t('actions.generic.add.label', { object: t('common.template') }),
                 content: ({ formData, handleInputChange }) => (
                     <form>
-                        {/* ✅ Template Name */}
+
                         <h2>{t('common.placeholder.name', { pl: t('common.the_template') })}</h2>
                         <Input
                             type="text"
@@ -38,7 +38,7 @@ export default function TemplateSectionHead() {
                             className="w-full"
                         />
 
-                        {/* ✅ Template Description */}
+
                         <h2 className="mt-3">{t('common.placeholder.description', { pl: t('common.the_template') })}</h2>
                         <Input
                             type="text"
@@ -49,7 +49,7 @@ export default function TemplateSectionHead() {
                             className="w-full"
                         />
 
-                        {/* ✅ Template Type Selector */}
+
                         <h2 className="mt-3">{t('common.template_types.label')}</h2>
                         <Select
                             className="w-full mt-1"

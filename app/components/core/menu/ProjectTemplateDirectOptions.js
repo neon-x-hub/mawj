@@ -29,7 +29,7 @@ export default function ProjectTemplateOptions({ project }) {
     const { templates } = useTemplates();
     const { updateProject } = useProjects();
 
-    // ✅ Modals
+
     const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Change Template Modal
     const {
         isOpen: isRemoveOpen,
@@ -37,12 +37,12 @@ export default function ProjectTemplateOptions({ project }) {
         onOpenChange: onRemoveOpenChange,
     } = useDisclosure(); // Confirm Removal Modal
 
-    // ✅ State
+
     const [selectedTemplate, setSelectedTemplate] = useState(project.template || null);
     const [loading, setLoading] = useState(false);
     const [removing, setRemoving] = useState(false);
 
-    // ✅ Handle actions
+
     const handleAction = (key) => {
         switch (key) {
             case 'open-template-editor':
@@ -56,20 +56,20 @@ export default function ProjectTemplateOptions({ project }) {
                 onOpen();
                 break;
             case 'remove-template':
-                openRemoveModal(); // ✅ Open confirmation modal
+                openRemoveModal();
                 break;
             default:
                 console.warn('Unknown template action:', key);
         }
     };
 
-    // ✅ Remove template
+
     const removeTemplate = async (onClose) => {
         try {
             setRemoving(true);
             await updateProject(project.id, { template: null });
             setSelectedTemplate(null);
-            console.log(`✅ Template removed from project ${project.name}`);
+
             window.location.reload();
             onClose();
         } catch (err) {
@@ -79,12 +79,12 @@ export default function ProjectTemplateOptions({ project }) {
         }
     };
 
-    // ✅ Save changed template
+
     const saveTemplate = async (onClose) => {
         try {
             setLoading(true);
             await updateProject(project.id, { template: selectedTemplate });
-            console.log(`✅ Changed template to ${selectedTemplate} for project ${project.name}`);
+
             onClose();
         } catch (err) {
             console.error('❌ Failed to change template:', err);
@@ -95,12 +95,12 @@ export default function ProjectTemplateOptions({ project }) {
 
     return (
         <>
-            {/* ✅ Template Options List */}
+
             <div className="space-y-1 w-[180px] max-w-md">
                 <ListboxWrapper>
                     <Listbox aria-label="Template Actions" onAction={handleAction}>
 
-                        {/* ✅ Open Template Editor */}
+
                         <ListboxItem
                             key="open-template-editor"
                             startContent={<MaskedIcon src="/icons/coco/line/Export.svg" height="18px" width="18px" color={"currentColor"} />}
@@ -109,7 +109,7 @@ export default function ProjectTemplateOptions({ project }) {
                             {t('actions.open')}
                         </ListboxItem>
 
-                        {/* ✅ Change Template */}
+
                         <ListboxItem
                             key="change-template"
                             startContent={
@@ -124,7 +124,7 @@ export default function ProjectTemplateOptions({ project }) {
                             {t('actions.swap')}
                         </ListboxItem>
 
-                        {/* ✅ Remove Template (opens confirmation modal) */}
+
                         <ListboxItem
                             key="remove-template"
                             color="danger"
@@ -149,7 +149,7 @@ export default function ProjectTemplateOptions({ project }) {
                 </ListboxWrapper>
             </div>
 
-            {/* ✅ Change Template Modal */}
+
             <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
                 <ModalContent>
                     {(onClose) => (
@@ -186,7 +186,7 @@ export default function ProjectTemplateOptions({ project }) {
                 </ModalContent>
             </Modal>
 
-            {/* ✅ Confirm Remove Template Modal */}
+
             <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
                 <ModalContent>
                     {(onClose) => (

@@ -36,7 +36,7 @@ export default function FolderDirectOptions({ folder }) {
                 break;
 
             case 'delete':
-                onOpen(); // ✅ open modal
+                onOpen();
                 break;
 
             default:
@@ -57,7 +57,7 @@ export default function FolderDirectOptions({ folder }) {
                 <ListboxWrapper>
                     <Listbox aria-label="Folder Actions" onAction={handleFolderAction}>
 
-                        {/* ✅ Open Folder */}
+
                         <ListboxItem
                             key="open"
                             startContent={<MaskedIcon src="/icons/coco/line/Export.svg" height="18px" width="18px" color="currentColor" />}
@@ -66,7 +66,7 @@ export default function FolderDirectOptions({ folder }) {
                             {t('actions.open')}
                         </ListboxItem>
 
-                        {/* ✅ Duplicate Folder */}
+
                         <ListboxItem
                             key="duplicate"
                             startContent={<MaskedIcon src="/icons/coco/line/Copy.svg" height="18px" width="18px" color="currentColor" />}
@@ -76,7 +76,7 @@ export default function FolderDirectOptions({ folder }) {
                             {t('actions.duplicate')}
                         </ListboxItem>
 
-                        {/* ✅ Delete Folder */}
+
                         <ListboxItem
                             key="delete"
                             color="danger"
@@ -101,7 +101,7 @@ export default function FolderDirectOptions({ folder }) {
                 </ListboxWrapper>
             </div>
 
-            {/* ✅ Confirmation Modal (fixed) */}
+
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                     {(onClose) => (

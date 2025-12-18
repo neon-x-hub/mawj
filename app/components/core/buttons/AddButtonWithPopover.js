@@ -9,7 +9,7 @@ const ButtonWithPopover = ({
     isOptions = false,
     iconUrl = isOptions
         ? '/icons/majestic/line/more-vertical.svg'
-        : '/icons/coco/line/Plus.svg', // ✅ defaults based on mode
+        : '/icons/coco/line/Plus.svg',
     PopoverOptions,
 }) => (
     <Popover

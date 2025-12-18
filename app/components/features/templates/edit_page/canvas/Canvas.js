@@ -26,7 +26,7 @@ export default function Canvas({ template }) {
             >
                 {({ zoomIn, zoomOut, resetTransform }) => (
                     <>
-                        {/* ✅ Pass handler to open modal */}
+
                         <ZoomControls
                             zoomIn={zoomIn}
                             zoomOut={zoomOut}
@@ -54,7 +54,7 @@ export default function Canvas({ template }) {
                 )}
             </TransformWrapper>
 
-            {/* ✅ Modal for changing base layer (force=false so it can be canceled) */}
+
             <UploadBaseLayerModal
                 template={template}
                 isOpen={isChangeBaseModalOpen}

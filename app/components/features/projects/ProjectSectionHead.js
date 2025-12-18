@@ -10,7 +10,7 @@ import ImportProjectModal from '../../core/modal/ImportProjectModal';
 export default function ProjectSectionHead() {
     const { addProject, setProjects, projects, getProjects } = useProjects();
 
-    // ✅ Available project types
+
     const projectTypes = [
         { key: 'card', label: t('common.project_types.card') },
         { key: 'video', label: t('common.project_types.video') },
@@ -28,7 +28,7 @@ export default function ProjectSectionHead() {
                 actionLabel: t('actions.generic.add.label', { object: t('common.project') }),
                 content: ({ formData, handleInputChange }) => (
                     <form>
-                        {/* ✅ Project Name */}
+
                         <h2>{t('common.placeholder.name', { pl: t('common.the_project') })}</h2>
                         <Input
                             type="text"
@@ -39,7 +39,7 @@ export default function ProjectSectionHead() {
                             className="w-full"
                         />
 
-                        {/* ✅ Project Description */}
+
                         <h2 className="mt-3">{t('common.placeholder.description', { pl: t('common.the_project') })}</h2>
                         <Input
                             type="text"
@@ -50,7 +50,7 @@ export default function ProjectSectionHead() {
                             className="w-full"
                         />
 
-                        {/* ✅ Project Type Selector */}
+
                         <h2 className="mt-3">{t('common.project_types.label')}</h2>
                         <Select
                             className="w-full mt-1"

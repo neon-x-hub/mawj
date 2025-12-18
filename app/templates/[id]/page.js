@@ -15,7 +15,7 @@ import { useDisclosure } from '@heroui/react';
 import UploadBaseLayerModal from '@/app/components/core/modal/UploadBaseLayer';
 
 function EditTemplateInner() {
-    const { id } = useParams(); // ✅ extract template ID from URL
+    const { id } = useParams();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const { layers, setLayers } = useLayers();
@@ -27,7 +27,7 @@ function EditTemplateInner() {
 
     const { getTemplateById, updateTemplate } = useTemplates();
 
-    /** ✅ Fetch template using custom hook */
+
     useEffect(() => {
         if (!id) return;
         (async () => {
@@ -47,12 +47,12 @@ function EditTemplateInner() {
         })();
     }, [id, getTemplateById]);
 
-    /** ✅ Open modal if no base layers exist */
+
     useEffect(() => {
         if (template?.baseLayers?.length === 0) onOpen();
     }, [template, onOpen]);
 
-    /** ✅ Initialize layers (base + regular) and push regular layers to Ledgex */
+
     useEffect(() => {
         if (!template) return;
 
@@ -79,7 +79,7 @@ function EditTemplateInner() {
         setLedgex(ledgexState);
     }, [template, setLayers, setLedgex]);
 
-    /** ✅ Undo & Redo handlers */
+
     const handleUndo = () => {
         const prevState = undo();
         if (!prevState) return;
@@ -98,7 +98,7 @@ function EditTemplateInner() {
         }));
     };
 
-    /** ✅ Keyboard shortcuts */
+
     useHotkeys('ctrl+z, meta+z', e => {
         e.preventDefault();
         handleUndo();
@@ -108,7 +108,7 @@ function EditTemplateInner() {
         handleRedo();
     });
 
-    /** ✅ Loading & Error states */
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full text-gray-500">
@@ -135,30 +135,30 @@ function EditTemplateInner() {
 
     return (
         <div className="relative w-full h-full bg-slate-100 overflow-hidden">
-            {/* ✅ Modal for uploading base layers (only when baseLayers is empty) */}
+
             {template.baseLayers?.length === 0 && (
                 <UploadBaseLayerModal template={template} isOpen={isOpen} onClose={onClose} />
             )}
 
             {template && <Canvas template={template} />}
 
-            {/* ✅ Sidebar Panel */}
+
             <EditorSidebarPanel template={template} />
 
-            {/* ✅ Save Button */}
+
             <SaveButton
                 onPress={async () => {
                     try {
-                        // ✅ Convert current layers to serializable objects
+
                         const LayersExport = layers.regular.map(layer => layer.toObject());
                         const ModifiersExport = layers.modifiers.map(mod => mod.toObject());
                         console.log('Layers Export:', LayersExport);
                         console.log('Modifiers Export:', ModifiersExport);
 
-                        // ✅ Call updateTemplate to persist layer changes
+
                         await updateTemplate(template.id, { layers: LayersExport, modifiers: ModifiersExport });
 
-                        console.log('✅ Template layers updated successfully');
+
                     } catch (err) {
                         console.error('❌ Failed to save layers:', err);
                     }

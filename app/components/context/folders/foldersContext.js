@@ -8,7 +8,7 @@ export function FoldersProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // ✅ Helper: Convert object → URLSearchParams
+
     const buildQuery = (params) => {
         const search = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
@@ -17,7 +17,7 @@ export function FoldersProvider({ children }) {
         return search.toString();
     };
 
-    // ✅ Fetch all folders
+
     const fetchFolders = async () => {
         try {
             const res = await fetch('/api/v1/folders');
@@ -31,7 +31,7 @@ export function FoldersProvider({ children }) {
         }
     };
 
-    // ✅ Fetch folders with filter
+
     const getFolders = async (filter = {}) => {
         try {
             setLoading(true);
@@ -49,7 +49,7 @@ export function FoldersProvider({ children }) {
         }
     };
 
-    // ✅ Add folder
+
     const addFolder = async (folderData) => {
         try {
             const res = await fetch('/api/v1/folders', {
@@ -68,7 +68,7 @@ export function FoldersProvider({ children }) {
         }
     };
 
-    // ✅ Update folder
+
     const updateFolder = async (id, updates) => {
         try {
             const res = await fetch(`/api/v1/folders/${id}`, {
@@ -83,7 +83,7 @@ export function FoldersProvider({ children }) {
         }
     };
 
-    // ✅ Delete folder
+
     const deleteFolder = async (id) => {
         try {
             const res = await fetch(`/api/v1/folders/${id}`, { method: 'DELETE' });
@@ -117,5 +117,5 @@ export function FoldersProvider({ children }) {
     );
 }
 
-// ✅ Custom hook
+
 export const useFolders = () => useContext(FoldersContext);

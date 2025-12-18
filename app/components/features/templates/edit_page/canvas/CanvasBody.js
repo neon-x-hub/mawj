@@ -8,7 +8,7 @@ export default function CanvasBody({ template }) {
     const { layers } = useLayers();
     const { id } = useParams();
 
-    const baseLayer = layers.base?.[0]; // ✅ safely get first base layer
+    const baseLayer = layers.base?.[0];
     if (!baseLayer) {
         return (
             <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -17,7 +17,7 @@ export default function CanvasBody({ template }) {
         );
     }
 
-    // ✅ Scale the preview to a fixed width
+
     const previewWidth = 500;
     const scale = baseLayer.width ? previewWidth / baseLayer.width : 1;
 
@@ -35,7 +35,7 @@ export default function CanvasBody({ template }) {
                 }}
                 id='canvas'
             >
-                {/* ✅ Correct API path matches your GET route */}
+
                 <Image
                     src={`/api/v1/templates/${id}/base/${baseLayer.name}`}
                     width={baseLayer.width}
@@ -45,7 +45,7 @@ export default function CanvasBody({ template }) {
 
                 />{/* Not fetching the image, maybe we need to  */}
 
-                {/* ✅ Render other layers */}
+
                 <div className="relative w-full h-full">
                     {layers.regular?.map((layer) =>
                         layer.renderContent({ node_key: layer.id })

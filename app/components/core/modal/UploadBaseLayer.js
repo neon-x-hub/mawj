@@ -23,7 +23,7 @@ export default function UploadBaseLayerModal({ template, isOpen, onClose, force 
 
     if (!template) return null;
 
-    /** ✅ Handle Upload */
+
     const handleUpload = async () => {
         const files = fileInputRef.current?.files;
         if (!files || files.length === 0) {
@@ -52,7 +52,7 @@ export default function UploadBaseLayerModal({ template, isOpen, onClose, force 
                     base: updatedTemplate.baseLayers
                 }));
             }
-            // ✅ Close modal on success
+
             onClose();
         } catch (err) {
             console.error('❌ Upload error:', err);
@@ -65,9 +65,9 @@ export default function UploadBaseLayerModal({ template, isOpen, onClose, force 
     return (
         <Modal
             isOpen={isOpen}
-            isDismissable={!force}                   // ✅ allow cancel only if force is false
-            isKeyboardDismissDisabled={force}       // ✅ disable ESC when force is true
-            onOpenChange={!force ? onClose : () => { }} // ✅ allow closing only if cancelable
+            isDismissable={!force}
+            isKeyboardDismissDisabled={force}
+            onOpenChange={!force ? onClose : () => { }}
             size="md"
             backdrop="blur"
         >

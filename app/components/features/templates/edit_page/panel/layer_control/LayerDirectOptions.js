@@ -27,7 +27,7 @@ export default function LayerDirectOptions({ layer }) {
     const currentLayer = layers.regular.find(l => l.id === layer.id);
     const isHidden = currentLayer?.props?.opacity === 0;
 
-    /** ✅ Toggle Hide/Show */
+
     const handleToggleVisibility = () => {
         const newOpacity = isHidden ? 1 : 0;
         setLayers(prevLayers => ({
@@ -58,7 +58,7 @@ export default function LayerDirectOptions({ layer }) {
 
     };
 
-    /** ✅ Duplicate Layer with persistence */
+
     const handleDuplicate = () => {
         setLayers(prevLayers => {
             const original = prevLayers.regular.find(l => l.id === layer.id);
@@ -92,7 +92,7 @@ export default function LayerDirectOptions({ layer }) {
 
     };
 
-    /** ✅ Delete Layer with Ledgex remove */
+
     const handleDelete = () => {
         setLayers(prevLayers => ({
             ...prevLayers,
@@ -101,7 +101,7 @@ export default function LayerDirectOptions({ layer }) {
         remove(layer.id);
     };
 
-    /** ✅ Dispatch actions */
+
     const handleAddLayer = (key) => {
         switch (key) {
             case "hide":
@@ -123,7 +123,7 @@ export default function LayerDirectOptions({ layer }) {
             <ListboxWrapper>
                 <Listbox aria-label="Layer Actions" onAction={handleAddLayer}>
 
-                    {/* ✅ Hide / Show */}
+
                     <ListboxItem
                         key="hide"
                         startContent={
@@ -142,7 +142,7 @@ export default function LayerDirectOptions({ layer }) {
                         {isHidden ? t("actions.show") : t("actions.hide")}
                     </ListboxItem>
 
-                    {/* ✅ Duplicate */}
+
                     <ListboxItem
                         key="duplicate"
                         startContent={
@@ -159,7 +159,7 @@ export default function LayerDirectOptions({ layer }) {
                         {t("actions.duplicate")}
                     </ListboxItem>
 
-                    {/* ✅ Delete */}
+
                     <ListboxItem
                         key="delete"
                         color="danger"

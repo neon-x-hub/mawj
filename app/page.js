@@ -16,7 +16,6 @@ import FolderDirectOptions from './components/core/menu/FolderDirectOptions';
 export default function Home() {
     const router = useRouter();
 
-    // ✅ Pull state & actions from context
     const { folders, loading, error, updateFolder } = useFolders();
 
     return (
@@ -24,10 +23,8 @@ export default function Home() {
             <HeroBanner />
             <FolderSectionHead />
 
-            {/* ✅ Error State */}
             {error && <p style={{ color: 'red' }}>{t('error')}: {error}</p>}
 
-            {/* ✅ Skeleton Loading State */}
             {loading && (
                 <ResponiveGrid>
                     {Array.from({ length: 6 }).map((_, i) => (
@@ -41,14 +38,12 @@ export default function Home() {
                 </ResponiveGrid>
             )}
 
-            {/* ✅ No Folders Case */}
             {!loading && !error && folders.length === 0 && (
                 <p className="text-center font-bold text-2xl opacity-80 h-52 flex items-center justify-center text-gray-500">
                     {t('messages.error.no_folders_found')}
                 </p>
             )}
 
-            {/* ✅ Render Grid if folders exist */}
             {!loading && !error && folders.length > 0 && (
                 <ResponiveGrid>
                     {folders.map((folder) => (

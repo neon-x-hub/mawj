@@ -48,7 +48,7 @@ export default function GenericCard({
             isPressable
             onPress={() => onPress()}
         >
-            {/* ✅ Preview Section */}
+
             <div className="flex">
                 {hasPreviews ? (
                     previews.length === 1 ? (
@@ -72,7 +72,7 @@ export default function GenericCard({
                 )}
             </div>
 
-            {/* ✅ Card Content */}
+
             <div className="absolute bottom-0 pr-5 pl-2 py-3 bg-white/50 backdrop-blur-md shadow-lg left-0 w-full flex justify-between items-center gap-4 z-10">
                 <div className="text-right">
                     {/* 🔹 Editable Title */}
@@ -104,7 +104,7 @@ export default function GenericCard({
                     {/* 🔹 Editable Description */}
                     <div
                         className="text-sm text-gray-500"
-                        onClick={(e) => e.stopPropagation()}  // ✅ prevent card click
+                        onClick={(e) => e.stopPropagation()}
                     >
                         {editingField === 'description' ? (
                             <input
@@ -139,7 +139,7 @@ export default function GenericCard({
                     )}
                 </div>
 
-                {/* ✅ Options Menu via ButtonWithPopover */}
+
                 <div className="flex-shrink-0">
                     <ButtonWithPopover
                         isOptions

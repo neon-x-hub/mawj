@@ -144,7 +144,7 @@ const LayersTab = () => {
                         />
                     }
                 >
-                    {/* ✅ Preview & Properties Panel */}
+
                     <LayerPreview layer={layer} handlePropsChange={handlePropsChange} />
                     {layer.renderPropertiesPanel((newProps) => handlePropsChange(layer.id, newProps))}
                 </AccordionItem>

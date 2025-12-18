@@ -10,7 +10,7 @@ function s4(html, parentId) {
             .replace(/@import[^;]+;/gi, '') // remove @import
             .replace(/url\(["']?(https?:)?[^)"']+["']?\)/gi, ''); // remove external urls
 
-        // ✅ prefix selectors with #canvas
+
         // naive but works: split by } and reattach
         safeCSS = safeCSS.split('}').map(block => {
             const [selectors, rules] = block.split('{');

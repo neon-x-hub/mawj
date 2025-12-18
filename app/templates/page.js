@@ -18,10 +18,10 @@ import TemplateDirectOptions from '../components/core/menu/TemplateDirectOptions
 export default function TemplatesPage() {
     const router = useRouter();
 
-    // ✅ Context
+
     const { templates, setTemplates, loading, error, fetchTemplates, updateTemplate } = useTemplates();
 
-    // ✅ Fetch templates on mount
+
     useEffect(() => {
         (async () => {
             try {
@@ -40,10 +40,10 @@ export default function TemplatesPage() {
                 <DynamicBreadcrumbs basePath="/templates" baseLabel={t('common.templates')} />
             </Suspense>
 
-            {/* ✅ Error Handling */}
+
             {error && <p style={{ color: 'red' }}>{t('error')}: {error}</p>}
 
-            {/* ✅ Loading Skeleton */}
+
             {loading && (
                 <ResponiveGrid>
                     {Array.from({ length: 6 }).map((_, i) => (
@@ -57,14 +57,14 @@ export default function TemplatesPage() {
                 </ResponiveGrid>
             )}
 
-            {/* ✅ Empty State */}
+
             {!loading && !error && templates.length === 0 && (
                 <p className="text-center font-bold text-2xl opacity-80 h-52 flex items-center justify-center text-gray-500">
                     {t('messages.error.no_templates_found')}
                 </p>
             )}
 
-            {/* ✅ Templates Grid */}
+
             {!loading && !error && templates.length > 0 && (
                 <ResponiveGrid>
                     {templates.map((template) => (

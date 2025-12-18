@@ -5,7 +5,7 @@ const revalidators = {
         const dbProvider = await datarows.getDataProvider();
         const allRows = await dbProvider.find(revalidationProps.projectId);
 
-        // ✅ Build a frequency map of columns
+
         const columnCounts = {};
         allRows.forEach(doc => {
             Object.keys(doc.data || {}).forEach(key => {
@@ -13,7 +13,7 @@ const revalidators = {
             });
         });
 
-        // ✅ Convert to array format [{n: colName, c: count}, ...]
+
         return Object.entries(columnCounts).map(([n, c]) => ({ n, c }));
     },
 

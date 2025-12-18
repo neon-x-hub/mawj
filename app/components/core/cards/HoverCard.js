@@ -23,10 +23,10 @@ export default function HoverCard({
     const { updateProject } = useProjects();
 
     const handleChooseTemplate = async (template) => {
-        console.log('✅ Template chosen:', template);
+
         try {
             await updateProject(project.id, { template: template.id });
-            console.log('✅ Project updated successfully');
+
             window.location.reload();
         } catch (err) {
             console.error('❌ Failed to update project:', err);
@@ -56,11 +56,11 @@ export default function HoverCard({
                         />
                     </>
                 ) : (
-                    // ✅ Fallback background when no image is provided
+
                     // When click a modal appears to choose a template from
                     <div
                         className="z-0 cursor-pointer w-full h-full flex flex-col items-center justify-center bg-gray-100"
-                        onClick={() => setIsModalOpen(true)} // ✅ Open modal on click
+                        onClick={() => setIsModalOpen(true)}
                     >
                         <MaskedIcon
                             src="/Icons/haicon/line/paint-brush.svg"
@@ -135,7 +135,7 @@ export default function HoverCard({
                     </div>
                 </CardFooter>
             </Card>
-            {/* ✅ Modal Integration */}
+
             <ChooseTemplateModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

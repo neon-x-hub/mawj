@@ -51,7 +51,7 @@ export default function DataTable({
     }, [data])
 
 
-    /** ✅ Helper to call the POST bulk endpoint */
+
     const sendBulkUpdate = async (updates) => {
         try {
             const res = await fetch(`/api/v1/projects/${project.id}/data`, {
@@ -79,7 +79,7 @@ export default function DataTable({
         }
     };
 
-    /** ✅ Action handlers */
+
     const handleEdit = async (formData) => {
         const selected = Array.from(selectedKeys);
         if (selected.length !== 1) return;
@@ -185,7 +185,7 @@ export default function DataTable({
         })
     }
 
-    /** ✅ Render table cells */
+
     const renderCell = (item, columnKey) => {
         const value = item[columnKey];
         switch (columnKey) {
@@ -196,7 +196,7 @@ export default function DataTable({
         }
     };
 
-    /** ✅ Action buttons configuration */
+
     const actionButtons = [
         {
             label: t("actions.delete"),
@@ -279,7 +279,7 @@ export default function DataTable({
 
     return (
         <div className="flex flex-col gap-3">
-            {/* ✅ Animated Action Bar */}
+
             <AnimatePresence>
                 {selectedKeys.size > 0 && (
                     <motion.div
@@ -306,7 +306,7 @@ export default function DataTable({
                 )}
             </AnimatePresence>
 
-            {/* ✅ Table */}
+
             {data.length > 0 ? (
                 <Table
                     aria-label="Project data table"

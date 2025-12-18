@@ -25,7 +25,7 @@ export default function TemplateDirectOptions({ template }) {
     const router = useRouter();
     const { addTemplate, deleteTemplate } = useTemplates();
 
-    // ✅ Delete confirmation modal
+
     const {
         isOpen: isDeleteOpen,
         onOpen: openDeleteModal,
@@ -34,7 +34,7 @@ export default function TemplateDirectOptions({ template }) {
 
     const [deleting, setDeleting] = useState(false);
 
-    // ✅ Handle actions
+
     const handleAction = (key) => {
         switch (key) {
             case 'open':
@@ -56,12 +56,12 @@ export default function TemplateDirectOptions({ template }) {
         }
     };
 
-    // ✅ Confirm template deletion
+
     const confirmDelete = async (onClose) => {
         try {
             setDeleting(true);
             await deleteTemplate(template.id);
-            console.log(`✅ Template ${template.name} deleted`);
+
             onClose();
         } catch (err) {
             console.error('❌ Failed to delete template:', err);
@@ -72,12 +72,12 @@ export default function TemplateDirectOptions({ template }) {
 
     return (
         <>
-            {/* ✅ Template Options List */}
+
             <div className="space-y-1 w-[180px] max-w-md">
                 <ListboxWrapper>
                     <Listbox aria-label="Template Actions" onAction={handleAction}>
 
-                        {/* ✅ Open Template */}
+
                         <ListboxItem
                             key="open"
                             startContent={<MaskedIcon src="/icons/coco/line/Export.svg" height="18px" width="18px" color="currentColor" />}
@@ -86,7 +86,7 @@ export default function TemplateDirectOptions({ template }) {
                             {t('actions.open')}
                         </ListboxItem>
 
-                        {/* ✅ Duplicate Template */}
+
                         <ListboxItem
                             key="duplicate"
                             startContent={<MaskedIcon src="/icons/coco/line/Copy.svg" height="18px" width="18px" color="currentColor" />}
@@ -96,7 +96,7 @@ export default function TemplateDirectOptions({ template }) {
                             {t('actions.duplicate')}
                         </ListboxItem>
 
-                        {/* ✅ Delete Template */}
+
                         <ListboxItem
                             key="delete"
                             color="danger"
@@ -121,7 +121,7 @@ export default function TemplateDirectOptions({ template }) {
                 </ListboxWrapper>
             </div>
 
-            {/* ✅ Delete Confirmation Modal */}
+
             <Modal isOpen={isDeleteOpen} onOpenChange={onDeleteOpenChange}>
                 <ModalContent>
                     {(onClose) => (

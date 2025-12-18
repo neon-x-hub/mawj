@@ -162,7 +162,7 @@ export async function importProjectBundle(
                         }
                     });
 
-                    // ✅ 7. Update metadata provider incrementally
+
                     const DATA_DIR = await config.get("baseFolder") || "./data";
                     const metadataFilePath = `${DATA_DIR}/datarows/${newProjectId}/fam.json`;
 

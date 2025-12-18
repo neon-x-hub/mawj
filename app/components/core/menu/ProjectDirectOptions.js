@@ -29,7 +29,7 @@ export default function ProjectDirectOptions({ project }) {
     const { folders } = useFolders();
     const { addProject, deleteProject } = useProjects();
 
-    // ✅ Modals
+
     const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Folder modal
     const {
         isOpen: isDeleteOpen,
@@ -37,12 +37,12 @@ export default function ProjectDirectOptions({ project }) {
         onOpenChange: onDeleteOpenChange
     } = useDisclosure(); // Delete confirmation modal
 
-    // ✅ State
+
     const [selectedFolders, setSelectedFolders] = useState(new Set());
     const [loading, setLoading] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
-    // ✅ Fetch folders this project belongs to
+
     useEffect(() => {
         const fetchProjectFolders = async () => {
             try {
@@ -57,7 +57,7 @@ export default function ProjectDirectOptions({ project }) {
         fetchProjectFolders();
     }, [project.id]);
 
-    // ✅ Handle actions
+
     const handleAction = (key) => {
         switch (key) {
             case 'open':
@@ -81,7 +81,7 @@ export default function ProjectDirectOptions({ project }) {
         }
     };
 
-    // ✅ Save updated folder associations in bulk
+
     const handleSaveFolders = async (onClose) => {
         try {
             setLoading(true);
@@ -95,7 +95,7 @@ export default function ProjectDirectOptions({ project }) {
             });
 
             if (!res.ok) throw new Error('Failed to update project folders');
-            console.log('✅ Project folders updated');
+
             onClose();
         } catch (err) {
             console.error('❌ Update failed:', err);
@@ -104,7 +104,7 @@ export default function ProjectDirectOptions({ project }) {
         }
     };
 
-    // ✅ Confirm project deletion
+
     const confirmDelete = async (onClose) => {
         try {
             setDeleting(true);
@@ -119,12 +119,12 @@ export default function ProjectDirectOptions({ project }) {
 
     return (
         <>
-            {/* ✅ Project Options List */}
+
             <div className="space-y-1 w-[180px] max-w-md">
                 <ListboxWrapper>
                     <Listbox aria-label="Project Actions" onAction={handleAction}>
 
-                        {/* ✅ Open Project */}
+
                         <ListboxItem
                             key="open"
                             startContent={<MaskedIcon src="/icons/coco/line/Export.svg" height="18px" width="18px" color="currentColor" />}
@@ -133,7 +133,7 @@ export default function ProjectDirectOptions({ project }) {
                             {t('actions.open')}
                         </ListboxItem>
 
-                        {/* ✅ Add to Folder */}
+
                         <ListboxItem
                             key="folders"
                             startContent={<MaskedIcon src="/icons/coco/line/Folder.svg" height="18px" width="18px" color="currentColor" />}
@@ -142,7 +142,7 @@ export default function ProjectDirectOptions({ project }) {
                             {t('common.folders')}
                         </ListboxItem>
 
-                        {/* ✅ Duplicate Project */}
+
                         <ListboxItem
                             key="duplicate"
                             startContent={<MaskedIcon src="/icons/coco/line/Copy.svg" height="18px" width="18px" color="currentColor" />}
@@ -152,7 +152,7 @@ export default function ProjectDirectOptions({ project }) {
                             {t('actions.duplicate')}
                         </ListboxItem>
 
-                        {/* ✅ Delete Project */}
+
                         <ListboxItem
                             key="delete"
                             color="danger"
@@ -177,7 +177,7 @@ export default function ProjectDirectOptions({ project }) {
                 </ListboxWrapper>
             </div>
 
-            {/* ✅ Folder Management Modal */}
+
             <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
                 <ModalContent>
                     {(onClose) => (
@@ -186,7 +186,7 @@ export default function ProjectDirectOptions({ project }) {
                             <ModalBody>
                                 <p className="text-sm opacity-70 mb-2">{t('messages.select_folders_for_project')}</p>
 
-                                {/* ✅ Multi-select for folders */}
+
                                 <Select
                                     label={t('common.folders')}
                                     placeholder={t('common.placeholder.select_folders')}
@@ -199,7 +199,7 @@ export default function ProjectDirectOptions({ project }) {
                                     {(folder) => <SelectItem key={folder.id}>{folder.name}</SelectItem>}
                                 </Select>
 
-                                {/* ✅ Display currently selected folders */}
+
                                 <div className="mt-4">
                                     <h3 className="font-semibold mb-2">{t('common.current_folders')}</h3>
                                     {Array.from(selectedFolders).length > 0 ? (
@@ -238,7 +238,7 @@ export default function ProjectDirectOptions({ project }) {
                 </ModalContent>
             </Modal>
 
-            {/* ✅ Delete Confirmation Modal */}
+
             <Modal isOpen={isDeleteOpen} onOpenChange={onDeleteOpenChange}>
                 <ModalContent>
                     {(onClose) => (

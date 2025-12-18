@@ -136,7 +136,7 @@ export default function ProjectHead({ project }) {
                         const json = await res.json();
 
                         if (res.ok) {
-                            console.log('✅ Folder opened:', json.message);
+
                         } else {
                             console.error('❌ Failed to open folder:', json.error);
                         }

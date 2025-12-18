@@ -54,7 +54,7 @@ export default function AddModifierOptions() {
             return;
         };
 
-        // ✅ Update regular layers array
+
         const updatedModifiers = layers.modifiers ? [...layers.modifiers, newLayer] : [newLayer];
         setLayers({ ...layers, modifiers: updatedModifiers });
     };

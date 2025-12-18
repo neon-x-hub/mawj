@@ -11,14 +11,12 @@ export async function POST(request, { params }) {
     try {
         const startTime = Date.now();
 
-        // ✅ 1. Parse FormData & get uploaded file
         const formData = await request.formData();
         const file = formData.get("file");
         if (!file) {
             return Response.json({ error: t("messages.error.datarows.no_file_uploaded") }, { status: 400 });
         }
 
-        // ✅ 2. Determine file extension
         let extension = "";
         if (file.name) {
             extension = file.name.toLowerCase().split(".").pop();
@@ -28,11 +26,9 @@ export async function POST(request, { params }) {
             extension = "csv";
         }
 
-        // ✅ 3. Read file content safely
         const buffer = await file.arrayBuffer();
         const fileContent = new TextDecoder().decode(buffer);
 
-        // ✅ 4. Parse based on file type
         let rawRecords = [];
         if (extension === "json") {
             try {
@@ -65,7 +61,6 @@ export async function POST(request, { params }) {
             );
         }
 
-        // ✅ 5. Transform records
         const documents = rawRecords.map((record) => ({
             status: false,
             createdAt: new Date().toISOString(),
@@ -73,11 +68,9 @@ export async function POST(request, { params }) {
             data: record
         }));
 
-        // ✅ 6. Save to DB
         const provider = await datarows.getDataProvider();
         await provider.bulkCreate(id, documents);
 
-        // ✅ 7. Update metadata provider incrementally
         const DATA_DIR = await config.get("baseFolder") || "./data";
         const metadataFilePath = `${DATA_DIR}/datarows/${id}/fam.json`;
 
@@ -111,7 +104,6 @@ export async function POST(request, { params }) {
 
         const endTime = Date.now();
 
-        // ✅ 8. Log stats event
         await stats.add({
             projectId: id,
             action: "data_ingestion",
@@ -121,7 +113,6 @@ export async function POST(request, { params }) {
             },
         });
 
-        // ✅ 9. Respond
         return Response.json(
             {
                 success: true,

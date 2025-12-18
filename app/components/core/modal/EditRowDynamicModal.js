@@ -14,7 +14,6 @@ export default function EditRowDynamicModal({
 }) {
     const [selectedTab, setSelectedTab] = useState("form");
 
-    // 🔥 Build a "merged" object for preview (formData OR fallback to selectedRow)
     const previewData = useMemo(() => {
         const merged = {};
         columns.forEach(col => {
@@ -97,7 +96,6 @@ export default function EditRowDynamicModal({
                     </div>
                 }
             >
-                {/* 🔥 Pass merged preview data here */}
                 <LivePreviewGenerator
                     project={project}
                     formData={previewData}
