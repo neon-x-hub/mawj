@@ -79,7 +79,7 @@ export default function DataSectionHead({ project, data, setData }) {
                     {
                         label: t('actions.generic.export.label', { object: t('common.data') }),
                         description: t('actions.generic.export.desc', { object: t('common.data') }),
-                        icon: '/icons/coco/bold/Add.svg',
+                        icon: '/icons/coco/bold/Arrow-Bottom-3.svg',
                         modal: {
                             title: t('actions.generic.add.label', { object: t('common.data') }),
                             actionLabel: t('actions.generic.export.label', { object: t('common.data') }),
@@ -106,7 +106,7 @@ export default function DataSectionHead({ project, data, setData }) {
                 placeholder: t('common.placeholder.search', { pl: t('common.data') }),
                 onSearch: async (q) => {
 
-                    // ✅ Regex to match key:'value', 'key':value, key:value, etc.
+
                     const regex = /'([^']+)'\s*:\s*'([^']+)'|'([^']+)'\s*:\s*(\S+)|(\w+)\s*:\s*'([^']+)'|(\w+)\s*:\s*(\S+)/g;
                     const params = {};
 
