@@ -4,7 +4,6 @@ import { t } from "@/app/i18n";
 import { Button, Skeleton } from "@heroui/react";
 import { useTemplates } from "@/app/components/context/templates/templatesContext";
 import MaskedIcon from "@/app/components/core/icons/Icon";
-import Image from "next/image";
 
 export default function LivePreviewGenerator({ project, formData }) {
     const { getTemplateById } = useTemplates();
@@ -108,10 +107,9 @@ export default function LivePreviewGenerator({ project, formData }) {
                                 className="w-full h-full object-contain rounded-xl"
                             />
                         ) : (
-                            <Image
+                            <img // Image from next forces caching, not idea for live preview
                                 src={previewData.url}
                                 alt="Live Preview"
-                                fill
                                 className="object-contain rounded-xl"
                             />
                         )
