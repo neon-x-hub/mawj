@@ -197,9 +197,17 @@ class TextLayer extends Layer {
                 <div
                     key={node_key}
                     id={elementId}
-                    style={style}
-                    dangerouslySetInnerHTML={{ __html: parsedContent }}
+                    style={{
+                        ...style,
+                        display: "flex",
+                    }}
                 >
+                    <div
+                        style={{
+                            position: "relative",
+                        }}
+                        dangerouslySetInnerHTML={{ __html: parsedContent }}
+                    />
                 </div>
             );
         }
@@ -214,6 +222,7 @@ class TextLayer extends Layer {
             </div>
         );
     }
+
 
 
     _computeFontSize({
