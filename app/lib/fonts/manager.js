@@ -67,8 +67,7 @@ export async function collectFonts() {
         if (!fontMap.has(key)) {
             fontMap.set(key, {
                 name: info.family,
-                style: info.subfamily,
-                postscript: info.postscript,
+                style: info.postscript,
                 file,
                 fullPath,
                 servable: true,
