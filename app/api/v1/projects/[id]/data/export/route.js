@@ -2,17 +2,14 @@ import fs from "fs";
 import path from "path";
 import datarows from "@/app/lib/providers/datarows";
 import { t } from "@/app/i18n";
-import { stringify } from "csv-stringify/sync"; // synchronous version
+import { stringify } from "csv-stringify/sync";
 
 export async function POST(request, { params }) {
     const { id } = await params;
 
     try {
         const body = await request.json();
-        const { exportFolder: folder, exportFormat: format } = body;
-
-        console.log("Export w/: ", format, "in ", folder);
-
+        const { exportFolder: folder, exportFormat: format = 'csv' } = body;
 
         if (!folder || !format || !["csv", "json"].includes(format.toLowerCase())) {
             return Response.json(
