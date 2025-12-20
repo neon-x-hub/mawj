@@ -8,7 +8,7 @@ import { useProjects } from '../../context/projects/projectsContext'
 import AddRowDynamicModal from '../../core/modal/AddRowDynamicModal'
 import ExportDataRowsModal from '../../core/modal/ExportDataRowsModal'
 export default function DataSectionHead({ project, data, setData }) {
-    const { uploadProjectDataFile, addProjectData, exportProjectData } = useProjects();
+    const { uploadProjectDataFile, addProjectData, exportProjectData, deleteAllData } = useProjects();
     return (
         <SectionHead
             title={t('common.data')}
@@ -100,7 +100,26 @@ export default function DataSectionHead({ project, data, setData }) {
                         }
                     }
                 ],
-                danger: [],
+                danger: [{
+                    label: t('actions.generic.delete_all.label', { object: t('common.data') }),
+                    description: t('actions.generic.delete.desc', { object: t('common.data') }),
+                    icon: '/icons/coco/bold/Trash-2.svg',
+                    modal: {
+                        title: t('actions.generic.delete_all.label', { object: t('common.data') }),
+                        actionLabel: t('actions.generic.delete_all.label', { object: t('common.data') }),
+                        content: () => (<p>{t('actions.generic.delete_all.confirm', { object: t('common.data') })}</p>
+                        ),
+                        dangerAction: async () => {
+                            try {
+                                const res = await deleteAllData(project.id);
+                                console.log('Data deleted successfully:', res);
+                                window.location.reload();
+                            } catch (err) {
+                                console.error('❌ Failed to delete data:', err);
+                            }
+                        }
+                    }
+                }],
             }}
             search={{
                 placeholder: t('common.placeholder.search', { pl: t('common.data') }),
