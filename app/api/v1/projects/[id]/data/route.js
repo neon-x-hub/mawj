@@ -116,6 +116,33 @@ export async function POST(request, { params }) {
         });
         await metadata.load({ projectId: id });
 
+        const hasDeleteAll = body.some(
+            item => item?.id === "all" && item.updates === null
+        );
+
+        // --- DELETE ALL ---
+        if (hasDeleteAll) {
+            const allRows = await provider.find(id);
+
+            metadata.set("rowCount", 0);
+            metadata.set("doneCount", 0);
+            metadata.set("columns", []);
+
+            if (allRows.length > 0) {
+                const allIds = allRows.map(r => r.id);
+                await provider.bulkDelete(id, allIds);
+            }
+
+            await metadata.save();
+
+            return Response.json({
+                success: true,
+                deleted: "all",
+                updated: []
+            });
+        }
+
+
         const updates = [];
         const deletes = [];
         for (const item of body) {
