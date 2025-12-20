@@ -40,7 +40,7 @@ export function ProjectsProvider({ children }) {
             const query = buildQuery(filter);
             const url = query ? `/api/v1/projects?${query}` : '/api/v1/projects';
             const res = await fetch(url);
-            if (!res.ok){
+            if (!res.ok) {
                 const payload = await res.json();
                 throw new Error(payload.error || 'Failed to fetch filtered projects');
             }
@@ -250,6 +250,22 @@ export function ProjectsProvider({ children }) {
         }
     };
 
+    const deleteAllData = async (id) => {
+        try {
+            const res = await fetch(`/api/v1/projects/${id}/data`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify([{ id: 'all', updates: null }])
+            });
+            if (!res.ok) throw new Error('Failed to delete all project data');
+            return true;
+        }
+        catch (err) {
+            console.error('Delete all project data error:', err);
+            throw err;
+        }
+    };
+
     useEffect(() => {
         fetchProjects();
     }, []);
@@ -271,7 +287,8 @@ export function ProjectsProvider({ children }) {
                 addProjectData,
                 deleteProjectData,
                 uploadProjectDataFile,
-                exportProjectData
+                exportProjectData,
+                deleteAllData,
             }}
         >
             {children}
