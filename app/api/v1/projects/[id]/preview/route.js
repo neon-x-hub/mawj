@@ -17,7 +17,7 @@ export async function GET(request, { params }) {
     const template = await dbInstance.findById('templates', project.template);
     if (!template) return new Response('Template not found', { status: 404 });
 
-    const previewDir = path.resolve(`${await config.get('baseFolder') || './data'}/templates/${id}/previews`);
+    const previewDir = path.resolve(`${await config.get('baseFolder') || './data'}/templates/${template.id}/previews`);
     const previewPath = path.join(previewDir, PREVIEW_NAME);
 
     // Ensure preview exists (render it if needed)
@@ -26,7 +26,9 @@ export async function GET(request, { params }) {
             fs.mkdirSync(previewDir, { recursive: true });
         }
 
-        await generatePreview(template);
+        console.log("Creating preview for ", template.id, " because ", project.id, " asked for it.");
+
+        await generatePreview(null, template, null);
     }
 
     // Serve the preview image
