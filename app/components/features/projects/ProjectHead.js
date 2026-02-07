@@ -15,6 +15,8 @@ export default function ProjectHead({ project }) {
         setIsProcessing(true)
         setProgress(0)
 
+        const pollingInterval = project.type === 'video' ? 2000 : 1000;
+
         const defaultFormatByType = {
             card: 'png',
             video: 'mp4',
@@ -49,7 +51,7 @@ export default function ProjectHead({ project }) {
             const { jobId } = await res.json()
 
             while (progress < 100) {
-                await new Promise(r => setTimeout(r, 1000))
+                await new Promise(r => setTimeout(r, pollingInterval))
 
                 const statusRes = await fetch(`/api/v1/generate/status/${jobId}`)
                 if (!statusRes.ok) throw new Error('Failed to get status')
