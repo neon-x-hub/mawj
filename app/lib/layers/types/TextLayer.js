@@ -7,7 +7,6 @@ import tw from '../../tw';
 import { stripTwTags } from '../../tw/clean';
 // Defaults
 import { TEXT_DEFAULTS } from '../../defaults';
-import { color } from 'framer-motion';
 
 // Text Layer implementation
 class TextLayer extends Layer {
