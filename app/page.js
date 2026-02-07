@@ -61,7 +61,7 @@ export default function Home() {
                             previews={
                                 folder.previews ||
                                 (folder.projects
-                                    ? folder.projects.map((p) => `/api/v1/projects/${p.id}/preview`)
+                                    ? folder.projects.map((p) => `/api/v1/projects/${p}/preview`)
                                     : [])
                             }
                             onPress={() => router.push(`/projects?f=${folder.id}`)}
