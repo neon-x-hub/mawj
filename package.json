@@ -2,11 +2,46 @@
     "name": "mawj",
     "version": "0.1.0",
     "private": true,
+    "main": "main.js",
     "scripts": {
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "electron": "electron .",
+        "dist": "electron-builder"
+    },
+    "build": {
+        "appId": "com.neon-x-hub.mawj",
+        "asar": false,
+        "win": {
+            "target": "nsis"
+        },
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "main.js",
+            "package.json",
+            {
+                "from": ".next/standalone",
+                "to": ".next/standalone"
+            },
+            {
+                "from": ".next/static",
+                "to": ".next/standalone/.next/static"
+            },
+            {
+                "from": "public",
+                "to": "public"
+            }
+        ],
+        "extraResources": [
+            {
+                "from": ".next/standalone",
+                "to": ".next/standalone"
+            }
+        ]
     },
     "dependencies": {
         "@heroui/react": "^2.7.11",
@@ -39,6 +74,8 @@
     "devDependencies": {
         "@eslint/eslintrc": "^3",
         "autoprefixer": "^10.4.21",
+        "electron": "^39.2.7",
+        "electron-builder": "^26.0.12",
         "eslint": "^9",
         "eslint-config-next": "15.3.5",
         "postcss": "^8.5.6",
