@@ -1,305 +1,51 @@
-import fs from 'fs';
-import path from 'path';
-import puppeteer from 'puppeteer';
-import Mustache from 'mustache';
-import he from 'he';
+import { RenderContext } from "./stages/RenderContext.js";
+import { Pipeline } from "./stages/Pipeline.js";
 
+// Setup
+import { BrowserStage } from "./stages/BrowserStage.js";
+import { CanvasStage } from "./stages/CanvasStage.js";
+import { FontStage } from "./stages/FontStage.js";
+import { StaticLayersStage } from "./stages/StaticLayersStage.js";
 
-import { buildLayer } from '../../layers/types/index.js';
-import { loadFontInPuppeteer } from './injectFont.js';
-import { getFontByFamilyAndStyle } from '../../fonts/manager.js';
-import config from '@/app/lib/providers/config';
-import fetchImageAsDataURL from '../../helpers/images/downloadToBase64.js';
-import localFileToDataURL from '../../helpers/images/readFromFsToBase64.js';
-import makeCssFontName from '../../fonts/cssName.js';
+// Per-row
+import { RowContextStage } from "./stages/RowContextStage.js";
+import { DynamicLayerStage } from "./stages/DynamicLayerStage.js";
+import { StabilityStage } from "./stages/StabilityStage.js";
+import { CaptureStage } from "./stages/CaptureStage.js";
 
-const BASE_URL = process.env.ASSET_HOST || 'http://localhost:3000';
+// Teardown
+import { CleanupStage } from "./stages/CleanupStage.js";
 
-export function collectFontsFromLayers(layers) {
-    const fonts = new Map();
+export async function render(project, template, rows = [], options = {}, onProgress) {
+    const ctx = new RenderContext({ project, template, rows, options, onProgress });
 
-    for (const layer of layers) {
-        if (layer.type !== 'text') continue;
+    const setupPipeline = new Pipeline([
+        new BrowserStage(),
+        new CanvasStage(),
+        new FontStage(),
+        new StaticLayersStage(),
+    ]);
 
-        const props = layer.options?.props;
-        if (!props?.fontFamily) continue;
+    await setupPipeline.run(ctx);
 
-        const family = props.fontFamily;
-        const style = props.fontFamilyStyle || 'Regular';
-        const cssName = makeCssFontName(family, style);
-
-        if (!fonts.has(cssName)) {
-            fonts.set(cssName, {
-                family,
-                style,
-                cssName
-            });
-        }
-    }
-
-    return Array.from(fonts.values());
-}
-
-async function loadProjectFonts(page, layers) {
-    const neededFonts = collectFontsFromLayers(layers);
-
-    for (const { family, style, cssName } of neededFonts) {
-        const font = await getFontByFamilyAndStyle(family, style);
-
-        if (!font) {
-            console.warn(`⚠️ Font not found: ${family} (${style})`);
-            continue;
-        }
-
-        await loadFontInPuppeteer(page, font, cssName);
-    }
-}
-
-export async function render(
-    project,
-    template,
-    rows = [],
-    options = { format: 'png' },
-    onRowRenderCompleted
-) {
-    const { renderToString } = await import('react-dom/server');
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--allow-file-access-from-files',
-            '--enable-local-file-accesses'
-        ]
-    });
-    const page = await browser.newPage();
-
-
-    const baseLayer = template.baseLayers[0];
-    await page.setViewport({ width: baseLayer.width, height: baseLayer.height });
-
-
-    const baseHTML = fs.readFileSync(path.resolve('./app/lib/engine/image/base.html'), 'utf8');
-    await page.setContent(baseHTML);
-
-
-    const customBaseLayerPath = options.baseLayer;
-    let backgroundDataURL = null;
-
-    if (
-        customBaseLayerPath &&
-        fs.existsSync(customBaseLayerPath) &&
-        fs.statSync(customBaseLayerPath).isFile()
-    ) {
-        try {
-            backgroundDataURL = await localFileToDataURL(customBaseLayerPath);
-        } catch (err) {
-            console.warn(`⚠️ Failed to load custom base layer: ${err.message}`);
-        }
-    }
-
-    if (backgroundDataURL) {
-        // Use the local image (base64)
-        await page.evaluate(
-            ({ width, height, backgroundDataURL }) => {
-                const canvas = document.getElementById("canvas");
-                canvas.style.width = `${width}px`;
-                canvas.style.height = `${height}px`;
-                canvas.style.background = `url('${backgroundDataURL}') center/cover no-repeat`;
-            },
-            {
-                width: baseLayer.width,
-                height: baseLayer.height,
-                backgroundDataURL,
-            }
-        );
-    } else {
-        // Default: use the hosted base layer
-        await page.evaluate(
-            ({ width, height, name, templateId, BASE_URL }) => {
-                const canvas = document.getElementById("canvas");
-                canvas.style.width = `${width}px`;
-                canvas.style.height = `${height}px`;
-                canvas.style.background = `url('${BASE_URL}/api/v1/templates/${templateId}/base/${name}') center/cover no-repeat`;
-            },
-            {
-                ...baseLayer,
-                templateId: template.id,
-                BASE_URL
-            }
-        );
-    }
-
-
-    await page.evaluate(() => new Promise((resolve) => {
-        const canvas = document.getElementById('canvas');
-        const url = canvas.style.background.match(/url\(['"]?(.*?)['"]?\)/)?.[1];
-        if (!url) return resolve(true);
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = url;
-    }));
-
-
-    await loadProjectFonts(page, template.layers);
-
-    backgroundDataURL && await page.evaluate((backgroundDataURL) => {
-        document.documentElement.style.background = 'transparent';
-        document.body.style.background = 'transparent';
-        const canvas = document.getElementById('canvas');
-        if (canvas && backgroundDataURL) {
-            canvas.style.backgroundColor = 'transparent';
-        }
-    }, backgroundDataURL);
-
-
-    const outputDir = options.outputDir || path.resolve(`${await config.get('baseFolder') || './data'}/projects/outputs/${project.id}`);
-    fs.mkdirSync(outputDir, { recursive: true });
-
-    const startTime = Date.now();
-    const results = [];
-
-
-    const staticLayers = template.layers.filter(l => !l.options?.props?.templateText);
-    const dynamicLayers = template.layers.filter(l => l.options?.props?.templateText);
-
-
-    async function renderLayers(page, layers) {
-        for (const layerConfig of layers) {
-            const layer = buildLayer(layerConfig.id, layerConfig);
-            const htmlString = renderToString(layer.renderContent({ node_key: layerConfig.id }));
-
-            await page.evaluate((html) => {
-                const container = document.getElementById('canvas');
-                const wrapper = document.createElement('div');
-                wrapper.classList.add('static-layer');
-                wrapper.innerHTML = html;
-                container.appendChild(wrapper.firstChild);
-            }, htmlString);
-        }
-    }
-
-    await renderLayers(page, staticLayers);
-
+    const perRowPipeline = new Pipeline([
+        new RowContextStage(),
+        new DynamicLayerStage(),
+        new StabilityStage(),
+        new CaptureStage(),
+    ]);
 
     for (const row of rows) {
-        const preprocessedRow = {
-            id: row.id,
-            ...Object.fromEntries(Object.entries(row.data || {}).map(([k, v]) => [k.replace(/\s+/g, '_'), v]))
-        };
-
-        // Clear dynamic container
-        await page.evaluate(() => {
-            const old = document.getElementById('dynamic-container');
-            if (old) old.remove();
-            const container = document.getElementById('canvas');
-            const wrapper = document.createElement('div');
-            wrapper.id = 'dynamic-container';
-            container.appendChild(wrapper);
-        });
-
-
-        // Render only dynamic layers for this row
-        for (const layerConfig of dynamicLayers) {
-            // Clone props so they don't overwrite original
-            const clonedConfig = {
-                ...layerConfig,
-                options: { ...layerConfig.options, props: { ...layerConfig.options.props } }
-            };
-
-            if (clonedConfig.options.props.templateText) {
-                const mustacheTemplate = clonedConfig.options.props.templateText;
-                const mustacheRender = Mustache.render(mustacheTemplate, preprocessedRow);
-                let finalContent = he.decode(mustacheRender);
-                if (clonedConfig.type === "image" && typeof finalContent === "string") {
-                    try {
-                        if (finalContent.startsWith("http://") || finalContent.startsWith("https://")) {
-                            // 🌍 Remote image → fetch and embed as base64
-                            finalContent = await fetchImageAsDataURL(finalContent);
-                        } else if (fs.existsSync(finalContent)) {
-                            // 📂 Local file → make it a file:// URL
-                            const absPath = path.resolve(finalContent);
-                            finalContent = localFileToDataURL(absPath);
-                        }
-                        // else → leave `finalContent` as-is
-                    } catch (err) {
-                        console.warn(`⚠️ Failed to resolve image source "${finalContent}":`, err.message);
-                    }
-                }
-
-                clonedConfig.options.props.content = finalContent;
-            }
-
-
-            const layer = buildLayer(clonedConfig.id, clonedConfig);
-            const htmlString = renderToString(layer.renderContent({ node_key: clonedConfig.id }));
-
-            await page.evaluate((html) => {
-                const container = document.getElementById('dynamic-container');
-                const range = document.createRange();
-                const fragment = range.createContextualFragment(html);
-                container.appendChild(fragment);
-            }, htmlString);
-        }
-
-        // Wait for fonts to settle
-        await page.evaluateHandle('document.fonts.ready');
-
-        await page.evaluate(() => {
-            const images = Array.from(document.querySelectorAll('#canvas img'));
-            return Promise.all(
-                images.map(img =>
-                    new Promise((resolve) => {
-                        if (img.complete) {
-                            resolve(img.naturalHeight !== 0);
-                        } else {
-                            img.onload = () => resolve(true);
-                            img.onerror = () => resolve(false);
-                        }
-                    })
-                )
-            );
-        });
-
-
-
-        const fileName = options.outputName || `${row.id}.${options.format}`;
-        const outputPath = path.join(outputDir, fileName);
-
-
-        const screenshotOptions = {
-            type: options.format === 'jpg' ? 'jpeg' : (options.format || 'png'),
-        };
-
-        // JPG-specific settings
-        if (screenshotOptions.type === 'jpeg') {
-            screenshotOptions.quality = options.quality || 80; // required to avoid Chromium stall
-            screenshotOptions.omitBackground = true; // flatten transparency
-        }
-
-        if (screenshotOptions.type === 'png') {
-            screenshotOptions.omitBackground = true;
-        }
-
-        screenshotOptions.path = outputPath;
-
-        // Safe capture
-        await page.screenshot(screenshotOptions);
-
-
-        results.push({ rowId: row.id, output: outputPath });
-
-        if (typeof onRowRenderCompleted === 'function') {
-            onRowRenderCompleted(row.id, outputPath);
-        }
-
+        ctx.setCurrentRow(row);
+        await perRowPipeline.run(ctx);
+        ctx.commitRowProgress(row.id);
     }
 
+    const teardownPipeline = new Pipeline([
+        new CleanupStage(),
+    ]);
 
-    await browser.close();
-    console.log(`==== Rendered ${results.length} rows in ${Date.now() - startTime}ms`);
-    return results;
+    await teardownPipeline.run(ctx);
+
+    return ctx.artifacts;
 }
