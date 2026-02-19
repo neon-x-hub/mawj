@@ -39,7 +39,7 @@ export class ThumbnailStage extends Stage {
                 { outputDir: thumbnailDir, format: "png" },
                 () => { }
             );
-            thumbnailPath = out[0].output;
+            thumbnailPath = out.rows[0].output;
         }
 
         ctx.thumbnailPath = thumbnailPath;
