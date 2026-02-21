@@ -1,10 +1,14 @@
+import config from "@/app/lib/providers/config";
+
+const DATA_DIR = await config.get('baseFolder') || './data';
+
 export class RenderContext {
     constructor({ project, template, rows, options, dataDir, onProgress }) {
         this.project = project;
         this.template = template;
         this.rows = rows;
         this.options = options;
-        this.dataDir = dataDir;
+        this.dataDir = dataDir || DATA_DIR;
         this.onProgress = onProgress;
 
         // Internal state
