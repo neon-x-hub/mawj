@@ -1,49 +1,57 @@
-import { tailwindToInlineStyle as twToInline } from "./css.js";
-
 export class StyledTextParser {
-    parse(input) {
-        let i = 0;
-        const len = input.length;
+  parse(input) {
+    let i = 0;
 
-        const stack = [
-            { style: "", content: "" } // root
-        ];
+    const root = { type: "root", children: [] };
+    const stack = [root];
 
-        while (i < len) {
-            if (input[i] === "[") {
-                const end = input.indexOf("]", i);
-                if (end === -1) break;
+    while (i < input.length) {
+      if (input[i] === "[") {
+        const end = input.indexOf("]", i);
+        if (end === -1) break;
 
-                const token = input.slice(i + 1, end).trim();
+        const token = input.slice(i + 1, end).trim();
 
-                // closing tag: [/], [ / ], etc.
-                if (token === "/") {
-                    if (stack.length > 1) {
-                        const node = stack.pop();
-                        const parent = stack[stack.length - 1];
-
-                        parent.content += `<span style="${node.style}">${node.content}</span>`;
-                    }
-
-                    i = end + 1;
-                    continue;
-                }
-
-                // opening tag
-                stack.push({
-                    style: twToInline(token),
-                    content: ""
-                });
-
-                i = end + 1;
-                continue;
-            }
-
-            // normal characters
-            stack[stack.length - 1].content += input[i];
-            i++;
+        // closing tag
+        if (token === "/") {
+          if (stack.length > 1) {
+            const node = stack.pop();
+            node.end = end + 1;
+            stack[stack.length - 1].children.push(node);
+          }
+          i = end + 1;
+          continue;
         }
 
-        return stack[0].content;
+        // opening tag
+        stack.push({
+          type: "style",
+          tag: token,
+          children: [],
+          start: i,
+          end: null
+        });
+
+        i = end + 1;
+        continue;
+      }
+
+      // text
+      const start = i;
+      let text = "";
+
+      while (i < input.length && input[i] !== "[") {
+        text += input[i++];
+      }
+
+      stack[stack.length - 1].children.push({
+        type: "text",
+        value: text,
+        start,
+        end: i
+      });
     }
+
+    return root;
+  }
 }
