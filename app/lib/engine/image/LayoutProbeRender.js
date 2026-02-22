@@ -52,7 +52,7 @@ export async function layoutProbeRender({
     }
 
     ctx.layoutProbeState = {
-        tokens: fullContent.trim().split(/\s+/),
+        tokens: fullContent.match(/\S+|\n+/g) ?? [],
         accepted: [],
         low: 0,
         high: 0,
