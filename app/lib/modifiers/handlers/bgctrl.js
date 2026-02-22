@@ -40,7 +40,7 @@ export async function processBgCtrl({ row, project, template, modifier, tmpDir, 
             () => { }
         );
 
-        output = output[0].output;
+        output = output.rows[0].output;
 
         const compositePath = path.join(tmpDir, `${row.id}_composite.mp4`);
         await compositeOverlayOntoVideo({
